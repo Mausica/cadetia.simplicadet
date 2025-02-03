@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.account.AccountFragment">
+
+
+    <FrameLayout
+        android:id="@+id/img_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_40sdp">
+
+        <ImageView
+            android:layout_width="@dimen/_108sdp"
+            android:layout_height="@dimen/_108sdp"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:src="@raw/home_img_profile"
+            tools:ignore="ContentDescription" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/_130sdp"
+            android:layout_height="@dimen/_130sdp"
+            android:layout_gravity="center"
+            android:indeterminateOnly="false"
+            android:progress="58"
+            android:progressDrawable="@drawable/home_profile_loading"
+            android:rotation="-90" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/acc_name"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_profile"
+        android:fontFamily="@font/circular_medium"
+        android:layout_centerInParent="true"
+        android:text="@string/acc_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_24ssp" />
+
+    <TextView
+        android:id="@+id/acc_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/acc_name"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:fontFamily="@font/circular_medium"
+        android:text="@string/acc_points"
+        android:textColor="@color/gray"
+        android:textSize="@dimen/_14ssp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/acc_points"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_70sdp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_vertical|center_horizontal">
+            <Button
+                android:id="@+id/acc_donate"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/acc_donate"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <Button
+                android:id="@+id/acc_review"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_review"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <Button
+                android:id="@+id/acc_share"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <TextView
+                android:id="@+id/acc_settings"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="@font/circular_medium"
+                android:text="@string/acc_settings"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_13ssp" />
+            <Button
+                android:id="@+id/acc_support"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <Button
+                android:id="@+id/acc_logout"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <TextView
+                android:id="@+id/acc_priority"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="@font/circular_medium"
+                android:text="@string/acc_donate"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_13ssp" />
+            <Button
+                android:id="@+id/acc_premium"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <Button
+                android:id="@+id/acc_profile"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <TextView
+                android:id="@+id/acc_legal"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:fontFamily="@font/circular_medium"
+                android:text="@string/acc_donate"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_13ssp" />
+
+            <Button
+                android:id="@+id/acc_policies"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+            <Button
+                android:id="@+id/acc_terms"
+                android:layout_width="@dimen/_255sdp"
+                android:layout_height="@dimen/_39sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:drawableStart="@drawable/auth_ic_person"
+                android:drawableEnd="@drawable/uni_ic_go"
+                android:drawablePadding="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_14sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:background="@drawable/acc_custom_button"
+                android:fontFamily="@font/circular_bold"
+                android:textSize="@dimen/_14ssp"
+                android:text="@string/acc_donate"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:gravity="start|center_vertical"
+                tools:ignore="VisualLintButtonSize,VisualLintBounds" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+    <TextView
+        android:id="@+id/text_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</RelativeLayout>

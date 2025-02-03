@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:id="@+id/drawer_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_13sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/img_profile"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginStart="@dimen/_10sdp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/loading_button"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_gravity="center"
+                android:src="@raw/guest"
+                app:shapeAppearanceOverlay="@style/circleImageView"
+                />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center"
+                android:indeterminateOnly="false"
+                android:progress="58"
+                android:progressDrawable="@drawable/home_profile_loading"
+                android:rotation="-90" />
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/drawer_name"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingTop="@dimen/_2sdp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14ssp"
+                android:fontFamily="@font/circular_bold"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingBottom="@dimen/_2sdp"
+                android:textSize="@dimen/_9ssp"
+                android:fontFamily="@font/circular_medium"
+                android:textColor="@color/light"
+                android:text="CNMTV Student"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_below="@+id/drawer_profile"
+        android:background="@color/special_background" />
+
+
+
+</RelativeLayout>

@@ -1,0 +1,111 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_dark">
+
+    <RelativeLayout
+        android:id="@+id/main_information"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_300sdp"
+        android:layout_marginTop="@dimen/_80sdp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:background="@drawable/background_nothing_rounded">
+
+        <ImageView
+            android:id="@+id/image_trophy"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_70sdp"
+            android:scaleType="centerCrop"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:contentDescription="@string/s1"
+            android:src="@drawable/home_ic_trophy"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/start_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_bold"
+            android:gravity="center|bottom"
+            android:layout_below="@+id/image_trophy"
+            android:text="Let's play!"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_23ssp" />
+
+        <TextView
+            android:id="@+id/start_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_medium"
+            android:gravity="center|bottom"
+            android:layout_below="@+id/start_title"
+            android:text="Play now and earn coins"
+            android:layout_marginTop="@dimen/_1sdp"
+            android:textColor="@color/light"
+            android:textSize="@dimen/_15ssp" />
+
+        <TextView
+            android:id="@+id/start_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_regular"
+            android:gravity="center|bottom"
+            android:lineSpacingExtra="@dimen/_2sdp"
+            android:paddingStart="@dimen/_28sdp"
+            android:paddingEnd="@dimen/_28sdp"
+            android:layout_below="@+id/start_subtitle"
+            android:text="Explore various topics, ace five questions, and earn coins. Are you ready for this adventure?"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:textColor="@color/light"
+            android:textSize="@dimen/_13ssp" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/start_test_button"
+        android:layout_width="@dimen/_160sdp"
+        android:layout_height="@dimen/_38sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:background="@drawable/button_green"
+        android:fontFamily="@font/circular_bold"
+        android:text="Start now"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14ssp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/main_information"
+        app:layout_constraintTop_toBottomOf="@+id/main_information"
+        app:layout_constraintStart_toStartOf="@+id/main_information"
+        app:layout_constraintEnd_toEndOf="@+id/main_information"
+        tools:ignore="VisualLintButtonSize,TextContrastCheck,DuplicateSpeakableTextCheck,VisualLintBounds" />
+
+
+    <LinearLayout
+        android:id="@+id/gradient_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:gravity="center|top"
+        android:background="@drawable/gradient_top_transparent"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/start_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/back_button"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:src="@drawable/uni_ic_back"
+        tools:ignore="RedundantDescriptionCheck" />
+
+</RelativeLayout>

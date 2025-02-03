@@ -1,0 +1,67 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation2"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.learn.simplify.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_home_to_homeFragment1"
+            app:destination="@id/homeFragment1" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_homeFragment3"
+            app:destination="@id/homeFragment3" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_homeFragment4"
+            app:destination="@id/homeFragment4" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment1"
+        android:name="com.learn.simplify.ui.home.HomeFragment1"
+        tools:layout="@layout/fragment_home1" />
+
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.learn.simplify.ui.home.HomeFragment2"
+        tools:layout="@layout/fragment_home2" />
+
+    <fragment
+        android:id="@+id/homeFragment3"
+        android:name="com.learn.simplify.ui.home.HomeFragment3"
+        tools:layout="@layout/fragment_home3" />
+
+    <fragment
+        android:id="@+id/homeFragment4"
+        android:name="com.learn.simplify.ui.home.HomeFragment4"
+        tools:layout="@layout/fragment_home4" />
+
+    <fragment
+        android:id="@+id/navigation_search"
+        android:label="@string/title_search"
+        android:name="com.learn.simplify.ui.search.SearchFragment"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/navigation_community"
+        android:name="com.learn.simplify.ui.community.CommunityFragment"
+        android:label="@string/title_community"
+        tools:layout="@layout/fragment_community"/>
+
+    <fragment
+        android:id="@+id/navigation_account"
+        android:name="com.learn.simplify.ui.account.AccountFragment"
+        android:label="@string/title_premium"
+        tools:layout="@layout/fragment_account"/>
+
+</navigation>

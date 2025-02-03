@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layoutDeleteNoteContainer"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_delete_note"
+        android:layout_marginLeft="@dimen/_40sdp"
+        android:layout_marginRight="@dimen/_40sdp"
+        android:orientation="vertical"
+        android:padding="@dimen/_12sdp"
+        android:elevation="5dp"
+        android:layout_marginTop="@dimen/_25sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="@dimen/_20sdp">
+
+        <ImageButton
+            android:id="@+id/cancelDel"
+            android:layout_width="@dimen/_26sdp"
+            android:layout_height="@dimen/_26sdp"
+            android:layout_gravity="right|top"
+            android:background="@android:color/transparent"
+            android:src="@drawable/uni_ic_close"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_8sdp"
+            android:text="Delete Note"
+            android:fontFamily="@font/circular_medium"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_medium"
+            android:paddingStart="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_4sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:textAlignment="center"
+            android:text="Are You Sure You Want to Delete This Note?"
+            android:textColor="@color/light"
+            android:textSize="@dimen/_13ssp" />
+
+        <Button
+            android:id="@+id/ok_btn_del"
+            android:layout_marginEnd="@dimen/_28sdp"
+            android:layout_marginStart="@dimen/_28sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/circular_bold"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_green"
+            android:textSize="@dimen/_14ssp"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/red"
+            android:text="Ok" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="@dimen/_42sdp"
+        android:layout_height="@dimen/_42sdp"
+        android:background="@drawable/background_text_add_url"
+        android:elevation="10dp"
+        android:padding="15dp"
+        android:src="@drawable/home_ic_delete"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout2"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

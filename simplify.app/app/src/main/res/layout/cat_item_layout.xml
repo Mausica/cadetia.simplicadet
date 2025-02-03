@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_3sdp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/catName"
+        android:text="Cat Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:maxLines="1"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_gravity="bottom"
+        android:fontFamily="@font/circular_medium"
+        android:includeFontPadding="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_18ssp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/quizzRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_7sdp"
+        android:paddingStart="@dimen/_12sdp"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/_5sdp"
+        android:orientation="horizontal" />
+
+</LinearLayout>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomNote"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".activities.CreateNoteBottom">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/_10sdp"
+        android:contentDescription="@string/app_name">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:id="@+id/imageBack"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/uni_ic_close"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/white" />
+
+            <Button
+                android:id="@+id/buttonAdd"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:layout_marginEnd="@dimen/_17sdp"
+                android:background="@drawable/button_green"
+                android:fontFamily="@font/circular_bold"
+                android:orientation="vertical"
+                android:text="@string/create_note_add"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10ssp"
+                app:layout_constraintBottom_toBottomOf="@id/imageBack"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imageBack"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <EditText
+                android:id="@+id/inputNoteTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:background="@null"
+                android:fontFamily="@font/circular_medium"
+                android:hint="Note Title"
+                android:importantForAutofill="no"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray"
+                android:textSize="@dimen/_13ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/viewTitleIndicator"
+                app:layout_constraintTop_toBottomOf="@id/imageBack"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <View
+                android:id="@+id/viewTitleIndicator"
+                android:layout_width="@dimen/_5sdp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/_17sdp"
+                android:backgroundTint="@color/secondary"
+                android:background="@drawable/home_background_subtitle_indicator"
+                app:layout_constraintBottom_toBottomOf="@id/inputNoteTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/inputNoteTitle"/>
+
+            <EditText
+                android:id="@+id/inputNoteSubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:background="@null"
+                android:fontFamily="@font/circular_medium"
+                android:hint="Note Subtitle"
+                android:importantForAutofill="no"
+                android:includeFontPadding="false"
+                android:inputType="textMultiLine"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray"
+                android:textSize="@dimen/_13ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@id/viewSubtitleIndicator"
+                app:layout_constraintTop_toBottomOf="@id/inputNoteTitle"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <View
+                android:id="@+id/viewSubtitleIndicator"
+                android:layout_width="@dimen/_5sdp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/_17sdp"
+                android:background="@drawable/home_background_subtitle_indicator"
+                android:backgroundTint="@color/secondary"
+                app:layout_constraintBottom_toBottomOf="@id/inputNoteSubtitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/inputNoteSubtitle"/>
+
+            <TextView
+                android:id="@+id/textDateTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/circular_medium"
+                android:includeFontPadding="false"
+                android:textColor="@color/special_gray"
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="@id/inputNoteSubtitle"
+                app:layout_constraintStart_toStartOf="@id/viewSubtitleIndicator"
+                app:layout_constraintTop_toBottomOf="@id/inputNoteSubtitle"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_17sdp"
+                android:layout_marginEnd="@dimen/_17sdp"
+                android:orientation="horizontal"
+                android:id="@+id/layoutMiscellaneous"
+                app:layout_constraintTop_toBottomOf="@id/textDateTime">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:background="@drawable/home_background_note"
+                    android:backgroundTint="@color/secondary">
+                    <ImageView
+                        android:id="@+id/icon_image"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:src="@drawable/home_ic_image"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        app:tint="@color/light" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/del_note"
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@drawable/home_background_note"
+                    android:alpha="0.2"
+                    android:clickable="false"
+                    android:backgroundTint="@color/secondary">
+                    <ImageView
+                        android:id="@+id/icon_delete"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:src="@drawable/home_ic_delete"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        app:tint="@color/red" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="@dimen/_168sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <View
+                            android:id="@+id/color1"
+                            android:layout_width="@dimen/_42sdp"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_gravity="center_vertical"
+                            android:backgroundTint="@color/gray"
+                            android:background="@drawable/color_pallette_left" />
+                        <ImageView
+                            android:id="@+id/image1"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:padding="@dimen/_10sdp"
+                            android:src="@drawable/home_ic_check"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no" />
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <View
+                            android:id="@+id/color2"
+                            android:layout_width="@dimen/_42sdp"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_gravity="center_vertical"
+                            android:backgroundTint="@color/spearmint"
+                            android:background="@drawable/color_pallette_center" />
+                        <ImageView
+                            android:id="@+id/image2"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:padding="@dimen/_10sdp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no" />
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <View
+                            android:id="@+id/color3"
+                            android:layout_width="@dimen/_42sdp"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_gravity="center_vertical"
+                            android:backgroundTint="@color/primary"
+                            android:background="@drawable/color_pallette_center" />
+                        <ImageView
+                            android:id="@+id/image3"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:padding="@dimen/_10sdp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no" />
+                    </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <View
+                            android:id="@+id/color4"
+                            android:layout_width="@dimen/_42sdp"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_gravity="center_vertical"
+                            android:backgroundTint="@color/citric"
+                            android:background="@drawable/color_pallette_right" />
+                        <ImageView
+                            android:id="@+id/image4"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:padding="@dimen/_10sdp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no" />
+                    </FrameLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <EditText
+                android:id="@+id/inputNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_17sdp"
+                android:layout_marginTop="@dimen/_17sdp"
+                android:layout_marginEnd="@dimen/_17sdp"
+                android:background="@null"
+                android:gravity="top"
+                android:fontFamily="@font/circular_medium"
+                android:importantForAutofill="no"
+                android:includeFontPadding="false"
+                android:minHeight="@dimen/_50sdp"
+                android:inputType="textMultiLine"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:hint="@string/home_type_note_here"
+                android:textColor="@color/white"
+                android:textColorHint="@color/special_gray"
+                android:textSize="@dimen/_13ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/imageNote"
+                app:layout_constraintTop_toBottomOf="@id/layoutMiscellaneous"/>
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/imageNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_17sdp"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_17sdp"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                android:cropToPadding="false"
+                android:contentDescription="@string/app_name"
+                app:riv_corner_radius_top_left="@dimen/_8sdp"
+                app:riv_corner_radius_top_right="@dimen/_8sdp"
+                app:layout_constraintTop_toBottomOf="@id/inputNote"/>
+
+            <ImageView
+                android:id="@+id/imageRemoveImage"
+                android:layout_width="@dimen/_28sdp"
+                android:layout_height="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_25sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:padding="@dimen/_5sdp"
+                android:src="@drawable/home_ic_delete"
+                android:foregroundTint="@color/white"
+                android:background="@drawable/background_remove_image"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/imageNote"
+                app:layout_constraintTop_toTopOf="@id/imageNote"
+                app:tint="@color/white" />
+
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:layout_marginStart="@dimen/_10sdp"
+    android:layout_marginEnd="@dimen/_10sdp"
+    android:elevation="@dimen/_5sdp"
+    android:backgroundTint="@color/secondary"
+    app:cardElevation="@dimen/_3sdp"
+    app:cardCornerRadius="@dimen/_14sdp"
+    app:contentPadding="@dimen/_3sdp"
+    android:layout_height="@dimen/_62sdp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@color/secondary">
+
+        <CheckBox
+            android:layout_marginStart="@dimen/_13sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:button="@drawable/rounded_checkbox_background"
+            android:id="@+id/checked_task" />
+
+        <View
+            android:id="@+id/view_glowed"
+            android:layout_width="@dimen/_3sdp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_7sdp"
+            android:elevation="10dp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:outlineSpotShadowColor="@color/red"
+            android:background="@drawable/glow_effect_red"
+            tools:targetApi="p" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Model task title"
+                android:fontFamily="@font/circular_bold"
+                android:singleLine="true"
+                android:textSize="@dimen/_15ssp"
+                android:id="@+id/title"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:textColor="@color/white"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_20sdp"
+                tools:text="Slide to edit the task in any game."
+                android:maxLines="1"
+                android:id="@+id/description"
+                android:fontFamily="@font/circular_medium"
+                android:textSize="@dimen/_11ssp"
+                android:textColor="@color/gray"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tue"
+                    android:singleLine="true"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:id="@+id/day"
+                    android:fontFamily="@font/circular_medium"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_1sdp"
+                    android:textColor="@color/special_gray"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="18"
+                    android:singleLine="true"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:id="@+id/date"
+                    android:fontFamily="@font/circular_medium"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_1sdp"
+                    android:textColor="@color/special_gray"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nov"
+                    android:singleLine="true"
+                    android:layout_marginEnd="@dimen/_7sdp"
+                    android:id="@+id/month"
+                    android:fontFamily="@font/circular_medium"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_1sdp"
+                    android:textColor="@color/special_gray"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="16:00"
+                    android:singleLine="true"
+                    android:layout_marginEnd="@dimen/_3sdp"
+                    android:id="@+id/time"
+                    android:fontFamily="@font/circular_medium"
+                    android:textSize="@dimen/_10ssp"
+                    android:layout_marginTop="@dimen/_1sdp"
+                    android:textColor="@color/special_dark"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/delete_task"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:background="@color/nothing"
+            android:layout_gravity="center"
+            android:src="@drawable/uni_ic_close"
+            app:tint="@color/white" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,89 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutLeaderboard"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_59sdp"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:gravity="center"
+    android:elevation="3dp"
+    android:layout_marginStart="@dimen/_5sdp"
+    android:layout_marginEnd="@dimen/_5sdp"
+    android:background="@drawable/background_nothing">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/number_leaderboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_marginStart="@dimen/_3sdp"
+            android:layout_gravity="center_vertical"
+            android:text="4"
+            android:fontFamily="@font/circular_bold"
+            android:textSize="@dimen/_14ssp"
+            android:textColor="@color/white"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/image_leaderboard"
+            android:layout_width="@dimen/_38sdp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="@dimen/_38sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:padding="@dimen/_2sdp"
+            android:src="@raw/person4"
+            app:shapeAppearanceOverlay="@style/circleImageView" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/name_leaderboard"
+        android:layout_width="@dimen/_110sdp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:text="David Brown"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:paddingStart="@dimen/_3sdp"
+        android:paddingEnd="@dimen/_3sdp"
+        android:fontFamily="@font/circular_bold"
+        android:includeFontPadding="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_13ssp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/scoreLayout"
+        android:background="@drawable/background_nothing"
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical"
+        android:padding="@dimen/_4sdp">
+
+        <ImageView
+            android:id="@+id/currencyView1"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/leaf_currency"
+            app:srcCompat="@drawable/leaf_currency" />
+
+        <TextView
+            android:id="@+id/score_leaderboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:fontFamily="@font/circular_medium"
+            android:layout_gravity="center_vertical"
+            android:text="4129"
+            android:textColor="@color/light"
+            android:textSize="@dimen/_13ssp" />
+    </LinearLayout>
+
+</LinearLayout>

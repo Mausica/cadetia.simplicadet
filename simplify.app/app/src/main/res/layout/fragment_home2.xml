@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context=".ui.home.HomeFragment2">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:layout_marginEnd="@dimen/_2sdp"
+        android:clipToPadding="false"
+        android:paddingStart="0dp"
+        android:paddingEnd="@dimen/_3sdp"
+        android:paddingBottom="@dimen/_60sdp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_54sdp"
+        app:backgroundTint="@color/primary"
+        app:fabCustomSize="@dimen/_42sdp"
+        app:maxImageSize="@dimen/_20sdp"
+        app:rippleColor="@color/blur"
+        app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
+        app:srcCompat="@drawable/home_ic_plus"
+        android:elevation="8dp"
+        android:tint="@android:color/black"
+        android:contentDescription="@string/home_add_note" />
+
+</FrameLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.home.HomeFragment3">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/_60sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAssistant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_54sdp"
+        app:backgroundTint="@color/primary"
+        app:fabCustomSize="@dimen/_42sdp"
+        app:maxImageSize="@dimen/_20sdp"
+        app:rippleColor="@color/blur"
+        app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
+        app:srcCompat="@drawable/home_ic_plus"
+        android:elevation="8dp"
+        android:tint="@android:color/black"
+        android:contentDescription="@string/home_add_note" />
+
+
+
+</FrameLayout>

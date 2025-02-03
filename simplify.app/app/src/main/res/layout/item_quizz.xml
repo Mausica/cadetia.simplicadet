@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutQuizz"
+    android:orientation="vertical"
+    android:layout_width="@dimen/_120sdp"
+    android:layout_height="wrap_content"
+    android:alpha="1"
+    android:layout_marginEnd="@dimen/_12sdp"
+    android:paddingBottom="@dimen/_12sdp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imageQuizz"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_120sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:cropToPadding="false"
+            android:src="@drawable/background_nothing_rounded"
+            android:visibility="visible"
+            app:riv_corner_radius="@dimen/_1sdp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/quizzTitle"
+        android:text="Great Smarter with Productivity Quizz."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:maxLines="2"
+        android:layout_marginBottom="@dimen/_3sdp"
+        android:fontFamily="@font/circular_medium"
+        android:includeFontPadding="false"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/image_leaderboard"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_1sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
+            android:padding="@dimen/_2sdp"
+            android:src="@raw/home_img_profile"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.75"
+            app:shapeAppearanceOverlay="@style/circleImageView" />
+
+        <TextView
+            android:id="@+id/name_leaderboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Marius Gabriel"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:fontFamily="@font/circular_medium"
+            android:includeFontPadding="false"
+            android:textColor="@color/light"
+            android:textSize="@dimen/_7ssp"/>
+    </LinearLayout>
+
+</LinearLayout>
