@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.learn.simplify"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.learn.simplify"
@@ -29,15 +29,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
         viewBinding = true
         dataBinding = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 }
 
@@ -56,8 +56,8 @@ dependencies {
 
 
     // Design
-    implementation("androidx.navigation:navigation-fragment:2.7.7")
-    implementation("androidx.navigation:navigation-ui:2.7.7")
+    implementation("androidx.navigation:navigation-fragment:2.8.6")
+    implementation("androidx.navigation:navigation-ui:2.8.6")
     implementation ("com.google.code.gson:gson:2.10.1")
 
     // SDP and SSP libraries
@@ -65,12 +65,11 @@ dependencies {
     implementation("com.intuit.ssp:ssp-android:1.1.0")
 
     //AI
-    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
-    implementation("com.google.guava:guava:31.0.1-android")
+    implementation("com.google.guava:guava:32.1.3-android")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
 
     // Ads
-    implementation("com.google.android.gms:play-services-ads:23.1.0")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
 
     // ImageView
     implementation("com.makeramen:roundedimageview:2.3.0")
@@ -79,7 +78,7 @@ dependencies {
 
     // Aesthetics
     implementation ("com.airbnb.android:lottie:4.2.0")
-    implementation ("androidx.transition:transition:1.5.0")
+    implementation ("androidx.transition:transition:1.5.1")
     implementation ("nl.dionsegijn:konfetti-xml:2.0.4")
 
     // Room Database Dependencies
@@ -87,7 +86,7 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
@@ -96,9 +95,9 @@ dependencies {
     implementation ("com.facebook.android:facebook-login:latest.release")
 
     //Google
-    implementation ("com.google.android.gms:play-services-auth:21.1.1")
-    implementation ("androidx.credentials:credentials:1.2.2")
-    implementation ("androidx.credentials:credentials-play-services-auth:1.2.2")
-    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.0")
+    implementation ("com.google.android.gms:play-services-auth:21.3.0")
+    implementation ("androidx.credentials:credentials:1.3.0")
+    implementation ("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
 }

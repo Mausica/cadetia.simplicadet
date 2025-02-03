@@ -20,7 +20,7 @@ class AIModel : ViewModel() {
 
     private val _responseLiveData = MutableLiveData<String?>()
     val responseLiveData: LiveData<String?> get() = _responseLiveData
-    private val apiKey: String = ""
+    private val apiKey: String = "AIzaSyAARirP0Qk9W3cCXf0h6UddVzMlIizD9s4"
 
     private val model = GenerativeModel(
         "gemini-1.5-pro-latest",

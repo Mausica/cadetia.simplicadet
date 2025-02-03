@@ -50,15 +50,15 @@
 
 
 
-    <string name="id_AppOpenAdd"></string>
-    <string name="id_InterstitialAdd"></string>
+    <string name="id_AppOpenAdd">ca-app-pub-8447567589954533/1110300440</string>
+    <string name="id_InterstitialAdd">ca-app-pub-8447567589954533/4813170916</string>
 
-    <string name="default_web_client_id"></string>
+    <string name="default_web_client_id">986100332858-1g2r9kcaq7vm7baqvvuc62gt0pdqf80m.apps.googleusercontent.com</string>
 
-    <string name="facebook_app_id"></string>
-    <string name="fb_login_protocol_scheme"></string>
-    <string name="facebook_client_token"></string>
+    <string name="facebook_app_id">2109357539444062</string>
+    <string name="fb_login_protocol_scheme">fb2109357539444062</string>
+    <string name="facebook_client_token">e0c5329da6c1f8460ece709873ff9cf8</string>
 
-    <string name="gemini_api"></string>
+    <string name="gemini_api">AIzaSyAARirP0Qk9W3cCXf0h6UddVzMlIizD9s4</string>
 
 </resources>

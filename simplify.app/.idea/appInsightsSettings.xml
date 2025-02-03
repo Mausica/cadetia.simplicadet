@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.learn.simplify" />
-                  <option name="mobileSdkAppId" value="1:986100332858:android:15bb6c2738b48f93627803" />
-                  <option name="projectId" value="simplify-nature" />
-                  <option name="projectNumber" value="986100332858" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

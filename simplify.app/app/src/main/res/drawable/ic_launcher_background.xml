@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <path
-        android:fillColor="#000000"
-        android:pathData="M0,0h108v108h-108z" />
-</vector>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="radial"
+        android:startColor="@color/primary_transparent"
+        android:endColor="@color/primary"
+        android:centerX="1"
+        android:centerY="1.5"
+        android:gradientRadius="2500"
+        />
+
+</shape>

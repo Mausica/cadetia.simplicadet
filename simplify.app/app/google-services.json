@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "986100332858",
+    "project_id": "simplify-nature",
+    "storage_bucket": "simplify-nature.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986100332858:android:15bb6c2738b48f93627803",
+        "android_client_info": {
+          "package_name": "com.learn.simplify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986100332858-7pleuumuro696611jkm3qpf9rjd5g2o0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.learn.simplify",
+            "certificate_hash": "746ab2ea9effc2cf1f43f867c973d51bbbe85b4b"
+          }
+        },
+        {
+          "client_id": "986100332858-1g2r9kcaq7vm7baqvvuc62gt0pdqf80m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6MzeWaYRDOe0E42hoiFO5FjLEDVodzX0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986100332858-1g2r9kcaq7vm7baqvvuc62gt0pdqf80m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
