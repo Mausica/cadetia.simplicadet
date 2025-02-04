@@ -1,5 +1,5 @@
 
-# Simplify [1.1.0](https://github.com/SuperMarius409/Simplifie)
+# Simplify [1.1.1](https://github.com/SuperMarius409/Simplifie)
 
 <img align="right" height="700" src="https://github.com/Simplify-Nature/simplify.app/blob/main/assets/phone.png"/>
 

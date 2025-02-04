@@ -12,6 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.learn.simplify"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -34,6 +35,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        //noinspection DataBindingWithoutKapt
         dataBinding = true
     }
     kotlinOptions {
@@ -56,8 +58,8 @@ dependencies {
 
 
     // Design
-    implementation("androidx.navigation:navigation-fragment:2.8.6")
-    implementation("androidx.navigation:navigation-ui:2.8.6")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.6")
     implementation ("com.google.code.gson:gson:2.10.1")
 
     // SDP and SSP libraries
