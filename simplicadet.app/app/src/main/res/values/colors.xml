@@ -25,6 +25,7 @@
     <color name="transparent_white">#05FFFFFF</color>
 
     <color name="background">#121212</color>
+    <color name="background_light">#fdfdfd</color>
     <color name="accent">#212121</color>
     <color name="secondary">#2C2C2C</color>
     <color name="primary">#626ad9</color>
