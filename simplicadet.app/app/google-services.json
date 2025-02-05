@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "672731390392",
+    "project_id": "simplicadet",
+    "storage_bucket": "simplicadet.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672731390392:android:2c44f99d0bf6b635baaf4d",
+        "android_client_info": {
+          "package_name": "com.cadetia.simplicadet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "672731390392-n2ask3agithk00un0p74pgp883rg08vl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cadetia.simplicadet",
+            "certificate_hash": "746ab2ea9effc2cf1f43f867c973d51bbbe85b4b"
+          }
+        },
+        {
+          "client_id": "672731390392-c7fkrbjbm5c4nmvnt7v3bk00hadilk8v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT-t4uMk9IgCAPDKXN_IOIGsQzK2zsB6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "672731390392-c7fkrbjbm5c4nmvnt7v3bk00hadilk8v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
