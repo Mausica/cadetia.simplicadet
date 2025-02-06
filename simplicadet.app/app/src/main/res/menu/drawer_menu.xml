@@ -10,6 +10,10 @@
             android:title="Settings menu"
             android:icon="@drawable/home_ic_settings"/>
         <item
+            android:id="@+id/drawer_win"
+            android:title="Leaderboard"
+            android:icon="@drawable/home_ic_trophy"/>
+        <item
             android:id="@+id/drawer_logout"
             android:title="Log out now"
             android:icon="@drawable/auth_ic_password"/>

@@ -6,7 +6,7 @@
             android:innerRadiusRatio="2.2"
             android:thicknessRatio="38"
             android:useLevel="false">
-            <solid android:color="@color/secondary"/>
+            <solid android:color="?attr/colorSecondary"/>
 
         </shape>
     </item>
@@ -16,7 +16,7 @@
         android:innerRadiusRatio="2.2"
         android:thicknessRatio="38"
         android:useLevel="true">
-        <solid android:color="@color/primary" />
+        <solid android:color="?attr/colorPrimary" />
     </shape>
 </item>
 </layer-list>
