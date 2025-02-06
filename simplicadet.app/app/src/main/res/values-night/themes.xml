@@ -38,6 +38,7 @@
         <item name="colorControlHighlight">@color/primary</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:textColor">@color/secondary</item>
+        <item name="backgroundTint">@color/black</item>
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorPrimaryInverse">@color/white</item>
         <item name="android:textColorSecondaryInverse">@color/light</item>

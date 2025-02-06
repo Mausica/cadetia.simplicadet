@@ -29,7 +29,8 @@
     <color name="accent">#212121</color>
     <color name="secondary">#2C2C2C</color>
     <color name="secondary_light">#D3D3D3</color>
-    <color name="primary">#626ad9</color>
+    <color name="primary">#4C91CD</color>
+    <color name="primaryb">#626ad9</color>
     <color name="primary_transparent">#6257cd</color>
 
     <color name="green_light">#1ED760</color>
