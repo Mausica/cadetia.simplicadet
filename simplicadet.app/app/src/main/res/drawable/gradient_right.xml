@@ -3,7 +3,7 @@
         android:type="radial"
         android:startColor="?attr/backgroundColor"
         android:endColor="?attr/colorPrimary"
-        android:centerColor="?attr/backgroundTint"
+        android:centerColor="?attr/backgroundColor"
         android:centerX="0.9"
         android:centerY="1"
         android:gradientRadius="3000"

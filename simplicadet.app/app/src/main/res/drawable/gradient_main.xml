@@ -4,7 +4,7 @@
         android:angle="180"
         android:startColor="?attr/backgroundColor"
         android:endColor="?attr/colorPrimary"
-        android:centerColor="?attr/backgroundTint"
+        android:centerColor="?attr/backgroundColor"
         android:centerX="1.2"
         android:centerY="0.7"/>
 
