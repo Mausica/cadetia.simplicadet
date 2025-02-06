@@ -13,8 +13,8 @@
         <LinearLayout
             android:id="@+id/signup_text"
             android:layout_width="match_parent"
-            android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_marginStart="@dimen/_28sdp"
+            android:layout_marginEnd="@dimen/_28sdp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerInParent="true"
@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/circular_medium"
                     android:text="@string/signup_title"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/textAppearanceBody1"
                     android:textSize="@dimen/_36ssp" />
 
             </LinearLayout>
@@ -52,7 +52,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/signup_name"
-            android:layout_width="@dimen/_280sdp"
+            android:layout_width="@dimen/_260sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_below="@id/signup_text"
@@ -63,6 +63,7 @@
             android:drawablePadding="@dimen/_10sdp"
             android:layout_centerInParent="true"
             android:ems="10"
+            app:backgroundTint="@null"
             android:background="@drawable/uni_input_search"
             android:drawableStart="@drawable/auth_custom_ic_name"
             android:hint="@string/name"
@@ -74,7 +75,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/signup_email"
-            android:layout_width="@dimen/_280sdp"
+            android:layout_width="@dimen/_260sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_below="@id/signup_name"
@@ -85,6 +86,7 @@
             android:drawablePadding="@dimen/_10sdp"
             android:layout_centerInParent="true"
             android:ems="10"
+            app:backgroundTint="@null"
             android:background="@drawable/uni_input_search"
             android:drawableStart="@drawable/auth_custom_ic_email"
             android:hint="@string/email"
@@ -95,7 +97,7 @@
             tools:ignore="VisualLintTextFieldSize" />
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/signup_password"
-            android:layout_width="@dimen/_280sdp"
+            android:layout_width="@dimen/_260sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_below="@id/signup_email"
@@ -106,6 +108,7 @@
             android:drawablePadding="@dimen/_10sdp"
             android:layout_centerInParent="true"
             android:ems="10"
+            app:backgroundTint="@null"
             android:background="@drawable/uni_input_search"
             android:drawableStart="@drawable/auth_custom_ic_password"
             android:hint="@string/password"
@@ -122,24 +125,16 @@
             android:layout_below="@id/signup_password"
             android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/_14sdp"
-            android:background="@drawable/button_green"
+            android:background="@drawable/button_social"
+            app:backgroundTint="@null"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             android:text="@string/signup_title"
             android:textAllCaps="false"
-            android:textColor="@color/black"
+            android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_14ssp"
             tools:ignore="VisualLintBounds,VisualLintButtonSize,DuplicateSpeakableTextCheck,TextContrastCheck" />
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/gradient_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
-        android:gravity="center|top"
-        android:background="@drawable/gradient_top_transparent"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </RelativeLayout>
 

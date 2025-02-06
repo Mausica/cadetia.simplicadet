@@ -2,9 +2,9 @@
     <gradient
         android:type="sweep"
         android:angle="60"
-        android:startColor="@color/background"
-        android:endColor="@color/primary"
-        android:centerColor="@android:color/black"
+        android:startColor="?attr/backgroundColor"
+        android:endColor="?attr/colorPrimary"
+        android:centerColor="?attr/backgroundTint"
         android:centerX="3"
         android:centerY="0.3"/>
 

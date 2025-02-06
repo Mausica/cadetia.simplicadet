@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.cadetia.simplicadet" />
-                  <option name="mobileSdkAppId" value="1:986100332858:android:15bb6c2738b48f93627803" />
-                  <option name="projectId" value="simplify-nature" />
-                  <option name="projectNumber" value="986100332858" />
+                  <option name="mobileSdkAppId" value="1:672731390392:android:2c44f99d0bf6b635baaf4d" />
+                  <option name="projectId" value="simplicadet" />
+                  <option name="projectNumber" value="672731390392" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

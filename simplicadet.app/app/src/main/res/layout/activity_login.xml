@@ -23,8 +23,8 @@
             android:id="@+id/login_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_marginStart="@dimen/_28sdp"
+            android:layout_marginEnd="@dimen/_28sdp"
             android:layout_alignParentTop="true"
             android:layout_centerInParent="true"
             android:orientation="vertical">
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/circular_bold"
                     android:text="@string/login_title"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/textAppearanceBody1"
                     android:textSize="@dimen/_36ssp" />
 
             </LinearLayout>
@@ -60,7 +60,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_email"
-            android:layout_width="@dimen/_280sdp"
+            android:layout_width="@dimen/_260sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:layout_below="@id/login_text"
@@ -72,6 +72,7 @@
             android:layout_centerInParent="true"
             android:ems="10"
             android:background="@drawable/uni_input_search"
+            app:backgroundTint="@null"
             android:drawableStart="@drawable/auth_custom_ic_email"
             android:hint="@string/login_email"
             android:inputType="textEmailAddress"
@@ -82,7 +83,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/login_password"
-            android:layout_width="@dimen/_280sdp"
+            android:layout_width="@dimen/_260sdp"
             android:layout_height="@dimen/_40sdp"
             android:layout_marginBottom="@dimen/_10sdp"
             android:layout_below="@id/login_email"
@@ -97,6 +98,7 @@
             android:drawableStart="@drawable/auth_custom_ic_password"
             android:hint="@string/password"
             android:inputType="textPassword"
+            app:backgroundTint="@null"
             android:textSize="@dimen/_14ssp"
             android:textColorHint="#CCCCCC"
             android:fontFamily="@font/circular_medium"
@@ -109,24 +111,16 @@
             android:layout_below="@id/login_password"
             android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/_8sdp"
-            android:background="@drawable/button_green"
+            android:background="@drawable/button_social"
+            app:backgroundTint="@null"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             android:text="@string/login_title"
             android:textAllCaps="false"
-            android:textColor="@color/black"
+            android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_14ssp"
             tools:ignore="VisualLintButtonSize,TextContrastCheck,DuplicateSpeakableTextCheck,VisualLintBounds" />
 
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/gradient_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
-        android:gravity="center|top"
-        android:background="@drawable/gradient_top_transparent"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </RelativeLayout>
