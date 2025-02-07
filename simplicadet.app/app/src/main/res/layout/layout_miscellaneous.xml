@@ -12,7 +12,7 @@
     app:layout_behavior="@string/bottom_sheet_behavior">
     <LinearLayout
         android:id="@+id/layoutMain"
-        android:background="@drawable/gradient_bottom_nav"
+        android:background="@drawable/gradient_bottom_light"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp"
         android:gravity="center_vertical"

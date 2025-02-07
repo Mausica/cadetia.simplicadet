@@ -52,7 +52,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        navView.setBackgroundResource(R.drawable.gradient_bottom_nav);
+        navView.setBackgroundResource(R.drawable.gradient_bottom_light);
         navView.setItemRippleColor(ColorStateList.valueOf(Color.TRANSPARENT));
 
         int[][] states = new int[][] {new int[] { android.R.attr.state_selected }, new int[] {}};

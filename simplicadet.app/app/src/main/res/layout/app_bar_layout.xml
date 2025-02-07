@@ -6,7 +6,7 @@
     android:id="@+id/appBarLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/gradient_top_nav"
+    android:background="?attr/backgroundColor"
     android:elevation="8dp">
 
     <LinearLayout
@@ -48,13 +48,14 @@
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginStart="@dimen/_13sdp"
-            android:background="@drawable/button_nothing"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
             android:text="@string/home_all"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
             tools:ignore="TouchTargetSizeCheck" />
 
@@ -63,13 +64,14 @@
             android:layout_width="@dimen/_50sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginStart="@dimen/_7sdp"
-            android:background="@drawable/button_nothing"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
             android:text="@string/home_notes"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
             tools:ignore="TouchTargetSizeCheck" />
 
@@ -78,13 +80,14 @@
             android:layout_width="@dimen/_70sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginStart="@dimen/_7sdp"
-            android:background="@drawable/button_nothing"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
             android:text="@string/home_assistant"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
             tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
@@ -93,13 +96,14 @@
             android:layout_width="@dimen/_50sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginStart="@dimen/_7sdp"
-            android:background="@drawable/button_nothing"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
             android:text="@string/home_tasks"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
             tools:ignore="TouchTargetSizeCheck" />
     </LinearLayout>
