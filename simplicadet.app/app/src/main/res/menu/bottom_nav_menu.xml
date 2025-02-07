@@ -11,9 +11,4 @@
         android:icon="@drawable/nav_search"
         android:title="@string/title_search" />
 
-    <item
-        android:id="@+id/navigation_community"
-        android:icon="@drawable/nav_community"
-        android:title="@string/title_community" />
-
 </menu>

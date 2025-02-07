@@ -91,6 +91,13 @@
                     android:orientation="vertical">
                 </LinearLayout>
 
+                <!-- Add the fragment container here -->
+                <FrameLayout
+                    android:id="@+id/fragment_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_48sdp" />
+
             </RelativeLayout>
 
             <View
@@ -100,14 +107,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/gradient_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_40sdp"
-        android:gravity="center|top"
-        android:background="@drawable/gradient_top_transparent"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

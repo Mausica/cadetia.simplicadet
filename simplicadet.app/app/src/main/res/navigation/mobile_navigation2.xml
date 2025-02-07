@@ -55,8 +55,14 @@
     <fragment
         android:id="@+id/navigation_community"
         android:name="com.cadetia.simplicadet.ui.community.CommunityFragment"
-        android:label="@string/title_community"
-        tools:layout="@layout/fragment_community"/>
+        android:label="Community"
+        tools:layout="@layout/fragment_community">
+        <action
+            android:id="@+id/action_community_to_home"
+            app:destination="@id/navigation_home"
+            app:popUpTo="@id/navigation_community"
+            app:popUpToInclusive="true"/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_account"

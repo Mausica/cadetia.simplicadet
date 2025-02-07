@@ -61,7 +61,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         navView.setItemIconTintList(colorStateList);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_search,R.id.navigation_community)
+                R.id.navigation_home, R.id.navigation_search)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
@@ -111,26 +111,26 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        // Handle navigation view item clicks here.
         int itemId = menuItem.getItemId();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
+
         if (itemId == R.id.drawer_logout) {
-            // Sign out the user and navigate to MainActivity
             firebaseAuth.signOut();
             Intent intent = new Intent(Home.this, MainActivity.class);
             startActivity(intent);
             finish();
         } else if (itemId == R.id.drawer_new) {
-            // Handle "What's new" click
             Toast.makeText(this, "What's new clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_help) {
-            // Handle "Help" click
             Toast.makeText(this, "Help clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_settings) {
-            // Handle "Settings" click
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.drawer_win) {
+            // Navigate to Community fragment // TO DO - MAPPING RANDOMLY TO HOME/SEARCH
+            navController.navigate(R.id.navigation_community);
         }
 
-        // Close the drawer after handling the click
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
