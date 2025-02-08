@@ -32,10 +32,11 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_44sdp"
+            android:layout_height="@dimen/_60sdp"
             android:layout_marginStart="0dp"
             android:layout_alignParentBottom="true"
             android:background="?attr/bottomBarGradient"
+            app:backgroundTint="@null"
             app:itemBackground="@null"
             app:labelVisibilityMode="labeled"
             app:itemHorizontalTranslationEnabled="true"

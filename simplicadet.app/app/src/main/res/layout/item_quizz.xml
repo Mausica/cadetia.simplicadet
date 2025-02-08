@@ -38,7 +38,7 @@
         android:layout_marginBottom="@dimen/_3sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
+        android:textColor="?attr/textAppearanceBody1"
         android:textSize="@dimen/_10ssp"/>
 
     <LinearLayout

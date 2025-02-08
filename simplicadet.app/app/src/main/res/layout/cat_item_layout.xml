@@ -16,7 +16,7 @@
         android:layout_gravity="bottom"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
+        android:textColor="?attr/textAppearanceBody1"
         android:textSize="@dimen/_18ssp" />
 
     <androidx.recyclerview.widget.RecyclerView

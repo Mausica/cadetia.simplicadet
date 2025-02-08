@@ -32,7 +32,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="@dimen/_60sdp"
-        android:layout_below="@+id/appBarLayout">
+        android:layout_below="@+id/appBarLayout"
+        android:elevation="-1dp">
 
         <FrameLayout
             android:id="@+id/smallerFragmentContainer"
