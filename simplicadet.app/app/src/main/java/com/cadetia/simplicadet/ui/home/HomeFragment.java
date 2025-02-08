@@ -3,6 +3,7 @@ package com.cadetia.simplicadet.ui.home;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -112,8 +114,11 @@ public class HomeFragment extends Fragment{
             button.setBackgroundResource(R.drawable.button_green);
             button.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         } else {
-            button.setBackgroundResource(R.drawable.button_nothing);
-            button.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            button.setBackgroundResource(R.drawable.button_social);
+            TypedArray typedArray = requireContext().getTheme().obtainStyledAttributes(new int[]{com.google.android.material.R.attr.textAppearanceBody1});
+            int textColor = typedArray.getColor(0, ContextCompat.getColor(requireContext(), R.color.white)); // Default to white if attribute is not found
+            typedArray.recycle();
+            button.setTextColor(textColor);
         }
     }
 
