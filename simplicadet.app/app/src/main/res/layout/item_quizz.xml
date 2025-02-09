@@ -23,7 +23,7 @@
             android:cropToPadding="false"
             android:src="@drawable/background_nothing_rounded"
             android:visibility="visible"
-            app:riv_corner_radius="@dimen/_1sdp" />
+            app:riv_corner_radius="5dp" />
 
     </RelativeLayout>
 
