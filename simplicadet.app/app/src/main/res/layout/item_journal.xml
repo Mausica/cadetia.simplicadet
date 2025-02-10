@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layoutNote"
+    android:id="@+id/layoutJournal"
     android:orientation="vertical"
-    android:layout_marginStart="@dimen/_6sdp"
+    android:layout_marginStart="@dimen/_12sdp"
     android:layout_marginTop="@dimen/_12sdp"
-    android:layout_marginEnd="@dimen/_6sdp"
+    android:layout_marginEnd="@dimen/_12sdp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:maxHeight="@dimen/_10sdp"
@@ -13,47 +13,63 @@
     android:background="@drawable/home_background_note">
 
     <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/imageNote"
+        android:id="@+id/imageJournal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-        android:visibility="gone"
-        android:maxHeight="@dimen/_180sdp"
+        android:src="@color/secondary"
+        android:maxHeight="@dimen/_160sdp"
         android:scaleType="centerCrop"
         android:cropToPadding="false"
-        app:riv_corner_radius_top_left="@dimen/_10sdp"
-        app:riv_corner_radius_top_right="@dimen/_10sdp"/>
+        android:padding="@dimen/_5sdp"
+        app:riv_corner_radius="8dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_25sdp"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:background="@color/secondary"
+        android:layout_marginEnd="@dimen/_5sdp">
+
+    </LinearLayout>
     <TextView
-        android:id="@+id/textTitle"
+        android:id="@+id/journalTitle"
+        android:text="@string/lorem_ipsum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_8sdp"
+        android:maxLines="1"
+        android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
         android:fontFamily="@font/circular_bold"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_13ssp"/>
+        android:textColor="?attr/textNormal"
+        android:textSize="@dimen/_14ssp"/>
     <TextView
-        android:id="@+id/textSubtitle"
+        android:id="@+id/journalSubtitle"
+        android:text="@string/lorem_ipsum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginTop="@dimen/_6sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
+        android:maxLines="5"
+        android:lineSpacingExtra="1dp"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
+        android:textColor="?attr/textNormal"
         android:textSize="@dimen/_12ssp"/>
     <TextView
-        android:id="@+id/textDateTime"
+        android:id="@+id/journalDateTime"
+        android:text="@string/lorem_ipsum"
+        android:maxLines="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
-        android:textColor="@color/gray"
-        android:textSize="@dimen/_7ssp"/>
+        android:textColor="?attr/textLight"
+        android:textSize="@dimen/_8ssp"/>
 </LinearLayout>

@@ -383,7 +383,7 @@ public class CreateNote extends BottomSheetDialogFragment {
         if (dialogDeleteNote == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
             View view = LayoutInflater.from(requireActivity()).inflate(
-                    R.layout.layout_delete_note,
+                    R.layout.popup_delete_note,
                     (ViewGroup) requireActivity().findViewById(R.id.layoutDeleteNoteContainer)
             );
 

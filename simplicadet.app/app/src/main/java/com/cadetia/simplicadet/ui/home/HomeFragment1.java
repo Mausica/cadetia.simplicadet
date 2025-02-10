@@ -25,12 +25,15 @@ import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.QuestionsActivity;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
+import com.cadetia.simplicadet.adapters.JournalAdapter;
 import com.cadetia.simplicadet.adapters.MainTaskAdapter;
 import com.cadetia.simplicadet.database.DatabaseClient;
 import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
+import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.Task;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,9 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private List<Task> tasks = new ArrayList<>();
     private Handler handler = new Handler();
     private String userEmail;
+    private RecyclerView journalRecyclerView;
+    private JournalAdapter journalAdapter;
+    private List<JournalEntry> journalList = new ArrayList<>();
 
     public HomeFragment1() {
         // Required empty public constructor
@@ -56,7 +62,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
 
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
-
+        journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
         return view;
     }
 
@@ -64,6 +70,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     public void onResume() {
         super.onResume();
         loadTaskFirstLayout();
+        loadJournals();
         loadCategories();
     }
 
@@ -103,6 +110,28 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         mainTasksRecycler.setAdapter(mainTaskAdapter); // Set the adapter for the RecyclerView
     }
+
+    private void loadJournals() {
+        DbQuery.loadJournals(new MyCompleteListener() {
+            @Override
+            public void onSucces() {
+                if (journalAdapter == null) { // Inițializare dacă nu a fost setată deja
+                    journalAdapter = new JournalAdapter(journalList, requireContext());
+                    journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    journalRecyclerView.setAdapter(journalAdapter);
+                }
+                journalList.clear();
+                journalList.addAll(DbQuery.g_journalList);
+                journalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure() {
+                Log.e(TAG, "Failed to load journals");
+            }
+        });
+    }
+
 
     private void loadCategories() {
         DbQuery.loadCategories(new MyCompleteListener() {

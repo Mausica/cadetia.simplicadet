@@ -3,6 +3,7 @@ package com.cadetia.simplicadet.database;
 import android.util.ArrayMap;
 import android.util.Log;
 
+import com.cadetia.simplicadet.model.JournalEntry;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class DbQuery {
 
     public static final String TAG = "DbQuery";
+    public static List<JournalEntry> g_journalList = new ArrayList<>();
     public static FirebaseFirestore g_firestore;
     public static List<CategoryModel> g_catList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
@@ -251,4 +253,28 @@ public class DbQuery {
                 });
 
     }
+
+    public static void loadJournals(MyCompleteListener listener) {
+        g_journalList.clear();
+
+        g_firestore.collection("JOURNAL")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        g_journalList.add(new JournalEntry(
+                                doc.getString("JOURNAL_TITLE"),
+                                doc.getString("JOURNAL_SUBTITLE"),
+                                doc.getString("JOURNAL_DATE"),
+                                doc.getString("JOURNAL_IMAGE")
+                        ));
+                    }
+                    listener.onSucces();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading journals: ", e);
+                    listener.onFailure();
+                });
+    }
+
+
 }

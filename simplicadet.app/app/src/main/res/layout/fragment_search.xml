@@ -83,7 +83,7 @@
         android:ems="10"
         android:elevation="4dp"
         android:background="@drawable/uni_input_search"
-        android:drawableStart="@drawable/uni_search"
+        android:drawableStart="@drawable/uni_ic_search"
         android:hint="Quizzes and Tests"
         android:textSize="@dimen/_14ssp"
         android:textColor="@color/white"

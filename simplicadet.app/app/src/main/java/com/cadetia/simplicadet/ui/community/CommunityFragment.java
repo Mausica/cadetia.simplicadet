@@ -135,7 +135,7 @@ public class CommunityFragment extends Fragment {
         for (int i = 0; i < userList.size(); i++) {
             UserModel user = userList.get(i);
 
-            View leaderboardItem = layoutInflater.inflate(R.layout.item_container_leaderboard, leaderboardContainer, false);
+            View leaderboardItem = layoutInflater.inflate(R.layout.item_leaderboard, leaderboardContainer, false);
 
             TextView textViewNumber = leaderboardItem.findViewById(R.id.number_leaderboard);
             textViewNumber.setText(String.valueOf(i + 4)); // Adjusted index to account for top 3

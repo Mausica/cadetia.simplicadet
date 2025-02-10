@@ -217,13 +217,13 @@ public class QuestionsActivity extends AppCompatActivity {
     private void highlightCorrectAnswer(boolean isCorrect) {
         if (isCorrect) {
             // Highlight correct answer
-            getSelectedTextView(currentQuestion.getCorrectAnswer()).setBackgroundResource(R.drawable.background_correct);
+            getSelectedTextView(currentQuestion.getCorrectAnswer()).setBackgroundResource(R.drawable.background_task_correct);
         } else {
             // Highlight selected answer and correct answer
             if (currentQuestion.getUserSelectedAnswer() != null) {
-                getSelectedTextView(currentQuestion.getUserSelectedAnswer()).setBackgroundResource(R.drawable.background_incorrect);
+                getSelectedTextView(currentQuestion.getUserSelectedAnswer()).setBackgroundResource(R.drawable.background_task_incorrect);
             }
-            getSelectedTextView(currentQuestion.getCorrectAnswer()).setBackgroundResource(R.drawable.background_correct);
+            getSelectedTextView(currentQuestion.getCorrectAnswer()).setBackgroundResource(R.drawable.background_task_correct);
         }
         if (!(currentQuestionIndex < DbQuery.g_quesList.size() - 1)) {
             handler.postDelayed(() -> {

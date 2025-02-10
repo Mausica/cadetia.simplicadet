@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="backgroundNormal" format="color" />
+    <attr name="backgroundLight" format="color" />
+    <attr name="backgroundDark" format="color" />
+
+    <attr name="textNormal" format="color" />
+    <attr name="textLight" format="color" />
+    <attr name="textDark" format="color" />
+
     <declare-styleable name="BottomBarTheme">
         <attr name="bottomBarGradient" format="reference" />
     </declare-styleable>
+
 </resources>

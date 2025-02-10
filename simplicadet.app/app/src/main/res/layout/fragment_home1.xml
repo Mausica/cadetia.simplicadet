@@ -32,6 +32,16 @@
                 android:nestedScrollingEnabled="false"/>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/journalRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:paddingBottom="@dimen/_40sdp"
+                android:nestedScrollingEnabled="false"/>
+
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoryRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -39,6 +49,7 @@
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:paddingBottom="@dimen/_40sdp"
                 android:nestedScrollingEnabled="false"/>
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

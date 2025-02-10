@@ -6,18 +6,29 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorSecondary">@color/secondary</item>
 
-        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background_d_normal</item>
         <item name="android:statusBarColor">@color/focus</item>
         <item name="android:navigationBarColor">@color/nothing</item>
+
         <!-- Secondary Colors -->
         <item name="backgroundColor">@color/background</item>
         <item name="backgroundTint">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
+
         <!-- Text Colors -->
         <item name="textAppearanceBody1">@color/white</item>
         <item name="textAppearanceBody2">@color/white</item>
-        <!-- Bottom Bar Gradient -->
+
+
         <item name="bottomBarGradient">@drawable/gradient_bottom_dark</item>
+
+        <item name="backgroundLight">@color/background_d_light</item>
+        <item name="backgroundDark">@color/background_d_dark</item>
+        <item name="backgroundNormal">@color/background_d_normal</item>
+
+        <item name="textLight">@color/text_l_light</item>
+        <item name="textDark">@color/text_l_dark</item>
+        <item name="textNormal">@color/white</item>
     </style>
 
     <!-- Custom Theme -->

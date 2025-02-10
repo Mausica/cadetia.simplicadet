@@ -10,7 +10,7 @@
     android:layout_height="wrap_content"
     android:maxHeight="@dimen/_10sdp"
     android:paddingBottom="@dimen/_12sdp"
-    android:background="@drawable/home_background_note">
+    android:background="@drawable/background_light_r12">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imageNote"
@@ -34,7 +34,7 @@
         android:layout_marginEnd="@dimen/_13sdp"
         android:fontFamily="@font/circular_bold"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
+        android:textColor="?attr/textNormal"
         android:textSize="@dimen/_14ssp"/>
     <TextView
         android:id="@+id/textSubtitle"
@@ -48,7 +48,7 @@
         android:layout_marginEnd="@dimen/_13sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
+        android:textColor="?attr/textNormal"
         android:textSize="@dimen/_12ssp"/>
     <TextView
         android:id="@+id/textDateTime"
@@ -61,6 +61,6 @@
         android:layout_marginEnd="@dimen/_13sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
-        android:textColor="@color/gray"
+        android:textColor="?attr/textLight"
         android:textSize="@dimen/_8ssp"/>
 </LinearLayout>
