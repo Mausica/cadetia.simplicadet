@@ -8,7 +8,7 @@
     android:layout_marginStart="@dimen/_16sdp"
     android:layout_marginEnd="@dimen/_16sdp"
     android:elevation="@dimen/_5sdp"
-    android:backgroundTint="@color/secondary"
+    android:backgroundTint="?attr/colorSecondary"
     app:cardElevation="@dimen/_4sdp"
     app:cardCornerRadius="@dimen/_6sdp"
     android:layout_height="@dimen/_40sdp">
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="@color/secondary">
+        android:background="?attr/colorSecondary">
 
         <View
             android:id="@+id/main_view_glowed"
@@ -48,7 +48,7 @@
             android:textSize="@dimen/_14ssp"
             android:id="@+id/main_title"
             android:layout_marginEnd="@dimen/_15sdp"
-            android:textColor="@color/white"/>
+            android:textColor="?attr/textNormal"/>
 
 
 

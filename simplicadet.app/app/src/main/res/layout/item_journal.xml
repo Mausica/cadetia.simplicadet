@@ -19,7 +19,7 @@
         android:adjustViewBounds="true"
         android:src="@color/secondary"
         android:maxHeight="@dimen/_160sdp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
         android:cropToPadding="false"
         android:padding="@dimen/_5sdp"
         app:riv_corner_radius="8dp"/>

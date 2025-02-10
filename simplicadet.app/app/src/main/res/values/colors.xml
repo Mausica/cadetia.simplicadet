@@ -8,9 +8,9 @@
     <color name="background_l_light">#ececec</color>
     <color name="background_l_dark">#999999</color>
     <color name="background_l_normal">#e2dee1</color>
-    <color name="background_d_light">#fdfdfd</color>
-    <color name="background_d_dark">#FFFFFFFF</color>
-    <color name="background_d_normal">#121212</color>
+    <color name="background_d_light">#131313</color>
+    <color name="background_d_dark">#666666</color>
+    <color name="background_d_normal">#1d212e</color>
 
     <color name="text_l_light">#9a9a9a</color>
     <color name="text_l_dark">#6e6e6e</color>

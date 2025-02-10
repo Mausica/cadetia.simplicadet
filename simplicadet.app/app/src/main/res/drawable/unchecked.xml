@@ -3,7 +3,7 @@
     <corners android:radius="8dp" />
     <stroke
         android:width="3dp"
-        android:color="@color/special_dark" />
+        android:color="?attr/backgroundDark" />
     <size
         android:width="@dimen/_20sdp"
         android:height="@dimen/_20sdp" />
