@@ -7,10 +7,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +41,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener {
+public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener, JournalAdapter.OnJournalClickListener{
 
     private static final String TAG = "HomeFragment1";
     private RecyclerView categoryRecyclerView;
@@ -51,6 +54,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private RecyclerView journalRecyclerView;
     private JournalAdapter journalAdapter;
     private List<JournalEntry> journalList = new ArrayList<>();
+    private LruCache<String, Bitmap> memCache;
 
     public HomeFragment1() {
         // Required empty public constructor
@@ -67,6 +71,22 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Calculate the maximum memory available for caching (in kilobytes)
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8; // Cache size is 1/8th of the max memory
+
+        // Initialize the cache
+        memCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024; // Return the size of the bitmap in kilobytes
+            }
+        };
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         loadTaskFirstLayout();
@@ -77,6 +97,16 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private void loadTaskFirstLayout() {
         setUpAdapter();
         getSavedTasks();
+    }
+
+    @Override
+    public void onJournalClick(String journalLink) {
+        if (journalLink != null && !journalLink.isEmpty()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(journalLink));
+            startActivity(intent);
+        } else {
+            Log.e(TAG, "Invalid journal link: " + journalLink);
+        }
     }
 
     private void getSavedTasks() {
@@ -115,8 +145,8 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         DbQuery.loadJournals(new MyCompleteListener() {
             @Override
             public void onSucces() {
-                if (journalAdapter == null) { // Inițializare dacă nu a fost setată deja
-                    journalAdapter = new JournalAdapter(journalList, requireContext());
+                if (journalAdapter == null) {
+                    journalAdapter = new JournalAdapter(journalList, HomeFragment1.this, memCache);
                     journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
                     journalRecyclerView.setAdapter(journalAdapter);
                 }

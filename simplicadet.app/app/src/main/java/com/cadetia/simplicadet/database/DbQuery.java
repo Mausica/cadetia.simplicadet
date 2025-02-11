@@ -23,10 +23,12 @@ import java.util.Map;
 public class DbQuery {
 
     public static final String TAG = "DbQuery";
-    public static List<JournalEntry> g_journalList = new ArrayList<>();
     public static FirebaseFirestore g_firestore;
+
+    public static List<JournalEntry> g_journalList = new ArrayList<>();
     public static List<CategoryModel> g_catList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
+
     public static int g_selected_cat_index = 0;
     public static int g_selected_test_index = 0;
 
@@ -257,7 +259,7 @@ public class DbQuery {
     public static void loadJournals(MyCompleteListener listener) {
         g_journalList.clear();
 
-        g_firestore.collection("JOURNAL")
+        g_firestore.collection("JOURNAL").orderBy("JOURNAL_DATE")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
@@ -265,7 +267,8 @@ public class DbQuery {
                                 doc.getString("JOURNAL_TITLE"),
                                 doc.getString("JOURNAL_SUBTITLE"),
                                 doc.getString("JOURNAL_DATE"),
-                                doc.getString("JOURNAL_IMAGE")
+                                doc.getString("JOURNAL_IMAGE"),
+                                doc.getString("JOURNAL_LINK")
                         ));
                     }
                     listener.onSucces();
