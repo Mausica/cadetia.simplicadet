@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/_16sdp"
+        app:layout_anchor="@id/nav_view"
         android:layout_marginBottom="@dimen/_54sdp"
         app:backgroundTint="@color/primary"
         app:fabCustomSize="@dimen/_42sdp"

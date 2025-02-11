@@ -12,7 +12,7 @@
 
         <!-- Secondary Colors -->
         <item name="backgroundColor">@color/background</item>
-        <item name="backgroundTint">@color/white</item>
+        <!-- <item name="backgroundTint">@color/white</item> -->
         <item name="colorPrimaryDark">@color/white</item>
 
         <!-- Text Colors -->

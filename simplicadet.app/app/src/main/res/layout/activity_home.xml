@@ -24,7 +24,7 @@
         android:theme="@style/NavigationDrawerStyle"
         app:menu="@menu/drawer_menu"/>
 
-    <RelativeLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container">
@@ -32,7 +32,7 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_60sdp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
             android:layout_alignParentBottom="true"
             android:background="?attr/bottomBarGradient"
@@ -47,7 +47,8 @@
             app:itemTextAppearanceInactive="@style/CustomInactiveBottomNavigationTextAppearance"
             app:itemIconTint="?attr/colorSecondary"
             app:itemTextColor="?attr/textAppearanceBody1"
-            app:menu="@menu/bottom_nav_menu" />
+            app:menu="@menu/bottom_nav_menu"
+            android:layout_gravity="bottom"/>
 
         <fragment
             android:id="@+id/nav_host_fragment_activity_home"
@@ -58,6 +59,6 @@
             app:navGraph="@navigation/mobile_navigation2"
             tools:ignore="FragmentTagUsage" />
 
-    </RelativeLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
