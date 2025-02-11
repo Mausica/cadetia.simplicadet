@@ -41,7 +41,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener, JournalAdapter.OnJournalClickListener{
+public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener, JournalAdapter.OnJournalClickListener {
 
     private static final String TAG = "HomeFragment1";
     private RecyclerView categoryRecyclerView;
@@ -63,7 +63,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home1, container, false);
-
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
@@ -89,8 +88,8 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     @Override
     public void onResume() {
         super.onResume();
-        loadTaskFirstLayout();
         loadJournals();
+        loadTaskFirstLayout();
         loadCategories();
     }
 
@@ -99,14 +98,31 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         getSavedTasks();
     }
 
-    @Override
-    public void onJournalClick(String journalLink) {
-        if (journalLink != null && !journalLink.isEmpty()) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(journalLink));
-            startActivity(intent);
-        } else {
-            Log.e(TAG, "Invalid journal link: " + journalLink);
-        }
+    private void loadJournals() {
+        DbQuery.loadJournals(new MyCompleteListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onSucces() {
+                // Create the adapter if it doesn't exist
+                if (journalAdapter == null) {
+                    journalAdapter = new JournalAdapter(journalList, HomeFragment1.this, memCache);
+                }
+
+                // Always set the adapter and layout manager to ensure the RecyclerView is properly initialized
+                journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                journalRecyclerView.setAdapter(journalAdapter);
+
+                // Update the data
+                journalList.clear();
+                journalList.addAll(DbQuery.g_journalList);
+                journalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure() {
+                Log.e(TAG, "Failed to load journals");
+            }
+        });
     }
 
     private void getSavedTasks() {
@@ -127,7 +143,13 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 super.onPostExecute(fetchedTasks);
                 tasks.clear();
                 tasks.addAll(fetchedTasks);
-                mainTaskAdapter.notifyDataSetChanged();
+                if (mainTaskAdapter == null) {
+                    mainTaskAdapter = new MainTaskAdapter(tasks);
+                    mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    mainTasksRecycler.setAdapter(mainTaskAdapter); // Ensure adapter is set here after data is ready
+                } else {
+                    mainTaskAdapter.notifyDataSetChanged();
+                }
             }
         }
 
@@ -141,27 +163,15 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         mainTasksRecycler.setAdapter(mainTaskAdapter); // Set the adapter for the RecyclerView
     }
 
-    private void loadJournals() {
-        DbQuery.loadJournals(new MyCompleteListener() {
-            @Override
-            public void onSucces() {
-                if (journalAdapter == null) {
-                    journalAdapter = new JournalAdapter(journalList, HomeFragment1.this, memCache);
-                    journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-                    journalRecyclerView.setAdapter(journalAdapter);
-                }
-                journalList.clear();
-                journalList.addAll(DbQuery.g_journalList);
-                journalAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure() {
-                Log.e(TAG, "Failed to load journals");
-            }
-        });
+    @Override
+    public void onJournalClick(String journalLink) {
+        if (journalLink != null && !journalLink.isEmpty()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(journalLink));
+            startActivity(intent);
+        } else {
+            Log.e(TAG, "Invalid journal link: " + journalLink);
+        }
     }
-
 
     private void loadCategories() {
         DbQuery.loadCategories(new MyCompleteListener() {
@@ -198,7 +208,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         Log.e(TAG, "Category ID: " + categoryId + ", Test ID: " + testId);
 
         // Get the context from categoryRecyclerView
-
         Context context = categoryRecyclerView.getContext();
         Intent intent = new Intent(context, QuestionsActivity.class);
 
@@ -239,7 +248,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                     Log.e(TAG, "Failed to update total score in Firestore.");
                 }
             });
-
         }
     }
 
@@ -248,9 +256,8 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserData", MODE_PRIVATE);
 
         // Retrieve the values using the keys
-        userEmail= sharedPreferences.getString("userEmail", "");
-
+        userEmail = sharedPreferences.getString("userEmail", "");
     }
-
 }
+
 

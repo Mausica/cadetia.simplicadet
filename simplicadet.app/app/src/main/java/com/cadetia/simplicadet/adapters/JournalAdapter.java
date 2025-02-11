@@ -1,6 +1,5 @@
 package com.cadetia.simplicadet.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.model.JournalEntry;
@@ -45,7 +43,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
     @Override
     public JournalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_journal, parent, false);
-        return new JournalViewHolder(itemView, memCache);  // Pass memCache to the ViewHolder
+        return new JournalViewHolder(itemView);
     }
 
     @Override
@@ -55,13 +53,11 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         holder.subtitle.setText(entry.getSubtitle());
         holder.date.setText(entry.getDate());
 
-        holder.itemView.setOnClickListener(v -> {
-            if (onJournalClickListener != null) {
-                onJournalClickListener.onJournalClick(entry.getLink());
-            }
-        });
+        // Handle click event for the journal entry
+        holder.itemView.setOnClickListener(v -> onJournalClickListener.onJournalClick(entry.getLink()));
 
-        holder.bind(entry);
+        // Load the image for the journal entry
+        loadImage(entry.getImageUrl(), holder.imageView);
     }
 
     @Override
@@ -69,54 +65,41 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         return journalList.size();
     }
 
+    private void loadImage(String imageUrl, ImageView imageView) {
+        Bitmap cachedImage = memCache.get(imageUrl); // Try to get the image from cache
+        if (cachedImage != null) {
+            imageView.setImageBitmap(cachedImage);  // If image is cached, use it
+        } else {
+            Glide.with(imageView.getContext())
+                    .asBitmap()
+                    .load(imageUrl)
+                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))  // Cache image to disk
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            imageView.setImageBitmap(resource);  // Set the image in the ImageView
+                            memCache.put(imageUrl, resource);  // Store the image in cache
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            super.onLoadFailed(errorDrawable);
+                            // Optionally, set a default error image if loading fails
+                        }
+                    });
+        }
+    }
+
     static class JournalViewHolder extends RecyclerView.ViewHolder {
         TextView title, subtitle, date;
-        ImageView image;
-        LinearLayout layoutJournal;
-        LruCache<String, Bitmap> memCache;  // Reference to memCache
+        ImageView imageView;
 
-        public JournalViewHolder(@NonNull View itemView, LruCache<String, Bitmap> memCache) {
+        public JournalViewHolder(View itemView) {
             super(itemView);
-            this.memCache = memCache;  // Set memCache
-            title = itemView.findViewById(R.id.journalTitle);
-            subtitle = itemView.findViewById(R.id.journalSubtitle);
-            date = itemView.findViewById(R.id.journalDateTime);
-            image = itemView.findViewById(R.id.imageJournal);
-            layoutJournal = itemView.findViewById(R.id.layoutJournal);
-        }
-
-        public void bind(JournalEntry entry) {
-            Context context = itemView.getContext();
-            String imageUrl = entry.getImageUrl();
-
-            Bitmap cachedImage = memCache.get(imageUrl); // Check if the bitmap is already cached
-            if (cachedImage != null) {
-                // If the image is cached, use it
-                image.setImageBitmap(cachedImage);
-            } else {
-                // Otherwise, load the image using Glide
-                RequestOptions options = new RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL);
-
-                Glide.with(context)
-                        .asBitmap() // Ensure Glide returns a Bitmap
-                        .load(imageUrl)
-                        .apply(options)
-                        .into(new CustomTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                // Once the image is loaded, add it to the cache
-                                memCache.put(imageUrl, resource);
-                                // Set the image to the ImageView
-                                image.setImageBitmap(resource);
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {
-                                // Handle the cleanup when the view is no longer in use
-                            }
-                        });
-            }
+            title = itemView.findViewById(R.id.journal_title);
+            subtitle = itemView.findViewById(R.id.journal_subtitle);
+            date = itemView.findViewById(R.id.journal_date);
+            imageView = itemView.findViewById(R.id.journal_image);
         }
     }
 }
