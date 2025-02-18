@@ -76,7 +76,7 @@ public class CreateQuestionBottom extends BottomSheetDialogFragment {
         aiModel.getResponseLiveData().observe(requireActivity(), response -> {
             HomeFragment3 fragment = (HomeFragment3) getParentFragment();
             if (fragment != null) {
-                fragment.onQuestionAsked("BEN", prompt, response);
+                //fragment.onQuestionAsked("BEN", prompt, response);
             }
         });
 
@@ -87,7 +87,7 @@ public class CreateQuestionBottom extends BottomSheetDialogFragment {
     private void addMessageToChat(String sender, String message) {
         HomeFragment3 fragment = (HomeFragment3) getParentFragment();
         if (fragment != null) {
-            fragment.addMessageToChat(sender, message); // Add the message to the chat history
+            //fragment.addMessageToChat(sender, message); // Add the message to the chat history
         }
     }
 }

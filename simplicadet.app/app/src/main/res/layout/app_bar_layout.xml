@@ -14,7 +14,6 @@
         android:id="@+id/container_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_36sdp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -70,7 +69,7 @@
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
-            android:text="@string/home_notes"
+            android:text="@string/home_order"
             android:textAllCaps="false"
             android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
@@ -86,7 +85,7 @@
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
-            android:text="@string/home_assistant"
+            android:text="@string/home_formation"
             android:textAllCaps="false"
             android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
