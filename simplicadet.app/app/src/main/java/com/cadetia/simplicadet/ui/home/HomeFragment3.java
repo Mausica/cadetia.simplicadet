@@ -30,9 +30,27 @@ public class HomeFragment3 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mindMapContainer = view.findViewById(R.id.mindMapContainer);
         zoomLayout = view.findViewById(R.id.zoomLayout);
 
+        // Rotate ZoomLayout for landscape view
+        zoomLayout.post(() -> {
+            int width = zoomLayout.getWidth();
+            int height = zoomLayout.getHeight();
+
+            zoomLayout.setRotation(90.0f);
+            zoomLayout.setTranslationX((width - height) / 2);
+            zoomLayout.setTranslationY((height - width) / 2);
+
+            ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+            params.width = height; // Swap width and height
+            params.height = width;
+            zoomLayout.setLayoutParams(params);
+            zoomLayout.requestLayout();
+        });
+
+        // Create a horizontal layout for multiple grids
         LinearLayout parentLayout = new LinearLayout(requireContext());
         parentLayout.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -52,7 +70,7 @@ public class HomeFragment3 extends Fragment {
                 params.height = 150;
                 button.setLayoutParams(params);
 
-                // Make the button turn red when clicked
+                // Make button turn red when clicked
                 button.setOnClickListener(v -> button.setBackgroundColor(
                         ContextCompat.getColor(requireContext(), android.R.color.holo_red_light)
                 ));

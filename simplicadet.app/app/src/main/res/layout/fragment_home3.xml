@@ -10,7 +10,7 @@
         android:id="@+id/zoomLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical|horizontal"
+        android:layout_marginBottom="@dimen/_60sdp"
         app:transformation="centerInside"
         app:transformationGravity="auto"
         app:alignment="center"
@@ -25,7 +25,7 @@
         app:oneFingerScrollEnabled="true"
         app:twoFingersScrollEnabled="true"
         app:threeFingersScrollEnabled="true"
-        app:minZoom="0.5"
+        app:minZoom="0.75"
         app:maxZoom="3.0"
         app:animationDuration="300"
         app:hasClickableChildren="true">
