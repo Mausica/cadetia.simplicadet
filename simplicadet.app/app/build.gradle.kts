@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.8.6")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("com.otaliastudios:zoomlayout:1.9.0")
 
     // SDP and SSP libraries
     implementation("com.intuit.sdp:sdp-android:1.1.0")
