@@ -23,7 +23,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/_40sdp"
             android:contentDescription="@string/s1"
-            android:src="@drawable/home_ic_trophy"
+            android:src="@drawable/home_ic_upload"
             app:tint="@color/white" />
 
         <TextView

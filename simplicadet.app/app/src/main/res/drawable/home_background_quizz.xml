@@ -3,7 +3,7 @@
 
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/special_black"/>
+            <solid android:color="@color/tint_5"/>
             <corners android:radius="@dimen/_10sdp"/>
         </shape>
     </item>
@@ -14,7 +14,7 @@
         android:top="0dp"
         android:bottom="@dimen/_4sdp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/special_background"/>
+            <solid android:color="?attr/backgroundLight"/>
             <corners android:radius="@dimen/_10sdp"/>
         </shape>
     </item>

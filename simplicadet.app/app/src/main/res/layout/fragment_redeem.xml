@@ -6,7 +6,7 @@
     android:id="@+id/bottomRedeem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/backgroundColor"
     tools:context=".activities.CreateNoteBottom">
 
     <ScrollView
@@ -35,7 +35,7 @@
                 android:src="@drawable/uni_ic_close"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white" />
+                app:tint="?attr/textNormal" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -74,7 +74,7 @@
                     android:paddingStart="@dimen/_20sdp"
                     android:paddingEnd="@dimen/_20sdp"
                     android:includeFontPadding="false"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/textNormal"
                     android:textSize="@dimen/_22ssp"/>
 
             </RelativeLayout>

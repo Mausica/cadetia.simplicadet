@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -100,6 +101,20 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         handler.postDelayed(() -> navigationDrawer(window), 100);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri fileUri = data.getData(); // URI of the selected file
+                // Process the Excel file (fileUri) here
+                // For example, you can read the file content using a library like Apache POI or any other method
+                Toast.makeText(this, "File selected: " + fileUri.getPath(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void navigationDrawer(Window view) {
         NavigationView navigationView = this.findViewById(R.id.navigation_view);
         drawerLayout = this.findViewById(R.id.drawer_layout);
@@ -138,9 +153,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             Toast.makeText(this, "Help clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_settings) {
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
-        } else if (itemId == R.id.drawer_win) {
+        } else if (itemId == R.id.drawer_upload) {
             // Navigate to Community fragment // TO DO - MAPPING RANDOMLY TO HOME/SEARCH
-            navController.navigate(R.id.navigation_community);
+            //navController.navigate(R.id.navigation_community);
+            // Triggering the file picker to select only Excel files
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); // For .xlsx files
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            startActivityForResult(intent, 1); // Request code 1 for file selection
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
