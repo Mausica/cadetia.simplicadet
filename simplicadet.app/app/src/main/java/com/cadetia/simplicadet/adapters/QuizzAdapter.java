@@ -18,6 +18,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.model.Quizz;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
 
@@ -46,7 +48,6 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
         holder.quizzTitleTextView.setText(quizz.getTitle());
         holder.itemView.setOnClickListener(v -> {
             if (onQuizClickListener != null) {
-                // Notify the listener about the quiz click
                 onQuizClickListener.onQuizClick(categoryId, quizz.getTestId());
             }
         });
@@ -60,38 +61,49 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
 
     static class QuizzViewHolder extends RecyclerView.ViewHolder {
         TextView quizzTitleTextView;
+        TextView createdName;
         private ImageView imageQuizz;
-        private LinearLayout layoutQuizz; // Move layoutQuizz here
+        private ImageView createdProfile;
+        private LinearLayout layoutQuizz;
 
         public QuizzViewHolder(@NonNull View itemView) {
             super(itemView);
             quizzTitleTextView = itemView.findViewById(R.id.quizzTitle);
             imageQuizz = itemView.findViewById(R.id.imageQuizz);
-            layoutQuizz = itemView.findViewById(R.id.layoutQuizz); // Initialize layoutQuizz here
+            layoutQuizz = itemView.findViewById(R.id.layoutQuizz);
+            createdName = itemView.findViewById(R.id.created_name);
+            createdProfile = itemView.findViewById(R.id.created_profile);
         }
 
         public void bind(Quizz quizz) {
-            // Load image using Glide if the context is still valid
             Context context = itemView.getContext();
             if (context instanceof Activity && !((Activity) context).isDestroyed()) {
-                RequestOptions options = new RequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL); // Cache image to disk
-
-                Glide.with(context)
-                        .load(quizz.getImageResourceUrl())
-                        .apply(options)
-                        .into(imageQuizz);
+                RequestOptions options = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL);
+                Glide.with(context).load(quizz.getImageResourceUrl()).apply(options).into(imageQuizz);
             } else {
-                // Log a message or handle the case where the context is not valid
-                Log.e("QuestionAdapter", "Invalid context: " + context);
+                Log.e("QuizzAdapter", "Invalid context: " + context);
             }
 
             quizzTitleTextView.setText(quizz.getTitle());
+            layoutQuizz.setAlpha(quizz.hasQuestions() ? 1.0f : 0.2f);
 
-            if (quizz.hasQuestions()) {
-                layoutQuizz.setAlpha(1.0f); // Full alpha if quiz has questions
-            } else {
-                layoutQuizz.setAlpha(0.2f); // Lower alpha if quiz doesn't have questions
+            if (quizz.getCreatedBy() != null) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("USERS").document(quizz.getCreatedBy())
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String userName = documentSnapshot.getString("NAME");
+                                String profileImage = documentSnapshot.getString("PHOTO");
+                                createdName.setText(userName != null ? userName : "Unknown User");
+                                if (profileImage != null && !profileImage.isEmpty()) {
+                                    Glide.with(context).load(profileImage).into(createdProfile);
+                                } else {
+                                    Glide.with(context).load(R.raw.guest).into(createdProfile);
+                                }
+                            }
+                        })
+                        .addOnFailureListener(e -> Log.e("QuizzAdapter", "Failed to fetch user data", e));
             }
         }
     }

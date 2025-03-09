@@ -161,7 +161,8 @@ public class DbQuery {
                                     .addOnSuccessListener(infoDoc -> {
                                         if (infoDoc.exists()) {
                                             String quizzImage = infoDoc.getString("imageUrl");
-                                            Quizz quizz = new Quizz(subCollectionName, quizzImage, subCollectionName, true);
+                                            String createdBy =  infoDoc.getString("createdBy");
+                                            Quizz quizz = new Quizz(subCollectionName, quizzImage, subCollectionName, true, createdBy);
                                             quizzList.add(quizz);
 
                                             if (quizzList.size() == subCollectionNames.size()) {
