@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
@@ -24,7 +25,10 @@ import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.QuestionModel;
 import com.makeramen.roundedimageview.RoundedImageView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import nl.dionsegijn.konfetti.core.PartyFactory;
 import nl.dionsegijn.konfetti.core.Position;
@@ -107,6 +111,8 @@ public class QuestionsActivity extends AppCompatActivity {
             @Override
             public void onSucces() {
                 if (!DbQuery.g_quesList.isEmpty()) {
+                    // Shuffle the list of questions
+                    Collections.shuffle(DbQuery.g_quesList);
                     displayQuestion(currentQuestionIndex);
                     textNumberTests.setText(" of " + DbQuery.g_quesList.size());
                 } else {
@@ -116,7 +122,7 @@ public class QuestionsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure() {
-                // Tratează eroarea de încărcare a întrebărilor
+                // Handle error loading questions
             }
         });
     }
@@ -252,10 +258,31 @@ public class QuestionsActivity extends AppCompatActivity {
             currentQuestion = question;
 
             questionTextView.setText(question.getQuestion());
-            optionATextView.setText(question.getOptionA());
-            optionBTextView.setText(question.getOptionB());
-            optionCTextView.setText(question.getOptionC());
-            optionDTextView.setText(question.getOptionD());
+
+            // Creăm o listă cu opțiuni și statusul de corectitudine
+            List<Pair<String, Boolean>> options = new ArrayList<>();
+            options.add(new Pair<>(question.getOptionA(), question.getCorrectAnswer().equals("A")));
+            options.add(new Pair<>(question.getOptionB(), question.getCorrectAnswer().equals("B")));
+            options.add(new Pair<>(question.getOptionC(), question.getCorrectAnswer().equals("C")));
+            options.add(new Pair<>(question.getOptionD(), question.getCorrectAnswer().equals("D")));
+
+            // Amestecăm lista de opțiuni
+            Collections.shuffle(options);
+
+            // Setăm textele opțiunilor și identificăm noul răspuns corect
+            optionATextView.setText(options.get(0).first);
+            optionBTextView.setText(options.get(1).first);
+            optionCTextView.setText(options.get(2).first);
+            optionDTextView.setText(options.get(3).first);
+
+            // Găsim indexul nou al răspunsului corect
+            for (int i = 0; i < options.size(); i++) {
+                if (options.get(i).second) {
+                    currentQuestion.setCorrectAnswer(new String[]{"A", "B", "C", "D"}[i]);
+                    break;
+                }
+            }
+
             textNumberQuestion.setText("Question " + (index + 1));
             if (question.getImage() != null && !question.getImage().isEmpty()) {
                 questionImage.setVisibility(View.VISIBLE);
@@ -269,6 +296,7 @@ public class QuestionsActivity extends AppCompatActivity {
             showNoQuestionsMessage();
         }
     }
+
 
     private void startQuestionTimer() {
         if (countDownTimer != null) {
