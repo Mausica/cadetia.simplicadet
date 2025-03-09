@@ -56,14 +56,22 @@ public class QuestionsActivity extends AppCompatActivity {
     private int totalScore = 0; // Punctajul total
     private long remainingTime = QUESTION_TIME;
     private LoadingView loadingView;
+    private int correctAnswers = 0; // Numărul de răspunsuri corecte
+    private long totalResponseTime = 0; // Timpul total de răspuns
 
 
     private void onQAFinished() {
+        long avgResponseTime = (correctAnswers > 0) ? totalResponseTime / correctAnswers : QUESTION_TIME;
+
+
         Intent intent = new Intent();
         intent.putExtra("totalScore", totalScore);
+        intent.putExtra("correctAnswers", correctAnswers);
+        intent.putExtra("avgResponseTime", avgResponseTime);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,9 +210,13 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(String selectedAnswer) {
+        long responseTime = QUESTION_TIME - remainingTime; // Timpul folosit pentru răspuns
+        totalResponseTime += responseTime; // Adăugăm timpul la total
+
         currentQuestion.setUserSelectedAnswer(selectedAnswer);
         if (selectedAnswer.equals(currentQuestion.getCorrectAnswer())) {
             totalScore += currentQuestion.getPoints();
+            correctAnswers++; // Incrementăm dacă e corect
             highlightCorrectAnswer(true);
             explodeOnCorrectAnswer(getSelectedTextView(currentQuestion.getCorrectAnswer()));
         } else {
@@ -212,6 +224,7 @@ public class QuestionsActivity extends AppCompatActivity {
             highlightCorrectAnswer(false);
         }
     }
+
 
     private void highlightCorrectAnswer(boolean isCorrect) {
         if (isCorrect) {

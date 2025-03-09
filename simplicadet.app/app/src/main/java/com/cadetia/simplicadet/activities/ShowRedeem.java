@@ -84,13 +84,20 @@ public class ShowRedeem extends BottomSheetDialogFragment {
         Bundle bundle = getArguments();
         assert bundle != null;
         totalScore = bundle.getInt("totalScore", 0);
-
+        int correctAnswers = bundle.getInt("correctAnswers", 0);
+        float averageTime = bundle.getFloat("averageTime", 0);
 
         String redeemTitleText = "Congratulations! You've got " + totalScore + " organicoins!";
         TextView redeemTitle = rootView.findViewById(R.id.redeemTitle);
         redeemTitle.setText(redeemTitleText);
 
+        TextView correctAnswersTextView = rootView.findViewById(R.id.correct_answers);
+        correctAnswersTextView.setText(correctAnswers + " Correct");
+
+        TextView avgResponseTextView = rootView.findViewById(R.id.average_response);
+        avgResponseTextView.setText(String.format(" %.1fs Average", averageTime));
     }
+
 
     private void preloadLottieAnimation() {
         int animationRes = R.raw.uni_redeem;

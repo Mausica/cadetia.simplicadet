@@ -218,15 +218,18 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         startActivityForResult(intent, 1);
     }
 
-    private void showRedeemDialog(int totalScore) {
+    private void showRedeemDialog(int totalScore, int correctAnswers, float averageTime) {
         if (totalScore > 0) {
             ShowRedeem bottomSheetFragment = new ShowRedeem();
             Bundle bundle = new Bundle();
             bundle.putInt("totalScore", totalScore);
+            bundle.putInt("correctAnswers", correctAnswers);
+            bundle.putFloat("averageTime", averageTime);
             bottomSheetFragment.setArguments(bundle);
             bottomSheetFragment.show(requireActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
         }
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -234,7 +237,10 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         retrieveUserData();
         if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
             int totalScore = data.getIntExtra("totalScore", 0);
-            handler.postDelayed(() -> showRedeemDialog(totalScore), 1000);
+            int correctAnswers = data.getIntExtra("correctAnswers", 0);
+            float averageTime = data.getFloatExtra("averageTime", 0);
+            handler.postDelayed(() -> showRedeemDialog(totalScore, correctAnswers, averageTime), 1000);
+
 
             // Update the total score in the database
             DbQuery.updateTotalScore(userEmail, totalScore, new MyCompleteListener() {
