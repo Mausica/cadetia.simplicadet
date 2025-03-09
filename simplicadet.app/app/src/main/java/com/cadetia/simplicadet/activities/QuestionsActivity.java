@@ -25,7 +25,6 @@ import com.cadetia.simplicadet.model.QuestionModel;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import nl.dionsegijn.konfetti.core.PartyFactory;
 import nl.dionsegijn.konfetti.core.Position;
@@ -46,21 +45,15 @@ public class QuestionsActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private ProgressBar progressBar;
     private CountDownTimer countDownTimer;
-    private static final long QUESTION_TIME = 10000; // 10 seconds
-    private int totalScore = 0; // Total score
-    private long remainingTime = QUESTION_TIME; // Remaining time for the current question
+    private static final long QUESTION_TIME = 10000; // 10 secunde
+    private int totalScore = 0; // Punctajul total
+    private long remainingTime = QUESTION_TIME; // Timpul rămas pentru întrebarea curentă
 
     private void onQAFinished() {
-        int totalScore = calculateTotalScore(); // Calculate the total score
         Intent intent = new Intent();
         intent.putExtra("totalScore", totalScore);
-        setResult(Activity.RESULT_OK, intent); // Pass total score as a result
-        finish(); // Finish the current activity
-    }
-
-    private int calculateTotalScore() {
-        // Logic to calculate total score
-        return totalScore;
+        setResult(Activity.RESULT_OK, intent); // Transmit punctajul total ca rezultat
+        finish(); // Închide activitatea curentă
     }
 
     @Override
@@ -87,11 +80,11 @@ public class QuestionsActivity extends AppCompatActivity {
         textNumberQuestion = findViewById(R.id.text_number_question);
         textNumberTests = findViewById(R.id.text_number_tests);
 
-        nextButton.setVisibility(View.GONE); // Hide the next button initially
+        nextButton.setVisibility(View.GONE); // Ascunde butonul "Next" inițial
 
         setOptionClickListeners();
 
-        // Retrieve the categoryId and testId from the intent
+        // Se recuperează categoryId și testId din intent
         Intent intent = getIntent();
         String categoryId = intent.getStringExtra("categoryId");
         String testId = intent.getStringExtra("testId");
@@ -102,8 +95,8 @@ public class QuestionsActivity extends AppCompatActivity {
             if (nextButton.getText().toString().equals("Finish")) {
                 animateButtonOnClickNull(nextButton);
                 handler.postDelayed(() -> {
-                    setResult(Activity.RESULT_OK); // Set the result to OK
-                    onQAFinished(); ; // Finish the activity
+                    setResult(Activity.RESULT_OK);
+                    onQAFinished();
                 }, 100);
             }
         });
@@ -117,14 +110,13 @@ public class QuestionsActivity extends AppCompatActivity {
                     displayQuestion(currentQuestionIndex);
                     textNumberTests.setText(" of " + DbQuery.g_quesList.size());
                 } else {
-                    // Handle case when no questions are available
                     showNoQuestionsMessage();
                 }
             }
 
             @Override
             public void onFailure() {
-                // Handle failure
+                // Tratează eroarea de încărcare a întrebărilor
             }
         });
     }
@@ -155,7 +147,7 @@ public class QuestionsActivity extends AppCompatActivity {
         x -= rect.left;
         y -= rect.top;
 
-        EmitterConfig emitterConfig = new Emitter(100L, TimeUnit.MILLISECONDS).max(50);
+        EmitterConfig emitterConfig = new Emitter(100L, java.util.concurrent.TimeUnit.MILLISECONDS).max(50);
         konfettiView.start(
                 new PartyFactory(emitterConfig)
                         .spread(360)
@@ -173,16 +165,14 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void onOptionClick(LinearLayout layout, TextView optionTextView) {
-        // Cancel the timer when an option is clicked
         if (countDownTimer != null) {
             countDownTimer.cancel();
             progressBar.setProgress(0);
         }
         setNonClickable();
         animateLayout(layout);
-        layout.setBackgroundResource(R.drawable.home_background_quizz); // Highlight selected option
-        checkAnswer(optionTextView.getText().toString()); // Check the selected answer
-        // Delay to move to the next question
+        layout.setBackgroundResource(R.drawable.home_background_quizz);
+        checkAnswer(optionTextView.getText().toString());
         handler.postDelayed(() -> {
             if (currentQuestionIndex < DbQuery.g_quesList.size() - 1) {
                 currentQuestionIndex++;
@@ -190,36 +180,27 @@ public class QuestionsActivity extends AppCompatActivity {
                 currentQuestion.setUserSelectedAnswer(null);
                 resetOptionBackgrounds();
             }
-        }, 3000); // 3 seconds delay
+        }, 3000);
     }
 
     private void checkAnswer(String selectedAnswer) {
-        currentQuestion.setUserSelectedAnswer(selectedAnswer); // Store the user-selected answer
+        currentQuestion.setUserSelectedAnswer(selectedAnswer);
         if (selectedAnswer.equals(currentQuestion.getCorrectAnswer())) {
-            // Correct answer
-            int scoreForQuestion = calculateScoreForQuestion();
-            totalScore += scoreForQuestion; // Update the total score
+            // Răspuns corect: se adaugă punctajul întrebării
+            totalScore += currentQuestion.getPoints();
             highlightCorrectAnswer(true);
             explodeOnCorrectAnswer(getSelectedTextView(currentQuestion.getCorrectAnswer()));
         } else {
-            // Incorrect answer
-            totalScore += 1; // Add 1 point for an incorrect answer
+            // Răspuns greșit: se adaugă o penalizare minimă
+            totalScore += 1;
             highlightCorrectAnswer(false);
         }
     }
 
-    private int calculateScoreForQuestion() {
-        // Calculate the score based on the remaining time
-        int timeRemainingSeconds = (int) (remainingTime / 1000);
-        return Math.min(10, timeRemainingSeconds + 1); // Return score from 1 to 10
-    }
-
     private void highlightCorrectAnswer(boolean isCorrect) {
         if (isCorrect) {
-            // Highlight correct answer
             getSelectedTextView(currentQuestion.getCorrectAnswer()).setBackgroundResource(R.drawable.background_task_correct);
         } else {
-            // Highlight selected answer and correct answer
             if (currentQuestion.getUserSelectedAnswer() != null) {
                 getSelectedTextView(currentQuestion.getUserSelectedAnswer()).setBackgroundResource(R.drawable.background_task_incorrect);
             }
@@ -245,7 +226,7 @@ public class QuestionsActivity extends AppCompatActivity {
 
     private TextView getSelectedTextView(String answer) {
         if (answer == null) {
-            return null; // Return null if the answer is null to avoid NullPointerException
+            return null;
         }
         if (answer.equals(optionATextView.getText().toString())) {
             return optionATextView;
@@ -268,7 +249,7 @@ public class QuestionsActivity extends AppCompatActivity {
     private void displayQuestion(int index) {
         if (index >= 0 && index < DbQuery.g_quesList.size()) {
             QuestionModel question = DbQuery.g_quesList.get(index);
-            currentQuestion = question; // Set current question
+            currentQuestion = question;
 
             questionTextView.setText(question.getQuestion());
             optionATextView.setText(question.getOptionA());
@@ -285,14 +266,13 @@ public class QuestionsActivity extends AppCompatActivity {
 
             startQuestionTimer();
         } else {
-            // Handle the case when index is out of bounds
             showNoQuestionsMessage();
         }
     }
 
     private void startQuestionTimer() {
         if (countDownTimer != null) {
-            countDownTimer.cancel(); // Cancel the previous timer
+            countDownTimer.cancel();
         }
 
         progressBar.setMax((int) QUESTION_TIME);
@@ -302,13 +282,12 @@ public class QuestionsActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 progressBar.setProgress((int) millisUntilFinished);
-                remainingTime = millisUntilFinished; // Update the remaining time
+                remainingTime = millisUntilFinished;
             }
 
             @Override
             public void onFinish() {
-                // Time is up, highlight the correct answer and move to the next question
-                remainingTime = 0; // No time remaining
+                remainingTime = 0;
                 setNonClickable();
                 highlightCorrectAnswer(false);
                 handler.postDelayed(() -> {
@@ -318,8 +297,7 @@ public class QuestionsActivity extends AppCompatActivity {
                         currentQuestion.setUserSelectedAnswer(null);
                         resetOptionBackgrounds();
                     }
-                }, 3000); // 3 seconds delay
-
+                }, 3000);
             }
         }.start();
     }
@@ -351,5 +329,4 @@ public class QuestionsActivity extends AppCompatActivity {
                         .start())
                 .start();
     }
-
 }

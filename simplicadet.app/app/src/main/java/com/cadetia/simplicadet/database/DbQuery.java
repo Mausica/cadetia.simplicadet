@@ -4,6 +4,7 @@ import android.util.ArrayMap;
 import android.util.Log;
 
 import com.cadetia.simplicadet.model.JournalEntry;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -15,10 +16,13 @@ import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.QuestionModel;
 import com.cadetia.simplicadet.model.Quizz;
 import com.cadetia.simplicadet.model.UserModel;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DbQuery {
 
@@ -119,142 +123,104 @@ public class DbQuery {
                 });
     }
 
-    public static void checkIfQuizHasQuestions(String categoryId, String testId, MyCompleteListener listener) {
-        g_firestore.collection("QUIZ")
-                .document(categoryId)
-                .collection("TESTS_LIST")
-                .document("TESTS_INFO")
-                .collection("QUESTIONS")
-                .document(testId)
-                .collection("QUESTION_INFO")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        listener.onSucces();
-                    } else {
-                        listener.onFailure();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error checking quiz questions: ", e);
-                    listener.onFailure();
-                });
-    }
-
     public static void loadCategories(MyCompleteListener listener) {
         g_catList.clear();
+        Log.e(TAG, "Starting loadCategories");
 
-        g_firestore.collection("QUIZ")
+        g_firestore.collection("QUIZES")
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot catDoc : queryDocumentSnapshots) {
+                .addOnSuccessListener(categorySnapshots -> {
+                    int totalCategories = categorySnapshots.size();
+                    AtomicInteger processedCategories = new AtomicInteger(0);
+
+                    if (totalCategories == 0) {
+                        listener.onSucces();
+                        return;
+                    }
+
+                    for (QueryDocumentSnapshot catDoc : categorySnapshots) {
                         String catID = catDoc.getId();
-                        String catName = catDoc.getString("NAME");
-                        int noOfTests;
-                        if (catDoc.getLong("NO_OF_TESTS") != null) {
-                            noOfTests = catDoc.getLong("NO_OF_TESTS").intValue();
-                        } else {
-                            noOfTests = 0;
-                            // Handle the case when NO_OF_TESTS field is null
-                            Log.e(TAG, "NO_OF_TESTS field is null for category ID: " + catID);
+                        int noOfTests = catDoc.contains("noTests") ? catDoc.getLong("noTests").intValue() : 0;
+
+                        // Obținem lista de subcolecții (teste) direct din document
+                        List<String> subCollectionNames = (List<String>) catDoc.get("subcollections");
+
+                        if (subCollectionNames == null || subCollectionNames.isEmpty()) {
+                            Log.e(TAG, "No subcollections found for category: " + catID);
+                            processedCategories.incrementAndGet();
+                            return;
                         }
 
-                        // Fetch quizzes for this category
                         List<Quizz> quizzList = new ArrayList<>();
-                        g_firestore.collection("QUIZ").document(catID).collection("TESTS_LIST")
-                                .get()
-                                .addOnSuccessListener(quizzSnapshots -> {
-                                    for (QueryDocumentSnapshot quizzDoc : quizzSnapshots) {
-                                        for (int i = 1; i <= noOfTests; i++) {
-                                            String quizzTitle = quizzDoc.getString("TEST" + i + "_TITLE");
-                                            String quizzImage = quizzDoc.getString("TEST" + i + "_IMAGE");
-                                            String testId = quizzDoc.getString("TEST" + i + "_ID");
 
-                                            // Check if quiz has questions
-                                            checkIfQuizHasQuestions(catID, testId, new MyCompleteListener() {
-                                                @Override
-                                                public void onSucces() {
-                                                    // Quiz has questions, add it to the list with normal alpha
-                                                    Quizz quizz = new Quizz(quizzTitle, quizzImage, testId, true);
-                                                    quizzList.add(quizz);
-                                                    if (quizzList.size() == noOfTests) {
-                                                        // Create CategoryModel instance with quizzes and add to list
-                                                        CategoryModel category = new CategoryModel(catID, catName, noOfTests, quizzList);
-                                                        g_catList.add(category);
+                        for (String subCollectionName : subCollectionNames) {
+                            g_firestore.collection("QUIZES").document(catID)
+                                    .collection(subCollectionName)
+                                    .document("Info")
+                                    .get()
+                                    .addOnSuccessListener(infoDoc -> {
+                                        if (infoDoc.exists()) {
+                                            String quizzImage = infoDoc.getString("imageUrl");
+                                            Quizz quizz = new Quizz(subCollectionName, quizzImage, subCollectionName, true);
+                                            quizzList.add(quizz);
 
-                                                        // Notify listener if all categories and quizzes are loaded
-                                                        if (g_catList.size() == queryDocumentSnapshots.size()) {
-                                                            listener.onSucces();
-                                                        }
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onFailure() {
-                                                    // Quiz doesn't have questions, add it to the list with lower alpha
-                                                    Quizz quizz = new Quizz(quizzTitle, quizzImage, testId, false);
-                                                    quizzList.add(quizz);
-                                                    if (quizzList.size() == noOfTests) {
-                                                        // Create CategoryModel instance with quizzes and add to list
-                                                        CategoryModel category = new CategoryModel(catID, catName, noOfTests, quizzList);
-                                                        g_catList.add(category);
-
-                                                        // Notify listener if all categories and quizzes are loaded
-                                                        if (g_catList.size() == queryDocumentSnapshots.size()) {
-                                                            listener.onSucces();
-                                                        }
-                                                    }
-                                                }
-                                            });
+                                            if (quizzList.size() == subCollectionNames.size()) {
+                                                createCategory(catID, noOfTests, quizzList, processedCategories, totalCategories, listener);
+                                            }
+                                        } else {
+                                            Log.e(TAG, "Document 'Info' does not exist in subcollection: " + subCollectionName);
                                         }
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    // Handle failure to fetch quizzes for this category
-                                    listener.onFailure();
-                                });
+                                    })
+                                    .addOnFailureListener(e -> Log.e(TAG, "Error fetching 'Info' document: " + e.getMessage()));
+                        }
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure to fetch categories
+                    Log.e(TAG, "Error loading categories: " + e.getMessage());
                     listener.onFailure();
                 });
     }
 
-    public static void loadQuestions(String categoryId, String testId, MyCompleteListener completeListener) {
+
+    private static void createCategory(String catID, int noTests, List<Quizz> quizzes,
+                                       AtomicInteger counter, int total, MyCompleteListener listener) {
+        CategoryModel category = new CategoryModel(catID, catID, noTests, quizzes);
+        g_catList.add(category);
+
+        if (counter.incrementAndGet() == total) {
+            listener.onSucces();
+        }
+    }
+
+    
+    public static void loadQuestions(String categoryId, String testTitle, MyCompleteListener completeListener) {
         g_quesList.clear();
 
-        g_firestore.collection("QUIZ")
-                .document(categoryId)
-                .collection("TESTS_LIST")
-                .document("TESTS_INFO")
-                .collection("QUESTIONS")
-                .document(testId)
-                .collection("QUESTION_INFO")
+        g_firestore.collection("QUIZES").document(categoryId).collection(testTitle)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        g_quesList.add(new QuestionModel(
-                                doc.getString("QUESTION"),
-                                doc.getString("A"),
-                                doc.getString("B"),
-                                doc.getString("C"),
-                                doc.getString("D"),
-                                doc.getString("ANSWER"),
-                                doc.getString("IMAGE")
-                        ));
+                        if (!doc.getId().equals("Info")) {
+                            List<String> options = (List<String>) doc.get("options");
+
+                            if (options == null || options.size() < 4) {
+                                continue;
+                            }
+
+                            g_quesList.add(new QuestionModel(
+                                    doc.getString("question"),
+                                    doc.getString("imageUrl"),
+                                    options,
+                                    doc.getLong("correctAnswerIndex").intValue(),
+                                    doc.getLong("points").intValue()
+                            ));
+                        }
                     }
-                    Log.e(TAG, "Number of questions loaded: " + DbQuery.g_quesList.size());
                     completeListener.onSucces();
-
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading questions: ", e);
-                    Log.e(TAG, "Number of questions not loaded: " + DbQuery.g_quesList.size());
-                    completeListener.onFailure();
-                });
-
+                .addOnFailureListener(e -> completeListener.onFailure());
     }
+
 
     public static void loadJournals(MyCompleteListener listener) {
         g_journalList.clear();

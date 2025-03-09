@@ -26,6 +26,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
+import com.cadetia.simplicadet.database.ExcelUpload;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
@@ -107,13 +108,17 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             if (data != null) {
-                Uri fileUri = data.getData(); // URI of the selected file
-                // Process the Excel file (fileUri) here
-                // For example, you can read the file content using a library like Apache POI or any other method
-                Toast.makeText(this, "File selected: " + fileUri.getPath(), Toast.LENGTH_SHORT).show();
+                Uri fileUri = data.getData(); // URI-ul fișierului selectat
+
+                // Apelează metoda de procesare a fișierului Excel
+                ExcelUpload excelUpload = new ExcelUpload();
+                excelUpload.uploadQuestions(this, fileUri);
+
+                Toast.makeText(this, "Uploading file: " + fileUri.getPath(), Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
     private void navigationDrawer(Window view) {
         NavigationView navigationView = this.findViewById(R.id.navigation_view);

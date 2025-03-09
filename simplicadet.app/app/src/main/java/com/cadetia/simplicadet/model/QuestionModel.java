@@ -1,5 +1,7 @@
 package com.cadetia.simplicadet.model;
 
+import java.util.List;
+
 public class QuestionModel {
 
     private String question;
@@ -9,8 +11,8 @@ public class QuestionModel {
     private String optionD;
     private String image;
     private String correctAns;
-    private String userSelectedAnswer; // New field
-
+    private String userSelectedAnswer;
+    private int points;
     public QuestionModel(String question, String optionA, String optionB, String optionC, String optionD, String correctAns, String image) {
         this.question = question;
         this.optionA = optionA;
@@ -19,6 +21,23 @@ public class QuestionModel {
         this.optionD = optionD;
         this.correctAns = correctAns;
         this.image = image;
+    }
+
+    public QuestionModel(String question, String image, List<String> options, int correctAnswerIndex, int points) {
+        this.question = question;
+        if (options != null && options.size() >= 4) {
+            this.optionA = options.get(0);
+            this.optionB = options.get(1);
+            this.optionC = options.get(2);
+            this.optionD = options.get(3);
+            if (correctAnswerIndex >= 0 && correctAnswerIndex < options.size()) {
+                this.correctAns = options.get(correctAnswerIndex);
+            } else {
+                this.correctAns = "";
+            }
+        }
+        this.image = image;
+        this.points = points;
     }
 
     public String getQuestion() {
@@ -83,5 +102,13 @@ public class QuestionModel {
 
     public void setUserSelectedAnswer(String userSelectedAnswer) {
         this.userSelectedAnswer = userSelectedAnswer;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 }

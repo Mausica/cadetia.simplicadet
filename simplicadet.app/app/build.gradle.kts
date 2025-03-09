@@ -58,10 +58,10 @@ dependencies {
 
 
     // Design
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.6")
-    implementation("androidx.navigation:navigation-ui-ktx:2.8.6")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.8")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.8")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation(libs.constraintlayout.v214)
     implementation("com.otaliastudios:zoomlayout:1.9.0")
 
     // SDP and SSP libraries
@@ -71,9 +71,11 @@ dependencies {
     //AI
     implementation("com.google.guava:guava:32.1.3-android")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+
 
     // Ads
-    implementation("com.google.android.gms:play-services-ads:23.6.0")
+    implementation("com.google.android.gms:play-services-ads:24.0.0")
 
     // ImageView
     implementation("com.makeramen:roundedimageview:2.3.0")
@@ -90,10 +92,11 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-firestore:25.1.2")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-functions:21.1.1")
 
     //Facebook
     implementation ("com.facebook.android:facebook-login:latest.release")
@@ -103,6 +106,6 @@ dependencies {
     implementation ("androidx.credentials:credentials:1.3.0")
     implementation ("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-    implementation ("com.google.android.material:material:1.6.0")
+    implementation (libs.material)
 
 }

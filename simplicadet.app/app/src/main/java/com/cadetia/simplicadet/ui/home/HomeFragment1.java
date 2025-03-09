@@ -259,5 +259,3 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         userEmail = sharedPreferences.getString("userEmail", "");
     }
 }
-
-
