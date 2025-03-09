@@ -19,8 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.database.DbQuery;
+import com.cadetia.simplicadet.entities.LoadingView;
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.QuestionModel;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -51,13 +54,15 @@ public class QuestionsActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private static final long QUESTION_TIME = 10000; // 10 secunde
     private int totalScore = 0; // Punctajul total
-    private long remainingTime = QUESTION_TIME; // Timpul rămas pentru întrebarea curentă
+    private long remainingTime = QUESTION_TIME;
+    private LoadingView loadingView;
+
 
     private void onQAFinished() {
         Intent intent = new Intent();
         intent.putExtra("totalScore", totalScore);
-        setResult(Activity.RESULT_OK, intent); // Transmit punctajul total ca rezultat
-        finish(); // Închide activitatea curentă
+        setResult(Activity.RESULT_OK, intent);
+        finish();
     }
 
     @Override
@@ -83,12 +88,13 @@ public class QuestionsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         textNumberQuestion = findViewById(R.id.text_number_question);
         textNumberTests = findViewById(R.id.text_number_tests);
+        loadingView = findViewById(R.id.loadingView);
 
-        nextButton.setVisibility(View.GONE); // Ascunde butonul "Next" inițial
+
+        nextButton.setVisibility(View.GONE);
 
         setOptionClickListeners();
 
-        // Se recuperează categoryId și testId din intent
         Intent intent = getIntent();
         String categoryId = intent.getStringExtra("categoryId");
         String testId = intent.getStringExtra("testId");
@@ -107,14 +113,18 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void loadQuestions(String categoryId, String testId) {
+        loadingView.startLoadingAnimation(R.raw.uni_loading, true);
+
         DbQuery.loadQuestions(categoryId, testId, new MyCompleteListener() {
             @Override
             public void onSucces() {
                 if (!DbQuery.g_quesList.isEmpty()) {
-                    // Shuffle the list of questions
-                    Collections.shuffle(DbQuery.g_quesList);
-                    displayQuestion(currentQuestionIndex);
-                    textNumberTests.setText(" of " + DbQuery.g_quesList.size());
+                    preloadImages(() -> {
+                        loadingView.stopLoadingAnimation();
+                        Collections.shuffle(DbQuery.g_quesList);
+                        displayQuestion(currentQuestionIndex);
+                        textNumberTests.setText(" of " + DbQuery.g_quesList.size());
+                    });
                 } else {
                     showNoQuestionsMessage();
                 }
@@ -122,10 +132,12 @@ public class QuestionsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure() {
-                // Handle error loading questions
+
+                loadingView.stopLoadingAnimation();
             }
         });
     }
+
 
     private void setOptionClickListeners() {
         layoutA.setOnClickListener(v -> onOptionClick(layoutA, optionATextView));
@@ -192,12 +204,10 @@ public class QuestionsActivity extends AppCompatActivity {
     private void checkAnswer(String selectedAnswer) {
         currentQuestion.setUserSelectedAnswer(selectedAnswer);
         if (selectedAnswer.equals(currentQuestion.getCorrectAnswer())) {
-            // Răspuns corect: se adaugă punctajul întrebării
             totalScore += currentQuestion.getPoints();
             highlightCorrectAnswer(true);
             explodeOnCorrectAnswer(getSelectedTextView(currentQuestion.getCorrectAnswer()));
         } else {
-            // Răspuns greșit: se adaugă o penalizare minimă
             totalScore += 1;
             highlightCorrectAnswer(false);
         }
@@ -252,6 +262,40 @@ public class QuestionsActivity extends AppCompatActivity {
         nextButton.setText("Finish");
     }
 
+    private void preloadImages(Runnable onPreloadComplete) {
+        List<String> imageUrls = new ArrayList<>();
+        for (QuestionModel question : DbQuery.g_quesList) {
+            if (question.getImage() != null && !question.getImage().isEmpty()) {
+                imageUrls.add(question.getImage());
+            }
+        }
+
+        if (imageUrls.isEmpty()) {
+            onPreloadComplete.run();
+            return;
+        }
+
+        final int[] loadedImages = {0};
+
+        for (String imageUrl : imageUrls) {
+
+            RequestOptions requestOptions = new RequestOptions()
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL);
+
+            Glide.with(this)
+                    .load(imageUrl)
+                    .apply(requestOptions)
+                    .into(questionImage);
+            loadedImages[0]++;
+
+            if (loadedImages[0] == imageUrls.size()) {
+                onPreloadComplete.run();
+            }
+        }
+    }
+
+
     private void displayQuestion(int index) {
         if (index >= 0 && index < DbQuery.g_quesList.size()) {
             QuestionModel question = DbQuery.g_quesList.get(index);
@@ -259,23 +303,19 @@ public class QuestionsActivity extends AppCompatActivity {
 
             questionTextView.setText(question.getQuestion());
 
-            // Creăm o listă cu opțiuni și statusul de corectitudine
             List<Pair<String, Boolean>> options = new ArrayList<>();
             options.add(new Pair<>(question.getOptionA(), question.getCorrectAnswer().equals("A")));
             options.add(new Pair<>(question.getOptionB(), question.getCorrectAnswer().equals("B")));
             options.add(new Pair<>(question.getOptionC(), question.getCorrectAnswer().equals("C")));
             options.add(new Pair<>(question.getOptionD(), question.getCorrectAnswer().equals("D")));
 
-            // Amestecăm lista de opțiuni
             Collections.shuffle(options);
 
-            // Setăm textele opțiunilor și identificăm noul răspuns corect
             optionATextView.setText(options.get(0).first);
             optionBTextView.setText(options.get(1).first);
             optionCTextView.setText(options.get(2).first);
             optionDTextView.setText(options.get(3).first);
 
-            // Găsim indexul nou al răspunsului corect
             for (int i = 0; i < options.size(); i++) {
                 if (options.get(i).second) {
                     currentQuestion.setCorrectAnswer(new String[]{"A", "B", "C", "D"}[i]);
