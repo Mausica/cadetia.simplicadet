@@ -56,18 +56,17 @@ public class QuestionsActivity extends AppCompatActivity {
     private int totalScore = 0; // Punctajul total
     private long remainingTime = QUESTION_TIME;
     private LoadingView loadingView;
+    private int totalQuestions = 0;
     private int correctAnswers = 0; // Numărul de răspunsuri corecte
     private long totalResponseTime = 0; // Timpul total de răspuns
 
 
     private void onQAFinished() {
-        long avgResponseTime = (correctAnswers > 0) ? totalResponseTime / correctAnswers : QUESTION_TIME;
-
-
         Intent intent = new Intent();
         intent.putExtra("totalScore", totalScore);
+        intent.putExtra("totalQuestions", totalQuestions);
+        intent.putExtra("totalTime", totalResponseTime);
         intent.putExtra("correctAnswers", correctAnswers);
-        intent.putExtra("avgResponseTime", avgResponseTime);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
@@ -131,7 +130,8 @@ public class QuestionsActivity extends AppCompatActivity {
                         loadingView.stopLoadingAnimation();
                         Collections.shuffle(DbQuery.g_quesList);
                         displayQuestion(currentQuestionIndex);
-                        textNumberTests.setText(" of " + DbQuery.g_quesList.size());
+                        totalQuestions = DbQuery.g_quesList.size();
+                        textNumberTests.setText(" of " + totalQuestions);
                     });
                 } else {
                     showNoQuestionsMessage();

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,7 +86,8 @@ public class ShowRedeem extends BottomSheetDialogFragment {
         assert bundle != null;
         totalScore = bundle.getInt("totalScore", 0);
         int correctAnswers = bundle.getInt("correctAnswers", 0);
-        float averageTime = bundle.getFloat("averageTime", 0);
+        int totalQuestions = bundle.getInt("totalQuestions", 0);
+        float totalTime = bundle.getFloat("totalTime", 0);
 
         String redeemTitleText = "Congratulations! You've got " + totalScore + " organicoins!";
         TextView redeemTitle = rootView.findViewById(R.id.redeemTitle);
@@ -94,8 +96,9 @@ public class ShowRedeem extends BottomSheetDialogFragment {
         TextView correctAnswersTextView = rootView.findViewById(R.id.correct_answers);
         correctAnswersTextView.setText(correctAnswers + " Correct");
 
+        float totalResponseTime = totalTime / totalQuestions;
         TextView avgResponseTextView = rootView.findViewById(R.id.average_response);
-        avgResponseTextView.setText(String.format(" %.1fs Average", averageTime));
+        avgResponseTextView.setText(String.format(" %.1fs Average", totalResponseTime));
     }
 
 

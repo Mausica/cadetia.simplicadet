@@ -36,7 +36,6 @@ import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.Task;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,8 +204,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
 
     @Override
     public void onQuizClick(String categoryId, String testId) {
-        Log.e(TAG, "Category ID: " + categoryId + ", Test ID: " + testId);
-
         // Get the context from categoryRecyclerView
         Context context = categoryRecyclerView.getContext();
         Intent intent = new Intent(context, QuestionsActivity.class);
@@ -218,13 +215,16 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         startActivityForResult(intent, 1);
     }
 
-    private void showRedeemDialog(int totalScore, int correctAnswers, float averageTime) {
+    private void showRedeemDialog(int totalScore, int correctAnswers, int totalQuestions, float totalTime) {
         if (totalScore > 0) {
             ShowRedeem bottomSheetFragment = new ShowRedeem();
             Bundle bundle = new Bundle();
+
             bundle.putInt("totalScore", totalScore);
+            bundle.putInt("totalQuestions", totalQuestions);
+            bundle.putFloat("totalTime", totalTime);
             bundle.putInt("correctAnswers", correctAnswers);
-            bundle.putFloat("averageTime", averageTime);
+
             bottomSheetFragment.setArguments(bundle);
             bottomSheetFragment.show(requireActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
         }
@@ -238,8 +238,10 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
             int totalScore = data.getIntExtra("totalScore", 0);
             int correctAnswers = data.getIntExtra("correctAnswers", 0);
-            float averageTime = data.getFloatExtra("averageTime", 0);
-            handler.postDelayed(() -> showRedeemDialog(totalScore, correctAnswers, averageTime), 1000);
+            int totalQuestions = data.getIntExtra("totalQuestions", 0);
+            long totalTime = data.getLongExtra("totalTime", 0L);
+            float totalResponseTime = (float) totalTime / 1000;
+            handler.postDelayed(() -> showRedeemDialog(totalScore, correctAnswers, totalQuestions, totalResponseTime), 1000);
 
 
             // Update the total score in the database
