@@ -17,7 +17,7 @@
             android:id="@+id/imageQuizz"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_120sdp"
-            android:layout_marginBottom="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:cropToPadding="false"
@@ -47,13 +47,12 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/created_profile"
-            android:layout_width="@dimen/_18sdp"
-            android:layout_height="@dimen/_18sdp"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
             android:layout_marginStart="@dimen/_1sdp"
             android:layout_marginTop="@dimen/_1sdp"
             android:layout_marginBottom="@dimen/_1sdp"
             android:padding="@dimen/_2sdp"
-            android:src="@raw/guest"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,14 +65,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Anonym User"
+            android:text=""
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/_4sdp"
             android:layout_marginEnd="@dimen/_4sdp"
-            android:fontFamily="@font/circular_medium"
+            android:fontFamily="@font/circular_bold"
             android:includeFontPadding="false"
             android:textColor="@color/light"
-            android:textSize="@dimen/_7ssp"/>
+            android:textSize="@dimen/_8ssp"/>
     </LinearLayout>
 
 </LinearLayout>

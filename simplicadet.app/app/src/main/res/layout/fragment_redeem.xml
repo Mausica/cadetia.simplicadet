@@ -67,7 +67,7 @@
                     android:layout_centerHorizontal="true"
                     android:textAlignment="center"
                     android:maxLines="3"
-                    android:text="Congratulations! You've got X organicoins!"
+                    android:text="Congratulations! You've got X points!"
                     android:layout_below="@+id/redeemAnimationView"
                     android:layout_marginBottom="@dimen/_3sdp"
                     android:fontFamily="@font/circular_medium"
@@ -89,7 +89,7 @@
                         android:id="@+id/correct_answers"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="5/5 Correct"
+                        android:text="5 Correct"
                         android:textColor="?attr/textLight"
                         android:fontFamily="@font/circular_medium"
                         android:textSize="@dimen/_14ssp" />
