@@ -1,7 +1,9 @@
 package com.cadetia.simplicadet.database;
 
+import android.content.Context;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.cadetia.simplicadet.model.JournalEntry;
 import com.google.firebase.firestore.CollectionReference;
@@ -123,7 +125,7 @@ public class DbQuery {
                 });
     }
 
-    public static void loadCategories(MyCompleteListener listener) {
+    public static void loadCategories(Context context, MyCompleteListener listener) {
         g_catList.clear();
         Log.e(TAG, "Starting loadCategories");
 
@@ -141,17 +143,18 @@ public class DbQuery {
                     for (QueryDocumentSnapshot catDoc : categorySnapshots) {
                         String catID = catDoc.getId();
                         int noOfTests = catDoc.contains("noTests") ? catDoc.getLong("noTests").intValue() : 0;
-
-                        // Obținem lista de subcolecții (teste) direct din document
                         List<String> subCollectionNames = (List<String>) catDoc.get("subcollections");
 
                         if (subCollectionNames == null || subCollectionNames.isEmpty()) {
                             Log.e(TAG, "No subcollections found for category: " + catID);
-                            processedCategories.incrementAndGet();
-                            return;
+                            if (processedCategories.incrementAndGet() == totalCategories) {
+                                listener.onSucces();
+                            }
+                            continue;
                         }
 
                         List<Quizz> quizzList = new ArrayList<>();
+                        AtomicInteger processedTests = new AtomicInteger(0);
 
                         for (String subCollectionName : subCollectionNames) {
                             g_firestore.collection("QUIZES").document(catID)
@@ -161,26 +164,35 @@ public class DbQuery {
                                     .addOnSuccessListener(infoDoc -> {
                                         if (infoDoc.exists()) {
                                             String quizzImage = infoDoc.getString("imageUrl");
-                                            String createdBy =  infoDoc.getString("createdBy");
+                                            String createdBy = infoDoc.getString("createdBy");
                                             Quizz quizz = new Quizz(subCollectionName, quizzImage, subCollectionName, true, createdBy);
                                             quizzList.add(quizz);
-
-                                            if (quizzList.size() == subCollectionNames.size()) {
-                                                createCategory(catID, noOfTests, quizzList, processedCategories, totalCategories, listener);
-                                            }
                                         } else {
                                             Log.e(TAG, "Document 'Info' does not exist in subcollection: " + subCollectionName);
+                                            Toast.makeText(context, "Incompatible quiz: " + subCollectionName, Toast.LENGTH_LONG).show();
+                                        }
+
+                                        if (processedTests.incrementAndGet() == subCollectionNames.size()) {
+                                            createCategory(catID, noOfTests, quizzList, processedCategories, totalCategories, listener);
                                         }
                                     })
-                                    .addOnFailureListener(e -> Log.e(TAG, "Error fetching 'Info' document: " + e.getMessage()));
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Error fetching 'Info' document: " + e.getMessage());
+                                        if (processedTests.incrementAndGet() == subCollectionNames.size()) {
+                                            createCategory(catID, noOfTests, quizzList, processedCategories, totalCategories, listener);
+                                        }
+                                        Toast.makeText(context, "Error fetching 'Info' document", Toast.LENGTH_LONG).show();
+                                    });
                         }
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error loading categories: " + e.getMessage());
+                    Toast.makeText(context, "Error loading categories", Toast.LENGTH_LONG).show();
                     listener.onFailure();
                 });
     }
+
 
 
     private static void createCategory(String catID, int noTests, List<Quizz> quizzes,

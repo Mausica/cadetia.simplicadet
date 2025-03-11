@@ -114,13 +114,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             if (data != null) {
-                Uri fileUri = data.getData(); // URI-ul fișierului selectat
-
-                // Apelează metoda de procesare a fișierului Excel
+                Uri fileUri = data.getData();
                 ExcelUpload excelUpload = new ExcelUpload();
                 excelUpload.uploadQuestions(this, fileUri);
-
-                Toast.makeText(this, "Uploading file: " + fileUri.getPath(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -161,17 +157,15 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (itemId == R.id.drawer_new) {
             Toast.makeText(this, "What's new clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_help) {
-            Toast.makeText(this, "Help clicked", Toast.LENGTH_SHORT).show();
+            // Navigate to Community fragment // TO DO - MAPPING RANDOMLY TO HOME/SEARCH
+            navController.navigate(R.id.navigation_community);
         } else if (itemId == R.id.drawer_settings) {
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_upload) {
-            // Navigate to Community fragment // TO DO - MAPPING RANDOMLY TO HOME/SEARCH
-            //navController.navigate(R.id.navigation_community);
-            // Triggering the file picker to select only Excel files
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); // For .xlsx files
+            intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-            startActivityForResult(intent, 1); // Request code 1 for file selection
+            startActivityForResult(intent, 1);
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);

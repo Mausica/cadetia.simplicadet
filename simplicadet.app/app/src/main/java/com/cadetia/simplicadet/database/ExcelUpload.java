@@ -28,10 +28,6 @@ public class ExcelUpload {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
 
-            String lastCategory = "";
-            String lastTestTitle = "";
-            String createdBy = "";
-            String quizImageUrl = "";
             Map<String, Set<String>> categoryTestsMap = new HashMap<>();
 
             for (Row row : sheet) {
@@ -53,51 +49,50 @@ public class ExcelUpload {
                 categoryTestsMap.putIfAbsent(category, new HashSet<>());
                 categoryTestsMap.get(category).add(testTitle);
 
-                if (!testTitle.equals(lastTestTitle)) {
-                    lastTestTitle = testTitle;
-                    createdBy = row.getCell(2) != null ? row.getCell(2).getStringCellValue().trim() : "";
-                    quizImageUrl = row.getCell(3) != null ? row.getCell(3).getStringCellValue().trim() : "";
-
-                    Map<String, Object> quizInfo = new HashMap<>();
-                    quizInfo.put("createdBy", createdBy);
-                    quizInfo.put("imageUrl", quizImageUrl);
-
-                    db.collection("QUIZES")
-                            .document(category)
-                            .collection(testTitle)
-                            .document("Info")
-                            .set(quizInfo);
-                }
-
-                if (row.getCell(4) == null || row.getCell(6) == null || row.getCell(7) == null || row.getCell(8) == null || row.getCell(9) == null || row.getCell(10) == null || row.getCell(11) == null) {
+                if (row.getCell(4) == null) {
                     Log.e("ExcelUpload", "Întrebare ignorată din cauza valorilor lipsă");
                     continue;
                 }
 
                 String question = row.getCell(4).getStringCellValue().trim();
-                String imageUrl = row.getCell(5) != null ? row.getCell(5).getStringCellValue().trim() : "";
-                String option1 = row.getCell(6).getStringCellValue().trim();
-                String option2 = row.getCell(7).getStringCellValue().trim();
-                String option3 = row.getCell(8).getStringCellValue().trim();
-                String option4 = row.getCell(9).getStringCellValue().trim();
-                int correctAnswerIndex = (int) row.getCell(10).getNumericCellValue();
-                int points = (int) row.getCell(11).getNumericCellValue();
 
-                List<String> options = List.of(option1, option2, option3, option4);
-
-                Map<String, Object> questionData = new HashMap<>();
-                questionData.put("question", question);
-                questionData.put("imageUrl", imageUrl);
-                questionData.put("options", options);
-                questionData.put("correctAnswerIndex", correctAnswerIndex);
-                questionData.put("points", points);
-
+                // Verifică dacă întrebarea există deja în Firestore
                 db.collection("QUIZES")
                         .document(category)
                         .collection(testTitle)
-                        .add(questionData)
-                        .addOnSuccessListener(documentReference -> Log.d("ExcelUpload", "Întrebare adăugată: " + documentReference.getId()))
-                        .addOnFailureListener(e -> Log.e("ExcelUpload", "Eroare la încărcare", e));
+                        .whereEqualTo("question", question)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            if (queryDocumentSnapshots.isEmpty()) {
+                                // Dacă întrebarea nu există, o adăugăm
+                                String imageUrl = row.getCell(5) != null ? row.getCell(5).getStringCellValue().trim() : "";
+                                String option1 = row.getCell(6).getStringCellValue().trim();
+                                String option2 = row.getCell(7).getStringCellValue().trim();
+                                String option3 = row.getCell(8).getStringCellValue().trim();
+                                String option4 = row.getCell(9).getStringCellValue().trim();
+                                int correctAnswerIndex = (int) row.getCell(10).getNumericCellValue();
+                                int points = (int) row.getCell(11).getNumericCellValue();
+
+                                List<String> options = List.of(option1, option2, option3, option4);
+
+                                Map<String, Object> questionData = new HashMap<>();
+                                questionData.put("question", question);
+                                questionData.put("imageUrl", imageUrl);
+                                questionData.put("options", options);
+                                questionData.put("correctAnswerIndex", correctAnswerIndex);
+                                questionData.put("points", points);
+
+                                db.collection("QUIZES")
+                                        .document(category)
+                                        .collection(testTitle)
+                                        .add(questionData)
+                                        .addOnSuccessListener(documentReference -> Log.d("ExcelUpload", "Întrebare adăugată: " + documentReference.getId()))
+                                        .addOnFailureListener(e -> Log.e("ExcelUpload", "Eroare la încărcare", e));
+                            } else {
+                                Log.d("ExcelUpload", "Întrebare deja existentă: " + question);
+                            }
+                        })
+                        .addOnFailureListener(e -> Log.e("ExcelUpload", "Eroare la verificarea existenței întrebării", e));
             }
 
             for (Map.Entry<String, Set<String>> entry : categoryTestsMap.entrySet()) {
@@ -118,4 +113,5 @@ public class ExcelUpload {
             Toast.makeText(context, "Eroare la încărcare!", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

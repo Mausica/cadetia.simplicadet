@@ -173,7 +173,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     }
 
     private void loadCategories() {
-        DbQuery.loadCategories(new MyCompleteListener() {
+        DbQuery.loadCategories(requireContext(), new MyCompleteListener() {
             @Override
             public void onSucces() {
                 List<CategoryModel> categoryList = DbQuery.g_catList;
