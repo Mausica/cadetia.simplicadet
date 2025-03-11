@@ -38,7 +38,7 @@
             android:layout_marginTop="@dimen/_3sdp"
             android:layout_marginBottom="@dimen/_3sdp"
             android:padding="@dimen/_2sdp"
-            android:src="@raw/person4"
+            android:src="@raw/guest"
             app:shapeAppearanceOverlay="@style/circleImageView" />
     </LinearLayout>
 
