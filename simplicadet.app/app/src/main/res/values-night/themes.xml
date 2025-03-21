@@ -26,6 +26,8 @@
         <item name="backgroundDark">@color/background_d_dark</item>
         <item name="backgroundNormal">@color/background_d_normal</item>
 
+        <item name="transparentLight">#0A0A0A</item>
+
         <item name="textLight">@color/text_l_light</item>
         <item name="textDark">@color/text_l_dark</item>
         <item name="textNormal">@color/white</item>

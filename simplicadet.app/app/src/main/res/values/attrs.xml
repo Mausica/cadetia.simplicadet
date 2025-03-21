@@ -4,6 +4,8 @@
     <attr name="backgroundLight" format="color" />
     <attr name="backgroundDark" format="color" />
 
+    <attr name="transparentLight" format="color" />
+
     <attr name="textNormal" format="color" />
     <attr name="textLight" format="color" />
     <attr name="textDark" format="color" />

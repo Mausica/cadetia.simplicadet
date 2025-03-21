@@ -10,7 +10,7 @@
         android:text="Cat Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:maxLines="1"
         android:layout_marginBottom="@dimen/_5sdp"
         android:layout_gravity="bottom"

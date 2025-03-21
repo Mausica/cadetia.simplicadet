@@ -10,7 +10,7 @@
     android:layout_height="wrap_content"
     android:maxHeight="@dimen/_10sdp"
     android:paddingBottom="@dimen/_12sdp"
-    android:background="@drawable/home_background_note">
+    android:background="@drawable/home_background_quizz">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/journal_image"

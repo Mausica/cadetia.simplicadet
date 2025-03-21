@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:alpha="1"
     android:layout_marginEnd="@dimen/_12sdp"
-    android:paddingBottom="@dimen/_12sdp">
+    android:background="@drawable/home_background_quizz">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,8 +15,9 @@
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imageQuizz"
+            android:padding="@dimen/_4sdp"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_120sdp"
+            android:layout_height="@dimen/_90sdp"
             android:layout_marginBottom="@dimen/_2sdp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
@@ -33,7 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:lineSpacingExtra="@dimen/_2sdp"
-        android:layout_marginTop="@dimen/_6sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:layout_marginEnd="@dimen/_6sdp"
         android:maxLines="2"
         android:layout_marginBottom="@dimen/_3sdp"
         android:fontFamily="@font/circular_medium"
@@ -43,21 +46,18 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:layout_marginEnd="@dimen/_6sdp"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:layout_marginBottom="@dimen/_9sdp"
+        android:layout_gravity="bottom">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/created_profile"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:layout_marginStart="@dimen/_1sdp"
-            android:layout_marginTop="@dimen/_1sdp"
-            android:layout_marginBottom="@dimen/_1sdp"
-            android:padding="@dimen/_2sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.75"
+            android:layout_width="@dimen/_12sdp"
+            android:layout_height="@dimen/_12sdp"
+            android:layout_gravity="center"
             app:shapeAppearanceOverlay="@style/circleImageView" />
 
         <TextView
@@ -66,13 +66,23 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text=""
+            android:layout_marginTop="@dimen/_2sdp"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_4sdp"
             android:fontFamily="@font/circular_bold"
             android:includeFontPadding="false"
             android:textColor="@color/light"
-            android:textSize="@dimen/_8ssp"/>
+            android:textSize="@dimen/_9ssp"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/verified_profile"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_1sdp"
+            android:src="@raw/verified"
+            android:layout_gravity="center"
+            app:shapeAppearanceOverlay="@style/circleImageView" />
     </LinearLayout>
 
 </LinearLayout>
