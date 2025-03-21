@@ -58,19 +58,25 @@
     <color name="secondary">#2C2C2C</color>
     <color name="secondary_light">#D3D3D3</color>
 
-    <color name="primaryb">#626ad9</color>
-    <color name="primary_transparentb">#6257cd</color>
+
+    <color name="green">#D91EB955</color>
+    <color name="green_transparent">#8C009B37</color>
+
+    <color name="red">#D9FA5A50</color>
+    <color name="red_transparent">#D9D23C28</color>
 
     <color name="green_light">#1ED760</color>
     <color name="green_medium">#1DB954</color>
     <color name="green_dark">#801DB954</color>
 
-    <color name="blue">#4100F5</color>
-    <color name="green">#5896e3</color>
-    <color name="yellow">#DDBA4E</color>
-    <color name="red">#D9FA5750</color>
-    <color name="red_transparent">#80FA5750</color>
 
+
+
+
+    <color name="primaryb">#626ad9</color>
+    <color name="primary_transparentb">#6257cd</color>
+    <color name="blue">#4100F5</color>
+    <color name="yellow">#DDBA4E</color>
 
     <color name="first">#FEBB3A</color>
     <color name="first_light">#F8C96F</color>

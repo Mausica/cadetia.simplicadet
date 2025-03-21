@@ -81,7 +81,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
                 if (task.isComplete()) {
                     glowedView.setBackgroundResource(R.drawable.glow_effect_green);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        glowedView.setOutlineSpotShadowColor(R.color.green);
+                        glowedView.setOutlineSpotShadowColor(R.color.primary);
                         main_title.setPaintFlags(main_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }
                 } else {
@@ -103,7 +103,7 @@ public class MainTaskAdapter extends RecyclerView.Adapter<MainTaskAdapter.TaskVi
                     if (isChecked) {
                         glowedView.setBackgroundResource(R.drawable.glow_effect_green);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                            glowedView.setOutlineSpotShadowColor(R.color.green);
+                            glowedView.setOutlineSpotShadowColor(R.color.primary);
                             main_title.setPaintFlags(main_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         }
                     } else {
