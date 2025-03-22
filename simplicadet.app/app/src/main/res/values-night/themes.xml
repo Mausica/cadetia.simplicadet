@@ -72,7 +72,7 @@
 
     <!-- Shape Styles -->
     <style name="SquareShapeOverlay">
-        <item name="cornerSize">@dimen/_14sdp</item>
+        <item name="cornerSize">@dimen/_16sdp</item>
     </style>
 
     <style name="circleImageView">

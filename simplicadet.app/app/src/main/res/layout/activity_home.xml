@@ -29,27 +29,6 @@
         android:layout_height="match_parent"
         android:id="@+id/container">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="0dp"
-            android:layout_alignParentBottom="true"
-            android:background="?attr/bottomBarGradient"
-            app:backgroundTint="@null"
-            app:itemBackground="@null"
-            app:labelVisibilityMode="labeled"
-            app:itemHorizontalTranslationEnabled="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:itemTextAppearanceActive="@style/CustomActiveBottomNavigationTextAppearance"
-            app:itemTextAppearanceInactive="@style/CustomInactiveBottomNavigationTextAppearance"
-            app:itemIconTint="?attr/colorSecondary"
-            app:itemTextColor="?attr/textAppearanceBody1"
-            app:menu="@menu/bottom_nav_menu"
-            android:layout_gravity="bottom"/>
-
         <fragment
             android:id="@+id/nav_host_fragment_activity_home"
             android:name="androidx.navigation.fragment.NavHostFragment"
@@ -59,6 +38,86 @@
             app:navGraph="@navigation/mobile_navigation2"
             tools:ignore="FragmentTagUsage" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:paddingStart="@dimen/_16sdp"
+            android:paddingEnd="@dimen/_16sdp"
+            android:paddingTop="@dimen/_12sdp"
+            android:paddingBottom="@dimen/_8sdp">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="@dimen/_210sdp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/nav_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_24sdp"
+                    app:cardElevation="@dimen/_6sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/fab_container"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+
+                    <com.google.android.material.bottomnavigation.BottomNavigationView
+                        android:id="@+id/nav_view"
+                        android:paddingEnd="@dimen/_8sdp"
+                        android:paddingStart="@dimen/_8sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/backgroundLight"
+                        app:backgroundTint="@null"
+                        app:itemBackground="@null"
+                        app:labelVisibilityMode="unlabeled"
+                        app:itemHorizontalTranslationEnabled="true"
+                        app:itemIconSize="@dimen/_19sdp"
+                        app:itemIconTint="?attr/colorSecondary"
+                        app:menu="@menu/bottom_nav_menu" />
+                </androidx.cardview.widget.CardView>
+
+                <FrameLayout
+                    android:id="@+id/fab_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/_12sdp"
+                    app:layout_constraintBottom_toBottomOf="@id/nav_card"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/nav_card"
+                    app:layout_constraintTop_toTopOf="@id/nav_card"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fabMain"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        app:layout_anchor="@id/nav_view"
+                        app:backgroundTint="@color/primary"
+                        app:fabCustomSize="@dimen/_42sdp"
+                        app:maxImageSize="@dimen/_20sdp"
+                        app:rippleColor="@color/blur"
+                        app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
+                        app:srcCompat="@drawable/home_ic_plus"
+                        android:elevation="8dp"
+                        android:tint="@android:color/black"
+                        android:contentDescription="@string/home_add_note" />
+                </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.drawerlayout.widget.DrawerLayout>
