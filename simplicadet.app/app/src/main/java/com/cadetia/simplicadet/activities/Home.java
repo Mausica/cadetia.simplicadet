@@ -6,7 +6,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -19,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.WindowCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -27,7 +25,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
-import com.cadetia.simplicadet.database.ExcelUpload;
+import com.cadetia.simplicadet.database.TextUpload;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
@@ -107,21 +105,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         handler.postDelayed(() -> navigationDrawer(window), 100);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            if (data != null) {
-                Uri fileUri = data.getData();
-                ExcelUpload excelUpload = new ExcelUpload();
-                excelUpload.uploadQuestions(this, fileUri);
-            }
-        }
-    }
-
-
     private void navigationDrawer(Window view) {
         NavigationView navigationView = this.findViewById(R.id.navigation_view);
         drawerLayout = this.findViewById(R.id.drawer_layout);
@@ -162,14 +145,43 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (itemId == R.id.drawer_settings) {
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_upload) {
+            // Modificare aici pentru a permite și fișiere text
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {"application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+            intent.setType("*/*");
+            String[] mimeTypes = {"text/plain", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             startActivityForResult(intent, 1);
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri fileUri = data.getData();
+                if (fileUri != null) {
+                    String mimeType = getContentResolver().getType(fileUri);
+
+                    // Verifică tipul fișierului
+                    if (mimeType != null && mimeType.contains("text/plain")) {
+                        // Procesează fișier text
+                        TextUpload textUpload = new TextUpload();
+                        textUpload.uploadQuestionsFromText(this, fileUri);
+                    } else if (mimeType != null && (mimeType.contains("excel") || mimeType.contains("sheet"))) {
+                        // Procesează fișier Excel
+                        // Dacă vrei să păstrezi și suportul pentru Excel, adaugă aici codul pentru ExcelUpload
+                        Toast.makeText(this, "Fișierele Excel nu mai sunt acceptate. Folosiți formatul text.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Format de fișier neacceptat. Folosiți fișiere text (.txt).", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        }
     }
 
     @Override
