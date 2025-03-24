@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cadetia.simplicadet.R;
@@ -53,14 +52,44 @@ public class HomeFragment3 extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         zoomLayout = view.findViewById(R.id.zoomLayout);
-        tvTotalCount = view.findViewById(R.id.tv_total_count);
-        tvTotalCount.setText("Total: " + TOTAL_SOLDIERS);
 
-        LinearLayout parentLayout = new LinearLayout(requireContext());
-        parentLayout.setOrientation(LinearLayout.HORIZONTAL);
+        // Main vertical container
+        LinearLayout mainContainer = new LinearLayout(requireContext());
+        mainContainer.setOrientation(LinearLayout.VERTICAL);
+        mainContainer.setGravity(Gravity.CENTER_HORIZONTAL);
 
         ViewGroup mindMapContainer = view.findViewById(R.id.mindMapContainer);
-        mindMapContainer.addView(parentLayout);
+        mindMapContainer.addView(mainContainer);
+
+        // COMPANY header (centered, 600px width)
+        TextView companyHeader = createHeaderView("COMPANY", 600);
+        mainContainer.addView(companyHeader);
+
+        // COMPANY stats (centered below header)
+        TextView companyStats = new TextView(requireContext());
+        companyStats.setGravity(Gravity.CENTER);
+        companyStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        companyStats.setTypeface(getResources().getFont(R.font.circular_bold));
+        companyStats.setPadding(10, 10, 10, 20);
+        updateCompanyStats(companyStats);
+
+        LinearLayout.LayoutParams statsParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        statsParams.gravity = Gravity.CENTER_HORIZONTAL;
+        companyStats.setLayoutParams(statsParams);
+        mainContainer.addView(companyStats);
+
+        // Container for all platoons (now using LinearLayout)
+        LinearLayout platoonsContainer = new LinearLayout(requireContext());
+        platoonsContainer.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams platoonsParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        platoonsContainer.setLayoutParams(platoonsParams);
+        mainContainer.addView(platoonsContainer);
 
         int soldierIndex = 0;
 
@@ -74,28 +103,12 @@ public class HomeFragment3 extends Fragment {
             platoonContainer.setPadding(20, 20, 20, 20);
 
             // Create Platoon Header
-            TextView platoonHeader = new TextView(requireContext());
-            platoonHeader.setText("PLATOON " + (i + 1));
-            platoonHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-            platoonHeader.setTypeface(getResources().getFont(R.font.circular_bold));
-            platoonHeader.setGravity(Gravity.CENTER);
-            platoonHeader.setPadding(10, 10, 10, 10);
-
-            GradientDrawable drawable = new GradientDrawable();
-            drawable.setShape(GradientDrawable.RECTANGLE);
-            drawable.setCornerRadius(TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
-
-            int backgroundColor = getThemeColor(R.attr.backgroundLight);
-            drawable.setColor(backgroundColor);
-            platoonHeader.setBackground(drawable);
-
-            LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(330, ViewGroup.LayoutParams.WRAP_CONTENT);
-            headerParams.setMargins(0, 0, 0, 10);
-            platoonHeader.setLayoutParams(headerParams);
+            TextView platoonHeader = createHeaderView("PLATOON " + (i + 1), 330);
+            platoonContainer.addView(platoonHeader);
 
             TextView platoonStats = new TextView(requireContext());
             updatePlatoonStats(i, platoonStats);
+            platoonContainer.addView(platoonStats);
 
             GridLayout gridLayout = new GridLayout(requireContext());
             gridLayout.setColumnCount(3);
@@ -115,18 +128,41 @@ public class HomeFragment3 extends Fragment {
 
                 soldierView.setTag(R.id.soldier_state_key, STATE_PRESENT);
                 soldierView.setTag(R.id.platoon_index_key, i);
-                soldierView.setOnClickListener(v -> cycleState(v, platoonStats));
+                soldierView.setOnClickListener(v -> {
+                    cycleState(v, platoonStats);
+                    updateCompanyStats(companyStats);
+                });
                 gridLayout.addView(soldierView);
             }
 
-            platoonContainer.addView(platoonHeader);
-            platoonContainer.addView(platoonStats);
             platoonContainer.addView(gridLayout);
-            parentLayout.addView(platoonContainer);
+            platoonsContainer.addView(platoonContainer);
         }
     }
 
+    private TextView createHeaderView(String text, int width) {
+        TextView header = new TextView(requireContext());
+        header.setText(text);
+        header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        header.setTypeface(getResources().getFont(R.font.circular_bold));
+        header.setGravity(Gravity.CENTER);
+        header.setPadding(10, 10, 10, 10);
 
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.RECTANGLE);
+        drawable.setCornerRadius(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
+        drawable.setColor(getThemeColor(R.attr.backgroundLight));
+        header.setBackground(drawable);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.setMargins(0, 0, 0, 10);
+        header.setLayoutParams(params);
+
+        return header;
+    }
 
     private void cycleState(View v, TextView platoonStats) {
         int platoonIndex = (int) v.getTag(R.id.platoon_index_key);
@@ -169,18 +205,30 @@ public class HomeFragment3 extends Fragment {
         updatePlatoonStats(platoonIndex, platoonStats);
     }
 
-    private int getThemeColor(int attr) {
-        TypedValue typedValue = new TypedValue();
-        requireContext().getTheme().resolveAttribute(attr, typedValue, true);
-        return typedValue.data;
-    }
-
-
     private void updatePlatoonStats(int platoonIndex, TextView platoonStats) {
         platoonStats.setGravity(Gravity.CENTER);
         platoonStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         platoonStats.setTypeface(getResources().getFont(R.font.circular_bold));
         platoonStats.setPadding(10, 10, 10, 10);
         platoonStats.setText("P: " + presentCount[platoonIndex] + " H: " + homeCount[platoonIndex] + " A: " + absentCount[platoonIndex]);
+    }
+
+    private void updateCompanyStats(TextView companyStats) {
+        int totalPresent = TOTAL_SOLDIERS; // Initialize with TOTAL_SOLDIERS
+        int totalHome = 0;
+        int totalAbsent = 0;
+        for (int i = 0; i < PLATOON_COUNT; i++) {
+            totalHome += homeCount[i];
+            totalAbsent += absentCount[i];
+        }
+        // Subtract absent and home soldiers from total present
+        totalPresent -= (totalHome + totalAbsent);
+        companyStats.setText("P: " + totalPresent + " H: " + totalHome + " A: " + totalAbsent);
+    }
+
+    private int getThemeColor(int attr) {
+        TypedValue typedValue = new TypedValue();
+        requireContext().getTheme().resolveAttribute(attr, typedValue, true);
+        return typedValue.data;
     }
 }
