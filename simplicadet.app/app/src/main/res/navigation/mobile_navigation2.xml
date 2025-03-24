@@ -53,7 +53,7 @@
         tools:layout="@layout/fragment_search" />
 
     <fragment
-        android:id="@+id/navigation_community"
+        android:id="@+id/navigation_liked"
         android:name="com.cadetia.simplicadet.ui.community.CommunityFragment"
         android:label="Community"
         tools:layout="@layout/fragment_community"/>

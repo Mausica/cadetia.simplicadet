@@ -78,7 +78,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         navView.setItemIconTintList(colorStateList);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_search)
+                R.id.navigation_home, R.id.navigation_search, R.id.navigation_liked)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
@@ -141,7 +141,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             Toast.makeText(this, "What's new clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_help) {
             // Navigate to Community fragment // TO DO - MAPPING RANDOMLY TO HOME/SEARCH
-            navController.navigate(R.id.navigation_community);
+            // navController.navigate(R.id.navigation_liked);
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.google.com/"));
+            startActivity(browserIntent);
+            
         } else if (itemId == R.id.drawer_settings) {
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_upload) {

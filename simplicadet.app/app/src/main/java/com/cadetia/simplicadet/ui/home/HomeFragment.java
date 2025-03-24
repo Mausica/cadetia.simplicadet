@@ -115,8 +115,10 @@ public class HomeFragment extends Fragment{
             button.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         } else {
             button.setBackgroundResource(R.drawable.button_social);
-            TypedArray typedArray = requireContext().getTheme().obtainStyledAttributes(new int[]{com.google.android.material.R.attr.textAppearanceBody1});
-            int textColor = typedArray.getColor(0, ContextCompat.getColor(requireContext(), R.color.white)); // Default to white if attribute is not found
+            TypedArray typedArray = requireContext().getTheme().obtainStyledAttributes(
+                    new int[]{com.google.android.material.R.attr.textAppearanceBody1}
+            );
+            int textColor = typedArray.getColor(0, ContextCompat.getColor(requireContext(), R.color.white));
             typedArray.recycle();
             button.setTextColor(textColor);
         }
