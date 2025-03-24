@@ -177,6 +177,10 @@ public class HomeFragment3 extends Fragment {
 
 
     private void updatePlatoonStats(int platoonIndex, TextView platoonStats) {
+        platoonStats.setGravity(Gravity.CENTER);
+        platoonStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        platoonStats.setTypeface(getResources().getFont(R.font.circular_bold));
+        platoonStats.setPadding(10, 10, 10, 10);
         platoonStats.setText("P: " + presentCount[platoonIndex] + " H: " + homeCount[platoonIndex] + " A: " + absentCount[platoonIndex]);
     }
 }
