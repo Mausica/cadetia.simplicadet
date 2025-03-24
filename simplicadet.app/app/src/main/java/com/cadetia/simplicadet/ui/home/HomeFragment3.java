@@ -1,6 +1,9 @@
 package com.cadetia.simplicadet.ui.home;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,25 +110,47 @@ public class HomeFragment3 extends Fragment {
         int newState = (currentState + 1) % 3;
         v.setTag(R.id.soldier_state_key, newState);
 
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.RECTANGLE);
+        drawable.setCornerRadius(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
+
+        int backgroundColor;
+
         switch (newState) {
             case STATE_PRESENT:
-                v.setBackgroundResource(R.drawable.formation_button_background);
+                backgroundColor = getThemeColor(R.attr.backgroundLight);
                 presentCount[platoonIndex]++;
+                absentCount[platoonIndex]--;
                 break;
+
             case STATE_HOME:
-                v.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_blue_dark));
+                backgroundColor = getThemeColor(R.attr.backgroundDark);
                 presentCount[platoonIndex]--;
                 homeCount[platoonIndex]++;
                 break;
+
             case STATE_ABSENT:
-                v.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light));
+                backgroundColor = Color.parseColor("#D9FA5A50");
                 homeCount[platoonIndex]--;
                 absentCount[platoonIndex]++;
                 break;
+
+            default:
+                return;
         }
 
+        drawable.setColor(backgroundColor);
+        v.setBackground(drawable);
         updatePlatoonStats(platoonIndex, platoonStats);
     }
+
+    private int getThemeColor(int attr) {
+        TypedValue typedValue = new TypedValue();
+        requireContext().getTheme().resolveAttribute(attr, typedValue, true);
+        return typedValue.data;
+    }
+
 
     private void updatePlatoonStats(int platoonIndex, TextView platoonStats) {
         platoonStats.setText("P: " + presentCount[platoonIndex] + " H: " + homeCount[platoonIndex] + " A: " + absentCount[platoonIndex]);

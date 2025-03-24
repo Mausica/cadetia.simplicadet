@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/formation_button_background"
+    android:layout_marginBottom="@dimen/_4sdp"
+    android:layout_marginRight="@dimen/_4sdp"
     android:padding="4dp">
 
     <TextView
@@ -12,6 +14,8 @@
         android:layout_height="wrap_content"
         android:text="RM"
         android:textAlignment="center"
-        android:textSize="12sp"
+        android:layout_gravity="center"
+        android:fontFamily="@font/circular_bold"
+        android:textSize="@dimen/_10ssp"
         android:textStyle="bold"/>
 </LinearLayout>

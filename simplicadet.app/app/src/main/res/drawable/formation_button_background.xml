@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Present State (Transparent Light) -->
-    <item android:state_pressed="false" android:state_checked="false">
+    <item>
         <shape android:shape="rectangle">
-            <solid android:color="?attr/transparentLight"/>
-            <corners android:radius="8dp"/>
-        </shape>
-    </item>
-
-    <!-- Home State (Background Dark) -->
-    <item android:state_checked="true" android:state_pressed="false">
-        <shape android:shape="rectangle">
-            <solid android:color="?attr/backgroundDark"/>
-            <corners android:radius="8dp"/>
-        </shape>
-    </item>
-
-    <!-- Absent State (Custom Red) -->
-    <item android:state_checked="true" android:state_pressed="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#D9FA5A50"/>
+            <solid android:color="?attr/backgroundLight"/>
             <corners android:radius="8dp"/>
         </shape>
     </item>
