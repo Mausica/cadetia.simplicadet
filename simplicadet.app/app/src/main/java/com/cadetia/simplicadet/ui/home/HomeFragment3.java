@@ -16,13 +16,10 @@ import androidx.fragment.app.Fragment;
 import com.cadetia.simplicadet.R;
 import com.otaliastudios.zoom.ZoomLayout;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HomeFragment3 extends Fragment {
 
     private static final int PLATOON_COUNT = 6;
-    private static final int SOLDIERS_PER_PLATOON = 27; // 3 x 9 grid
+    private static final int SOLDIERS_PER_PLATOON = 27;
     private static final int TOTAL_SOLDIERS = PLATOON_COUNT * SOLDIERS_PER_PLATOON;
 
     private static final String[] SOLDIERS = {
@@ -37,6 +34,9 @@ public class HomeFragment3 extends Fragment {
 
     private ZoomLayout zoomLayout;
     private TextView tvTotalCount;
+    private final int[] presentCount = new int[PLATOON_COUNT];
+    private final int[] homeCount = new int[PLATOON_COUNT];
+    private final int[] absentCount = new int[PLATOON_COUNT];
 
     public HomeFragment3() {}
 
@@ -57,13 +57,21 @@ public class HomeFragment3 extends Fragment {
         parentLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         ViewGroup mindMapContainer = view.findViewById(R.id.mindMapContainer);
+        mindMapContainer.addView(parentLayout);
 
         int soldierIndex = 0;
 
         for (int i = 0; i < PLATOON_COUNT; i++) {
+            presentCount[i] = SOLDIERS_PER_PLATOON;
+            homeCount[i] = 0;
+            absentCount[i] = 0;
+
             LinearLayout platoonContainer = new LinearLayout(requireContext());
             platoonContainer.setOrientation(LinearLayout.VERTICAL);
             platoonContainer.setPadding(20, 20, 20, 20);
+
+            TextView platoonStats = new TextView(requireContext());
+            updatePlatoonStats(i, platoonStats);
 
             GridLayout gridLayout = new GridLayout(requireContext());
             gridLayout.setColumnCount(3);
@@ -82,31 +90,44 @@ public class HomeFragment3 extends Fragment {
                 soldierIndex++;
 
                 soldierView.setTag(R.id.soldier_state_key, STATE_PRESENT);
-                soldierView.setOnClickListener(v -> cycleState(v));
+                soldierView.setTag(R.id.platoon_index_key, i);
+                soldierView.setOnClickListener(v -> cycleState(v, platoonStats));
                 gridLayout.addView(soldierView);
             }
 
+            platoonContainer.addView(platoonStats);
             platoonContainer.addView(gridLayout);
             parentLayout.addView(platoonContainer);
         }
-
-        mindMapContainer.addView(parentLayout);
     }
 
-    private void cycleState(View v) {
+    private void cycleState(View v, TextView platoonStats) {
+        int platoonIndex = (int) v.getTag(R.id.platoon_index_key);
         int currentState = (int) v.getTag(R.id.soldier_state_key);
         int newState = (currentState + 1) % 3;
         v.setTag(R.id.soldier_state_key, newState);
+
         switch (newState) {
             case STATE_PRESENT:
                 v.setBackgroundResource(R.drawable.formation_button_background);
+                presentCount[platoonIndex]++;
                 break;
             case STATE_HOME:
                 v.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_blue_dark));
+                presentCount[platoonIndex]--;
+                homeCount[platoonIndex]++;
                 break;
             case STATE_ABSENT:
                 v.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light));
+                homeCount[platoonIndex]--;
+                absentCount[platoonIndex]++;
                 break;
         }
+
+        updatePlatoonStats(platoonIndex, platoonStats);
+    }
+
+    private void updatePlatoonStats(int platoonIndex, TextView platoonStats) {
+        platoonStats.setText("P: " + presentCount[platoonIndex] + " H: " + homeCount[platoonIndex] + " A: " + absentCount[platoonIndex]);
     }
 }
