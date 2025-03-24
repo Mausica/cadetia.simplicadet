@@ -12,7 +12,7 @@
         android:id="@+id/tv_soldier_initials"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="RM"
+        android:text=""
         android:textAlignment="center"
         android:layout_gravity="center"
         android:fontFamily="@font/circular_bold"

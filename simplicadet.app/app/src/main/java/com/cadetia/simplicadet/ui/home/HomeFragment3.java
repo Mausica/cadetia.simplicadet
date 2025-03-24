@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,6 @@ public class HomeFragment3 extends Fragment {
         return inflater.inflate(R.layout.fragment_home3, container, false);
     }
 
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -72,6 +72,27 @@ public class HomeFragment3 extends Fragment {
             LinearLayout platoonContainer = new LinearLayout(requireContext());
             platoonContainer.setOrientation(LinearLayout.VERTICAL);
             platoonContainer.setPadding(20, 20, 20, 20);
+
+            // Create Platoon Header
+            TextView platoonHeader = new TextView(requireContext());
+            platoonHeader.setText("PLATOON " + (i + 1));
+            platoonHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            platoonHeader.setTypeface(getResources().getFont(R.font.circular_bold));
+            platoonHeader.setGravity(Gravity.CENTER);
+            platoonHeader.setPadding(10, 10, 10, 10);
+
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.RECTANGLE);
+            drawable.setCornerRadius(TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
+
+            int backgroundColor = getThemeColor(R.attr.backgroundLight);
+            drawable.setColor(backgroundColor);
+            platoonHeader.setBackground(drawable);
+
+            LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(330, ViewGroup.LayoutParams.WRAP_CONTENT);
+            headerParams.setMargins(0, 0, 0, 10);
+            platoonHeader.setLayoutParams(headerParams);
 
             TextView platoonStats = new TextView(requireContext());
             updatePlatoonStats(i, platoonStats);
@@ -98,11 +119,14 @@ public class HomeFragment3 extends Fragment {
                 gridLayout.addView(soldierView);
             }
 
+            platoonContainer.addView(platoonHeader);
             platoonContainer.addView(platoonStats);
             platoonContainer.addView(gridLayout);
             parentLayout.addView(platoonContainer);
         }
     }
+
+
 
     private void cycleState(View v, TextView platoonStats) {
         int platoonIndex = (int) v.getTag(R.id.platoon_index_key);
