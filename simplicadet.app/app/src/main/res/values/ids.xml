@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="soldier_state_key" type="id"/>
+    <item name="soldier_number_key" type="id"/>
+
+    <item name="platoon_status_present" type="id"/>
+    <item name="platoon_status_home" type="id"/>
+    <item name="platoon_status_absent" type="id"/>
+</resources>

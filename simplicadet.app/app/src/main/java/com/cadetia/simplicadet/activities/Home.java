@@ -138,17 +138,16 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(intent);
             finish();
         } else if (itemId == R.id.drawer_new) {
-            Toast.makeText(this, "What's new clicked", Toast.LENGTH_SHORT).show();
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://presamil.ro/ultimul_nr/"));
+            startActivity(browserIntent);
         } else if (itemId == R.id.drawer_help) {
-            // Navigate to Community fragment // TO DO - MAPPING RANDOMLY TO HOME/SEARCH
             // navController.navigate(R.id.navigation_liked);
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.google.com/"));
             startActivity(browserIntent);
-            
+
         } else if (itemId == R.id.drawer_settings) {
             Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_upload) {
-            // Modificare aici pentru a permite și fișiere text
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
             String[] mimeTypes = {"text/plain", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};

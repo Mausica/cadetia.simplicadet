@@ -4,21 +4,39 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.cadetia.simplicadet.R;
 import com.otaliastudios.zoom.ZoomLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment3 extends Fragment {
 
-    private FrameLayout mindMapContainer;
+    private static final int PLATOON_COUNT = 6;
+    private static final int SOLDIERS_PER_PLATOON = 27; // 3 x 9 grid
+    private static final int TOTAL_SOLDIERS = PLATOON_COUNT * SOLDIERS_PER_PLATOON;
+
+    private static final String[] SOLDIERS = {
+            "Radulescu Marius", "Grama Bianca", "Popescu Ion", "Stanescu Maria",
+            "Ionescu Andrei", "Constantinescu Elena", "Popa Florin", "Diaconescu Raluca",
+            "Marinescu Cristian", "Negulescu Ana"
+    };
+
+    private static final int STATE_PRESENT = 0;
+    private static final int STATE_HOME = 1;
+    private static final int STATE_ABSENT = 2;
+
     private ZoomLayout zoomLayout;
+    private TextView tvTotalCount;
 
     public HomeFragment3() {}
 
@@ -31,61 +49,64 @@ public class HomeFragment3 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mindMapContainer = view.findViewById(R.id.mindMapContainer);
         zoomLayout = view.findViewById(R.id.zoomLayout);
+        tvTotalCount = view.findViewById(R.id.tv_total_count);
+        tvTotalCount.setText("Total: " + TOTAL_SOLDIERS);
 
-        // Rotate ZoomLayout for landscape view
-        zoomLayout.post(() -> {
-            int width = zoomLayout.getWidth();
-            int height = zoomLayout.getHeight();
-
-            zoomLayout.setRotation(90.0f);
-            zoomLayout.setTranslationX((width - height) / 2);
-            zoomLayout.setTranslationY((height - width) / 2);
-
-            ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
-            params.width = height; // Swap width and height
-            params.height = width;
-            zoomLayout.setLayoutParams(params);
-            zoomLayout.requestLayout();
-        });
-
-        // Create a horizontal layout for multiple grids
         LinearLayout parentLayout = new LinearLayout(requireContext());
         parentLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        for (int j = 0; j < 6; j++) {
-            LinearLayout gridContainer = new LinearLayout(requireContext());
-            gridContainer.setOrientation(LinearLayout.VERTICAL);
+        ViewGroup mindMapContainer = view.findViewById(R.id.mindMapContainer);
+
+        int soldierIndex = 0;
+
+        for (int i = 0; i < PLATOON_COUNT; i++) {
+            LinearLayout platoonContainer = new LinearLayout(requireContext());
+            platoonContainer.setOrientation(LinearLayout.VERTICAL);
+            platoonContainer.setPadding(20, 20, 20, 20);
+
             GridLayout gridLayout = new GridLayout(requireContext());
             gridLayout.setColumnCount(3);
             gridLayout.setRowCount(9);
 
-            for (int i = 1; i <= 27; i++) {
-                Button button = new Button(requireContext());
-                button.setText(String.valueOf(i + (j * 27)));
+            for (int j = 0; j < SOLDIERS_PER_PLATOON; j++) {
+                View soldierView = getLayoutInflater().inflate(R.layout.item_formation, gridLayout, false);
+                soldierView.getLayoutParams().width = 100;
+                soldierView.getLayoutParams().height = 100;
 
-                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = 150;
-                params.height = 150;
-                button.setLayoutParams(params);
+                TextView tvInitials = soldierView.findViewById(R.id.tv_soldier_initials);
+                String fullName = SOLDIERS[soldierIndex % SOLDIERS.length];
+                String[] nameParts = fullName.split(" ");
+                String initials = nameParts[0].substring(0, 1) + nameParts[1].substring(0, 1);
+                tvInitials.setText(initials);
+                soldierIndex++;
 
-                // Make button turn red when clicked
-                button.setOnClickListener(v -> button.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), android.R.color.holo_red_light)
-                ));
-
-                gridLayout.addView(button);
+                soldierView.setTag(R.id.soldier_state_key, STATE_PRESENT);
+                soldierView.setOnClickListener(v -> cycleState(v));
+                gridLayout.addView(soldierView);
             }
 
-            LinearLayout.LayoutParams gridParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            gridParams.setMargins(50, 50, 50, 50);
-            gridLayout.setLayoutParams(gridParams);
-            gridContainer.addView(gridLayout);
-            parentLayout.addView(gridContainer);
+            platoonContainer.addView(gridLayout);
+            parentLayout.addView(platoonContainer);
         }
 
         mindMapContainer.addView(parentLayout);
+    }
+
+    private void cycleState(View v) {
+        int currentState = (int) v.getTag(R.id.soldier_state_key);
+        int newState = (currentState + 1) % 3;
+        v.setTag(R.id.soldier_state_key, newState);
+        switch (newState) {
+            case STATE_PRESENT:
+                v.setBackgroundResource(R.drawable.formation_button_background);
+                break;
+            case STATE_HOME:
+                v.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_blue_dark));
+                break;
+            case STATE_ABSENT:
+                v.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_light));
+                break;
+        }
     }
 }
