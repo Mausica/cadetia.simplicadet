@@ -1,7 +1,7 @@
 
 # Simplify [1.1.1](https://github.com/SuperMarius409/Simplifie)
 
-<img align="right" height="700" src="https://github.com/Simplify-Nature/simplify.app/blob/main/assets/phone.png"/>
+<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png"/>
 
 Does school really expect you to remember when and where every class is, AND what’s due at what time?
 Staying organized is harder now than ever, so even if you were a super computer you’d still struggle.
