@@ -69,7 +69,7 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
         View view = inflater.inflate(R.layout.fragment_home2, container, false);
 
         //fabMain = view.findViewById(R.id.fabMain);
-        //fabMain.setOnClickListener(v -> showCreateNote(null, false));
+        // fabMain.setOnClickListener(v -> showCreateNote(null, false));
 
         RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));

@@ -105,22 +105,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         drawerNameTextView = headerView.findViewById(R.id.drawer_name);
         drawerloadingButton = headerView.findViewById(R.id.loading_button);
 
-        FloatingActionButton fabMain = findViewById(R.id.fabMain);
-        fabMain.setOnClickListener(v -> {
-            Fragment fragment = getSupportFragmentManager()
-                    .findFragmentById(R.id.nav_host_fragment_activity_home);
-
-            if (fragment instanceof NavHostFragment) {
-                NavHostFragment navHostFragment = (NavHostFragment) fragment;
-                Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-
-                if (primaryNavigationFragment instanceof HomeFragment) {
-                    HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
-                    homeFragment.rotateZoomLayoutInHomeFragment3();
-                }
-            }
-        });
-
 
 
         // Retrieve and set user data
@@ -247,19 +231,35 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 Fragment childFragment = primaryFragment.getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
 
                 if (childFragment instanceof HomeFragment1) {
-                    fabMain.setImageResource(R.drawable.home_ic_home);
+                    fabMain.setImageResource(R.drawable.home_ic_plus);
+                    fabMain.setVisibility(View.GONE);
                 } else if (childFragment instanceof HomeFragment2) {
-                    fabMain.setImageResource(R.drawable.home_ic_notes);
+                    fabMain.setImageResource(R.drawable.home_ic_plus);
+                    fabMain.setVisibility(View.VISIBLE);
+                    fabMain.setOnClickListener(v -> {
+                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
+                        homeFragment.actionController();
+                    });
                 } else if (childFragment instanceof HomeFragment3) {
                     fabMain.setImageResource(R.drawable.home_ic_rotate);
+                    fabMain.setVisibility(View.VISIBLE);
+                    fabMain.setOnClickListener(v -> {
+                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
+                        homeFragment.actionController();
+                    });
                 } else if (childFragment instanceof HomeFragment4) {
-                    fabMain.setImageResource(R.drawable.home_ic_logout);
+                    fabMain.setImageResource(R.drawable.home_ic_plus);
+                    fabMain.setVisibility(View.VISIBLE);
+                    fabMain.setOnClickListener(v -> {
+                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
+                        homeFragment.actionController();
+                    });
                 }
             }
         }
-
-        // Always make sure FAB is visible
-        fabMain.setVisibility(View.VISIBLE);
     }
 
     private void retrieveUserData() {

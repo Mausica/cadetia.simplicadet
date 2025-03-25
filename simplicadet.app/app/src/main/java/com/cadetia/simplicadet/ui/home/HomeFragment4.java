@@ -70,7 +70,7 @@ public class HomeFragment4 extends Fragment implements TaskAdapter.DeleteTaskLis
         createTaskBottom.show(getChildFragmentManager(), createTaskBottom.getTag());
     }
 
-    private void showCreateTask() {
+    public void showCreateTask() {
         CreateTaskBottom createTaskBottom = new CreateTaskBottom();
         createTaskBottom.setTaskSavedListener(this);
         createTaskBottom.show(getChildFragmentManager(), createTaskBottom.getTag());

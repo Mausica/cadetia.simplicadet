@@ -159,11 +159,19 @@ public class HomeFragment extends Fragment{
 
     }
 
-    public void rotateZoomLayoutInHomeFragment3() {
+    public void actionController() {
         Fragment fragment = getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
-        if (fragment instanceof HomeFragment3) {
+        if (fragment instanceof HomeFragment2) {
+            HomeFragment2 frag2 = (HomeFragment2) fragment;
+            frag2.showCreateNote(null, false);
+        }
+        else if (fragment instanceof HomeFragment3) {
             HomeFragment3 frag3 = (HomeFragment3) fragment;
             frag3.rotateZoomLayout();
+        }
+        else if (fragment instanceof HomeFragment4) {
+            HomeFragment4 frag4 = (HomeFragment4) fragment;
+            frag4.showCreateTask();
         }
     }
 
