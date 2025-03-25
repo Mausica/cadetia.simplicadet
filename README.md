@@ -41,7 +41,7 @@ https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simp
 git clone https://github.com/YourUsername/simplicadet.git
 ```
 
-[<kbd>  Download Simplicadet  </kbd>][KBD]
+[<kbd> <br><br> Download Simplicadet <br><br> </kbd>][KBD]
 
 [KBD]:https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
 
