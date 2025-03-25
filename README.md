@@ -7,9 +7,6 @@
 
 **Simplicadet** is a cutting‐edge app designed with military precision for cadets and adaptable for all students. Whether you’re preparing for drills or academic exams, Simplicadet helps you stay organized and mission‐ready with elegant task management, live news updates, interactive quizzes, and an innovative formation mindmap for attendance tracking.
 
-
-
-### Features ✨
 ---
 
 ### 📝 Elegant Task Management
