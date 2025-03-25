@@ -11,6 +11,8 @@
 
 ### Features ✨
 
+---
+
 ### 📝 Elegant Task Management
 - **Organize Tasks with Precision:** Schedule assignments, drills, and academic deadlines.
 - **Smart Reminders & Notifications:** Never miss a critical drill or exam.
