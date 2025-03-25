@@ -60,7 +60,7 @@ git clone https://github.com/Mausica/simplicadet.git
 
 
 ## 💖 Support the Project
-If you want to go a step further and support my open source work, follow me on youtube  ![](https://github.com/CLorant/readme-social-icons/raw/main/medium/colored/youtube.svg)
+If you want to go a step further and support my open source work, follow me on youtube  ![https://www.youtube.com/@mausicadev](https://github.com/CLorant/readme-social-icons/raw/main/medium/colored/youtube.svg)
 
 
 To support the project directly, feel free to open issues for icon suggestions, or contribute with a pull request!
