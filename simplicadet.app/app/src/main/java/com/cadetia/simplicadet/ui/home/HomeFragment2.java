@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.cadetia.simplicadet.activities.Home;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.CreateNote;
@@ -67,8 +68,8 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home2, container, false);
 
-        fabMain = view.findViewById(R.id.fabMain);
-        fabMain.setOnClickListener(v -> showCreateNote(null, false));
+        //fabMain = view.findViewById(R.id.fabMain);
+        //fabMain.setOnClickListener(v -> showCreateNote(null, false));
 
         RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));

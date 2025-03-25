@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.cadetia.simplicadet.R;
+import com.cadetia.simplicadet.activities.Home;
 import com.otaliastudios.zoom.ZoomLayout;
 
 public class HomeFragment3 extends Fragment {
@@ -36,7 +38,7 @@ public class HomeFragment3 extends Fragment {
     private static final int STATE_ABSENT = 2;
 
     private ZoomLayout zoomLayout;
-    private TextView tvTotalCount;
+    private int rotationState = 0;
     private final int[] presentCount = new int[PLATOON_COUNT];
     private final int[] homeCount = new int[PLATOON_COUNT];
     private final int[] absentCount = new int[PLATOON_COUNT];
@@ -44,7 +46,7 @@ public class HomeFragment3 extends Fragment {
     public HomeFragment3() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home3, container, false);
     }
 
@@ -231,4 +233,39 @@ public class HomeFragment3 extends Fragment {
         requireContext().getTheme().resolveAttribute(attr, typedValue, true);
         return typedValue.data;
     }
+
+    public void rotateZoomLayout() {
+        if (zoomLayout != null) {
+            zoomLayout.post(() -> {
+                int width = zoomLayout.getWidth();
+                int height = zoomLayout.getHeight();
+
+                // Directly toggle between 0 and 90 degrees
+                float rotation = (rotationState == 0) ? 90.0f : 0.0f;
+                rotationState = (rotationState + 1) % 2; // Now just 0 and 1
+
+                if (rotation == 90.0f) {
+                    zoomLayout.setTranslationX((width - height) / 2);
+                    zoomLayout.setTranslationY((height - width) / 2);
+
+                    ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+                    params.width = height;
+                    params.height = width;
+                    zoomLayout.setLayoutParams(params);
+                } else {
+                    zoomLayout.setTranslationX(0);
+                    zoomLayout.setTranslationY(0);
+
+                    ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+                    params.width = width;
+                    params.height = height;
+                    zoomLayout.setLayoutParams(params);
+                }
+
+                zoomLayout.setRotation(rotation);
+                zoomLayout.requestLayout();
+            });
+        }
+    }
+
 }

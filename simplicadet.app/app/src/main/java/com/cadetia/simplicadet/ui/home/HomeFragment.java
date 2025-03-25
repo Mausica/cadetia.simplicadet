@@ -1,14 +1,17 @@
 package com.cadetia.simplicadet.ui.home;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.icu.text.DisplayOptions.DisplayLength.LENGTH_SHORT;
 
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.Home;
@@ -54,28 +58,30 @@ public class HomeFragment extends Fragment{
         // Buttons for your options
         Button allButton = view.findViewById(R.id.home_ac1);
         Button notesButton = view.findViewById(R.id.home_ac2);
-        Button flashcardsButton = view.findViewById(R.id.home_ac3);
+        Button formationButton = view.findViewById(R.id.home_ac3);
         Button tasksButton = view.findViewById(R.id.home_ac4);
 
         // Set up the Button listeners
         setupButton(allButton, R.id.action_navigation_home_to_homeFragment1, new HomeFragment1());
         setupButton(notesButton, R.id.action_navigation_home_to_homeFragment2, new HomeFragment2());
-        setupButton(flashcardsButton, R.id.action_navigation_home_to_homeFragment3, new HomeFragment3());
+        setupButton(formationButton, R.id.action_navigation_home_to_homeFragment3, new HomeFragment3());
         setupButton(tasksButton, R.id.action_navigation_home_to_homeFragment4, new HomeFragment4());
 
         // Set the allButton as the default selected button
         selectButton(allButton);
     }
 
-
-
     private void setupButton(Button button, int destinationId, Fragment fragment) {
         button.setOnClickListener(view -> {
-            // Check if the clicked button is already selected
             if (view.isSelected()) {
                 // Refresh data when an activated button is clicked again
                 //loadNotesInBackground();
                 return;
+            }
+
+            // Update FAB icon
+            if (getActivity() instanceof Home) {
+                ((Home) getActivity()).updateFabIcon(fragment);
             }
 
             // Deselect the currently selected button (if any)
@@ -89,7 +95,6 @@ public class HomeFragment extends Fragment{
             selectedButton.setSelected(true);
             updateButtonState(selectedButton, true);
 
-            // Replace the fragment in the container
             replaceFragment(fragment);
         });
     }
@@ -98,8 +103,16 @@ public class HomeFragment extends Fragment{
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.smallerFragmentContainer, fragment);
-        transaction.addToBackStack(null);  // Optional: Add the transaction to the back stack
+        transaction.addToBackStack(null);
         transaction.commit();
+
+        // Add callback after transaction completes
+        fragmentManager.executePendingTransactions();
+        new Handler().post(() -> {
+            if (getActivity() instanceof Home) {
+                ((Home) getActivity()).updateFabIcon(this);
+            }
+        });
     }
 
     private void selectButton(Button button) {
@@ -145,5 +158,14 @@ public class HomeFragment extends Fragment{
 
 
     }
+
+    public void rotateZoomLayoutInHomeFragment3() {
+        Fragment fragment = getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
+        if (fragment instanceof HomeFragment3) {
+            HomeFragment3 frag3 = (HomeFragment3) fragment;
+            frag3.rotateZoomLayout();
+        }
+    }
+
 
 }

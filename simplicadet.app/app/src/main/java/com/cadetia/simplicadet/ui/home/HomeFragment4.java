@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cadetia.simplicadet.activities.Home;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.CreateTaskBottom;
@@ -43,8 +44,9 @@ public class HomeFragment4 extends Fragment implements TaskAdapter.DeleteTaskLis
         View view = inflater.inflate(R.layout.fragment_home4, container, false);
 
         tasksRecycler = view.findViewById(R.id.tasksRecyclerView);
-        addTask = view.findViewById(R.id.fabTask);
-        addTask.setOnClickListener(v -> showCreateTask());
+        //addTask = view.findViewById(R.id.fabTask);
+        //addTask.setOnClickListener(v -> showCreateTask());
+
 
         setUpAdapter();
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

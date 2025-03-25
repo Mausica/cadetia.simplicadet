@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment3">
+    tools:context=".ui.home.HomeFragment3"
+    android:id="@+id/homeFragment3">
 
     <com.otaliastudios.zoom.ZoomLayout
         android:id="@+id/zoomLayout"

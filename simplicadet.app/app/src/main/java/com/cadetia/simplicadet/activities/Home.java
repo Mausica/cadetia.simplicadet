@@ -19,14 +19,22 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.database.TextUpload;
+import com.cadetia.simplicadet.ui.home.HomeFragment;
+import com.cadetia.simplicadet.ui.home.HomeFragment1;
+import com.cadetia.simplicadet.ui.home.HomeFragment2;
+import com.cadetia.simplicadet.ui.home.HomeFragment3;
+import com.cadetia.simplicadet.ui.home.HomeFragment4;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,6 +104,24 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         drawerNameTextView = headerView.findViewById(R.id.drawer_name);
         drawerloadingButton = headerView.findViewById(R.id.loading_button);
+
+        FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        fabMain.setOnClickListener(v -> {
+            Fragment fragment = getSupportFragmentManager()
+                    .findFragmentById(R.id.nav_host_fragment_activity_home);
+
+            if (fragment instanceof NavHostFragment) {
+                NavHostFragment navHostFragment = (NavHostFragment) fragment;
+                Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+
+                if (primaryNavigationFragment instanceof HomeFragment) {
+                    HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
+                    homeFragment.rotateZoomLayoutInHomeFragment3();
+                }
+            }
+        });
+
+
 
         // Retrieve and set user data
         retrieveUserData();
@@ -206,6 +232,34 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         if (interstitialAdd != null) {
             interstitialAdd.showInterstitialAd(Home.this);
         }
+    }
+
+    public void updateFabIcon(Fragment fragment) {
+        FloatingActionButton fabMain = findViewById(R.id.fabMain);
+
+        // Get the actual visible fragment from NavHost
+        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
+        if (navHostFragment instanceof NavHostFragment) {
+            Fragment primaryFragment = ((NavHostFragment) navHostFragment).getChildFragmentManager().getPrimaryNavigationFragment();
+
+            if (primaryFragment instanceof HomeFragment) {
+                // Check child fragment for HomeFragment
+                Fragment childFragment = primaryFragment.getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
+
+                if (childFragment instanceof HomeFragment1) {
+                    fabMain.setImageResource(R.drawable.home_ic_home);
+                } else if (childFragment instanceof HomeFragment2) {
+                    fabMain.setImageResource(R.drawable.home_ic_notes);
+                } else if (childFragment instanceof HomeFragment3) {
+                    fabMain.setImageResource(R.drawable.home_ic_rotate);
+                } else if (childFragment instanceof HomeFragment4) {
+                    fabMain.setImageResource(R.drawable.home_ic_logout);
+                }
+            }
+        }
+
+        // Always make sure FAB is visible
+        fabMain.setVisibility(View.VISIBLE);
     }
 
     private void retrieveUserData() {

@@ -19,7 +19,7 @@
         android:paddingBottom="@dimen/_60sdp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabMain"
+        android:id="@+id/fabOrder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

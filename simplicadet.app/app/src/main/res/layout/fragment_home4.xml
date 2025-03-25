@@ -28,6 +28,7 @@
         app:fabCustomSize="@dimen/_42sdp"
         app:maxImageSize="@dimen/_20sdp"
         app:rippleColor="@color/blur"
+        android:visibility="gone"
         app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
         app:srcCompat="@drawable/home_ic_plus"
         android:elevation="8dp"
