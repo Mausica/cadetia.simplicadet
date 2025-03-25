@@ -1,39 +1,50 @@
 
-# Simplify [1.1.1](https://github.com/SuperMarius409/Simplifie)
+# Simplicadet [Beta] 🚀🎖️
 
-<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png"/>
+<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
 
-Does school really expect you to remember when and where every class is, AND what’s due at what time?
-Staying organized is harder now than ever, so even if you were a super computer you’d still struggle.
-Don’t worry, we’ve got an app that will help even the laziest students stay organized, productive, and, dare we say, ON TIME!
+> “Discipline is the soul of an army.” – George Washington
 
-Our `all-in-one organizational app` is designed to cater to the diverse needs of students, offering a range of functionalities to keep you on track and productive throughout your academic journey.
+**Simplicadet** is a cutting‐edge app designed with military precision for cadets and adaptable for all students. Whether you’re preparing for drills or academic exams, Simplicadet helps you stay organized and mission‐ready with elegant task management, live news updates, interactive quizzes, and an innovative formation mindmap for attendance tracking.
 
-First and foremost, our `Note Taking App` provides a seamless and intuitive interface for capturing and organizing your notes, lectures, videos, and other important resources. You can easily create, edit, and categorize your notes into customized notebooks or folders, ensuring that all your academic materials are neatly arranged and easily accessible.
+---
 
-But the note-taking feature is just the tip of the iceberg. Our app goes beyond that to offer a powerful `AI Assistant` named BEN, leveraging the capabilities of artificial intelligence to provide personalized support and guidance. BEN can help you with a variety of tasks, such as setting reminders for upcoming assignments and exams, suggesting study resources based on your subjects, and even offering study tips and techniques tailored to your learning style.
+## Features ✨
 
-Furthermore, our app includes a comprehensive task management system. You can create to-do lists, set deadlines, and receive notifications to stay on top of your assignments, projects, and extracurricular activities. The app's intuitive interface allows you to prioritize tasks, track progress, and ensure you never miss a deadline again.
+### 📝 Elegant Task Management
+- **Organize Tasks with Precision:** Schedule assignments, drills, and academic deadlines.
+- **Smart Reminders & Notifications:** Never miss a critical drill or exam.
+- **Mission-Critical Prioritization:** Adapt scheduling based on urgency and importance.
 
-To make studying more engaging and interactive, our app features a `built-in quiz game`. You can create custom quizzes based on your course materials, enabling you to reinforce your learning and assess your knowledge in a fun and gamified manner. Challenge yourself, compete with classmates, or simply use it as a self-assessment tool to gauge your understanding of the subject matter.
+### 📡 Real-Time News Feed
+- **Live Updates from CNMTV:** Stay informed with the latest beta news from our school.
+- **Instant Bulletins:** Receive timely alerts for drills, campus announcements, and training sessions.
 
-With our app, you'll have a comprehensive suite of tools at your disposal, enabling you to stay organized, manage your tasks effectively, access personalized support, and make learning an enjoyable and engaging experience.
+### 🏆 Dynamic Quizzes & Leaderboard
+- **Interactive Regulation Quizzes:** Test your knowledge on military rules and procedures.
+- **Firebase-Powered Updates:** Quizzes are updated in real time, ensuring the most current standards.
+- **Points & Leaderboard:** Earn points for every correct answer and see your rank climb among peers.
 
-So, what do you think? Are you ready to install our app and revolutionize the way you stay organized and productive as a student?
+### 🗺️ Formation Mindmap & Attendance Tracker
+- **Digital Formation Visualization:** A dynamic mindmap displaying your unit’s formation.
+- **Quick Roll-Call Management:** Easily identify absentees and track attendance in real time.
+- **Enhanced Accountability:** Maintain order and discipline with a clear, visual roster.
 
-[![Repository size](https://img.shields.io/github/repo-size/kivymd/kivymd.svg)](https://github.com/SuperMarius409)
+---
 
-## Installation
+## Installation ⚙️
 
-> [!Note]
-> The app has a newer version but is still on testing. 
+<br>
+
+[<kbd> <br> Download <br> </kbd>][https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk]
+
+<br>
 
 ```bash
-git clone https://github.com/Simplify-Nature/simplify.app.git
+git clone https://github.com/YourUsername/simplicadet.git
 ```
-Or access the file `releases\simplify.apk` and download the file on your phone.
 
-## Documentation & Credits
+## Documentation & Credits 📚
 
 - See documentation at [java](https://docs.oracle.com/en/java/)
 - Wiki with examples of using Google Compose Widgets: [examples](https://developer.android.com/samples)
@@ -45,35 +56,19 @@ Or access the file `releases\simplify.apk` and download the file on your phone.
 
 [![My Skills](https://skillicons.dev/icons?i=java,kotlin,firebase,gcp,androidstudio,ae,ps,ai)](https://skillicons.dev)
 
-## Watch Our App Demo
 
-> [!Important]
-> [![Repository icon](https://github.com/SuperMarius409/simplify.app/blob/main/assets/logo.png)](https://github.com/SuperMarius409)
+> “In the military, precision isn’t just a habit—it’s a way of >life.” – A Proud Cadet 
 
-<p align="left">
-  <a href="https://drive.google.com/drive/folders/1A7GXL60SCmtimJzcJ3N-p_kYNe0b0Z-I?usp=sharing">
-    <img 
-        width="600" 
-        src="https://preview.redd.it/okay-so-apparently-theres-an-issue-with-loading-or-watching-v0-rsegol869zfb1.jpg?width=640&crop=smart&auto=webp&s=415b227aa5b73effa2dda1fe8a5fa603fa5667d1" 
-        title="Click to watch demo application of our app"
-    >
+## Connect With Me 🤝
+
+<div id="badges">
+  <a href="your-linkedin-URL">
+    <img src="https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Badge"/>
   </a>
-</p>
-
-## Web-Powered App Integration
-
-```kotlin
-val generativeModel = GenerativeModel(
-    // The Gemini 1.5 models are versatile and work with both text-only and multimodal prompts
-    modelName = "gemini-1.5-flash-latest",
-    // Access your API key as a Build Configuration variable (see "Set up your API key" above)
-    apiKey = BuildConfig.apiKey
-)
-
-val prompt = "Write a story about a magic backpack."
-val response = generativeModel.generateContent(prompt)
-print(response.text)
-```
-
-This essential function serves as the **backbone** for all our apps. It utilizes an `API` to retrieve `JSON` data and dynamically updates the app's text based on the received information. In this example we use [GeminiAPI](https://ai.google.dev/gemini-api/docs/api-key) to get the json data and update it to our app. We rely on this function across our apps to seamlessly integrate real-time data and provide users with **up-to-date** and relevant content.
-
+  <a href="your-youtube-URL">
+    <img src="https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Youtube Badge"/>
+  </a>
+  <a href="your-twitter-URL">
+    <img src="https://img.shields.io/badge/Twitter-blue?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter Badge"/>
+  </a>
+</div>
