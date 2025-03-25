@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/backgroundNormal"
     tools:context=".ui.community.CommunityFragment">
 
     <ScrollView
@@ -67,7 +68,7 @@
                     android:fontFamily="@font/circular_bold"
                     android:text="All Time"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/textNormal"
                     android:textSize="@dimen/_12ssp"
                     tools:ignore="TouchTargetSizeCheck" />
 

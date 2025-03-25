@@ -421,7 +421,7 @@ public class CreateNote extends BottomSheetDialogFragment {
                 new DeleteNoteTask().execute();
             });
 
-            view.findViewById(R.id.cancelDel).setOnClickListener(v -> dialogDeleteNote.dismiss());
+            //view.findViewById(R.id.cancelDel).setOnClickListener(v -> dialogDeleteNote.dismiss());
         }
 
         dialogDeleteNote.show();
