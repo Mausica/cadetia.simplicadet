@@ -37,21 +37,14 @@ https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simp
 
 ## Installation ⚙️
 
-<div align = center>
-<br>
-<br>
-
-[<kbd> <br> Download Simplicadet <br> </kbd>][KBD]
-
-</div>
-<br>
-<br>
-
-[KBD]:https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
-
 ```bash
 git clone https://github.com/YourUsername/simplicadet.git
 ```
+
+[<kbd>  Download Simplicadet  </kbd>][KBD]
+
+[KBD]:https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
+
 
 ## Documentation & Credits 📚
 
