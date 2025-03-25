@@ -55,6 +55,20 @@
                     android:textSize="@dimen/_12ssp"
                     tools:ignore="TouchTargetSizeCheck" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_marginStart="@dimen/_7sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:fontFamily="@font/circular_bold"
+                    android:textAllCaps="false"
+                    android:textAlignment="center"
+                    android:textColor="?attr/textDark"
+                    android:textSize="@dimen/_12ssp"
+                    android:text="All Time"/>
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/leaderboard_all"
                     android:layout_width="wrap_content"
@@ -62,6 +76,7 @@
                     android:layout_marginStart="@dimen/_7sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
+                    android:visibility="gone"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:layout_weight="0.5"
                     android:background="@drawable/background_nothing"

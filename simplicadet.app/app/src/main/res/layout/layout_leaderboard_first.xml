@@ -85,7 +85,7 @@
                         android:maxLines="1"
                         android:text=""
                         android:textAlignment="center"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/textNormal"
                         android:textSize="@dimen/_15ssp" />
 
                     <LinearLayout
@@ -97,13 +97,6 @@
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:padding="@dimen/_3sdp">
-
-                        <ImageView
-                            android:id="@+id/currencyView3"
-                            android:layout_width="@dimen/_20sdp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/leaf_currency"
-                            app:srcCompat="@drawable/leaf_currency" />
 
                         <TextView
                             android:id="@+id/currencyTextView3"
@@ -180,7 +173,7 @@
                         android:text=""
                         android:maxLines="1"
                         android:textAlignment="center"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/textNormal"
                         android:textSize="@dimen/_15ssp" />
 
                     <LinearLayout
@@ -192,13 +185,6 @@
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:padding="@dimen/_3sdp">
-
-                        <ImageView
-                            android:id="@+id/currencyView1"
-                            android:layout_width="@dimen/_20sdp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/leaf_currency"
-                            app:srcCompat="@drawable/leaf_currency" />
 
                         <TextView
                             android:id="@+id/currencyTextView1"
@@ -269,7 +255,7 @@
                         android:text=""
                         android:maxLines="1"
                         android:textAlignment="center"
-                        android:textColor="@color/white"
+                        android:textColor="?attr/textNormal"
                         android:textSize="@dimen/_15ssp" />
 
                     <LinearLayout
@@ -281,13 +267,6 @@
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:padding="@dimen/_3sdp">
-
-                        <ImageView
-                            android:id="@+id/currencyView2"
-                            android:layout_width="@dimen/_20sdp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/leaf_currency"
-                            app:srcCompat="@drawable/leaf_currency" />
 
                         <TextView
                             android:id="@+id/currencyTextView2"

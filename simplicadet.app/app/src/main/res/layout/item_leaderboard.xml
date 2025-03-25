@@ -3,8 +3,8 @@
     android:id="@+id/layoutLeaderboard"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/_59sdp"
-    android:layout_marginTop="@dimen/_10sdp"
+    android:layout_height="@dimen/_50sdp"
+    android:layout_marginTop="@dimen/_7sdp"
     android:gravity="center"
     android:elevation="3dp"
     android:layout_marginStart="@dimen/_5sdp"
@@ -27,7 +27,7 @@
             android:text="4"
             android:fontFamily="@font/circular_bold"
             android:textSize="@dimen/_14ssp"
-            android:textColor="@color/white"/>
+            android:textColor="?attr/textNormal"/>
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/image_leaderboard"
@@ -52,38 +52,21 @@
         android:layout_marginStart="@dimen/_10sdp"
         android:paddingStart="@dimen/_3sdp"
         android:paddingEnd="@dimen/_3sdp"
+        android:maxLines="1"
         android:fontFamily="@font/circular_bold"
         android:includeFontPadding="false"
-        android:textColor="@color/white"
+        android:textColor="?attr/textNormal"
         android:textSize="@dimen/_13ssp"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/score_leaderboard"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/scoreLayout"
-        android:background="@drawable/background_nothing"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:fontFamily="@font/circular_medium"
         android:layout_gravity="center_vertical"
-        android:padding="@dimen/_4sdp">
-
-        <ImageView
-            android:id="@+id/currencyView1"
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/leaf_currency"
-            app:srcCompat="@drawable/leaf_currency" />
-
-        <TextView
-            android:id="@+id/score_leaderboard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_8sdp"
-            android:fontFamily="@font/circular_medium"
-            android:layout_gravity="center_vertical"
-            android:text="4129"
-            android:textColor="@color/light"
-            android:textSize="@dimen/_13ssp" />
-    </LinearLayout>
+        android:text="4129"
+        android:textColor="?attr/textDark"
+        android:textSize="@dimen/_13ssp" />
 
 </LinearLayout>
