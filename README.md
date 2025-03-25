@@ -36,7 +36,7 @@
 
 <br>
 
-[<kbd> <br> Download <br> </kbd>][https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk]
+<kbd> <br> Download <br> </kbd>https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
 
 <br>
 
