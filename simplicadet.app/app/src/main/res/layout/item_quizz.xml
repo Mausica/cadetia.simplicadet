@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="@dimen/_120sdp"
     android:layout_height="wrap_content"
+    android:elevation="3dp"
     android:alpha="1"
     android:layout_marginEnd="@dimen/_12sdp"
     android:background="@drawable/home_background_quizz">
