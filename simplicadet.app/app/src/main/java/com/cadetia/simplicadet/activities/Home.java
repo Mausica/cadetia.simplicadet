@@ -156,7 +156,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(browserIntent);
 
         } else if (itemId == R.id.drawer_settings) {
-            Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_upload) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
