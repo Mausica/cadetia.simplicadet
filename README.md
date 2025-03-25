@@ -7,9 +7,9 @@
 
 **Simplicadet** is a cutting‐edge app designed with military precision for cadets and adaptable for all students. Whether you’re preparing for drills or academic exams, Simplicadet helps you stay organized and mission‐ready with elegant task management, live news updates, interactive quizzes, and an innovative formation mindmap for attendance tracking.
 
----
 
-## Features ✨
+
+### Features ✨
 
 ### 📝 Elegant Task Management
 - **Organize Tasks with Precision:** Schedule assignments, drills, and academic deadlines.
@@ -29,10 +29,6 @@
 - **Digital Formation Visualization:** A dynamic mindmap displaying your unit’s formation.
 - **Quick Roll-Call Management:** Easily identify absentees and track attendance in real time.
 - **Enhanced Accountability:** Maintain order and discipline with a clear, visual roster.
-
----
-
-https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
 
 
 ## Installation ⚙️
