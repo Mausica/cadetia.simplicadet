@@ -89,7 +89,7 @@ public class ShowRedeem extends BottomSheetDialogFragment {
         int totalQuestions = bundle.getInt("totalQuestions", 0);
         float totalTime = bundle.getFloat("totalTime", 0);
 
-        String redeemTitleText = "Congratulations! You've got " + totalScore + " organicoins!";
+        String redeemTitleText = "Congratulations! You've got " + totalScore + " points!";
         TextView redeemTitle = rootView.findViewById(R.id.redeemTitle);
         redeemTitle.setText(redeemTitleText);
 

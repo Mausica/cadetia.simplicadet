@@ -51,6 +51,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private TextView drawerNameTextView;
     ShapeableImageView drawerloadingButton;
     private DrawerLayout drawerLayout;
+    private String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,11 +159,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else if (itemId == R.id.drawer_settings) {
             //Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
         } else if (itemId == R.id.drawer_upload) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");
-            String[] mimeTypes = {"text/plain", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-            startActivityForResult(intent, 1);
+            if (userEmail.equals("marius.gabryel2017@gmail.com")){
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                String[] mimeTypes = {"text/plain", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                startActivityForResult(intent, 1);
+            } else
+                Toast.makeText(this, "Nu ai permisiunea necesară!", Toast.LENGTH_LONG).show();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -266,6 +270,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
         String userName = sharedPreferences.getString("userName", "");
         String userPhoto = sharedPreferences.getString("userPhoto", "");
+        userEmail = sharedPreferences.getString("userEmail", "");
 
         drawerNameTextView.setText(userName);
 
