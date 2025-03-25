@@ -41,7 +41,7 @@ https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simp
 git clone https://github.com/YourUsername/simplicadet.git
 ```
 
-[<kbd> <br><br> Download Simplicadet <br><br> </kbd>][KBD]
+[<kbd> <br> Download Simplicadet <br> </kbd>][KBD]
 
 [KBD]:https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
 
@@ -61,16 +61,9 @@ git clone https://github.com/YourUsername/simplicadet.git
 
 > “In the military, precision isn’t just a habit—it’s a way of >life.” – A Proud Cadet 
 
-## Connect With Me 🤝
 
-<div id="badges">
-  <a href="your-linkedin-URL">
-    <img src="https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Badge"/>
-  </a>
-  <a href="your-youtube-URL">
-    <img src="https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Youtube Badge"/>
-  </a>
-  <a href="your-twitter-URL">
-    <img src="https://img.shields.io/badge/Twitter-blue?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter Badge"/>
-  </a>
-</div>
+## 💖 Support the Project
+If you want to go a step further and support my open source work, follow me on youtube  ![](https://github.com/CLorant/readme-social-icons/raw/main/medium/colored/youtube.svg)
+
+
+To support the project directly, feel free to open issues for icon suggestions, or contribute with a pull request!
