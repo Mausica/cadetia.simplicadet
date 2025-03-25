@@ -9,9 +9,7 @@
 
 
 
-### Features ✨
-
----
+## Features ✨
 
 ### 📝 Elegant Task Management
 - **Organize Tasks with Precision:** Schedule assignments, drills, and academic deadlines.
@@ -36,7 +34,7 @@
 ## Installation ⚙️
 
 ```bash
-git clone https://github.com/YourUsername/simplicadet.git
+git clone https://github.com/Mausica/simplicadet.git
 ```
 
 [<kbd> <br> Download Simplicadet <br> </kbd>][KBD]
