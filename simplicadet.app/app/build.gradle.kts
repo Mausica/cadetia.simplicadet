@@ -58,8 +58,8 @@ dependencies {
 
 
     // Design
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.8")
-    implementation("androidx.navigation:navigation-ui-ktx:2.8.8")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.9")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.constraintlayout.v214)
     implementation("com.otaliastudios:zoomlayout:1.9.0")
@@ -75,7 +75,7 @@ dependencies {
 
 
     // Ads
-    implementation("com.google.android.gms:play-services-ads:24.0.0")
+    implementation("com.google.android.gms:play-services-ads:24.1.0")
 
     // ImageView
     implementation("com.makeramen:roundedimageview:2.3.0")
@@ -92,19 +92,19 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
-    implementation("com.google.firebase:firebase-firestore:25.1.2")
+    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+    implementation("com.google.firebase:firebase-firestore:25.1.3")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-functions:21.1.1")
+    implementation("com.google.firebase:firebase-functions:21.2.0")
 
     //Facebook
     implementation ("com.facebook.android:facebook-login:latest.release")
 
     //Google
     implementation ("com.google.android.gms:play-services-auth:21.3.0")
-    implementation ("androidx.credentials:credentials:1.3.0")
-    implementation ("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation ("androidx.credentials:credentials:1.5.0")
+    implementation ("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation (libs.material)
 

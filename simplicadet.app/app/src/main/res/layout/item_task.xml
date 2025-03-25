@@ -4,84 +4,68 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_marginTop="@dimen/_10sdp"
-    android:layout_marginStart="@dimen/_10sdp"
-    android:layout_marginEnd="@dimen/_10sdp"
+    android:layout_marginTop="@dimen/_8sdp"
+    android:layout_marginStart="@dimen/_14sdp"
+    android:layout_marginEnd="@dimen/_14sdp"
     android:elevation="@dimen/_5sdp"
-    android:backgroundTint="@color/secondary"
-    app:cardElevation="@dimen/_3sdp"
-    app:cardCornerRadius="@dimen/_14sdp"
-    app:contentPadding="@dimen/_3sdp"
-    android:layout_height="@dimen/_62sdp">
+    android:backgroundTint="?attr/backgroundLight"
+    app:cardElevation="@dimen/_4sdp"
+    app:cardCornerRadius="@dimen/_6sdp"
+    android:layout_height="wrap_content">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="@color/secondary">
-
-        <CheckBox
-            android:layout_marginStart="@dimen/_13sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:button="@drawable/rounded_checkbox_background"
-            android:id="@+id/checked_task" />
+        android:background="?attr/backgroundLight">
 
         <View
             android:id="@+id/view_glowed"
-            android:layout_width="@dimen/_3sdp"
+            android:layout_width="@dimen/_6sdp"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_7sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
             android:elevation="10dp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:layout_marginBottom="@dimen/_8sdp"
             android:outlineSpotShadowColor="@color/red"
             android:background="@drawable/glow_effect_red"
             tools:targetApi="p" />
 
+        <CheckBox
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:button="@drawable/rounded_checkbox_background"
+            android:id="@+id/checked_task" />
+
+        <!-- New LinearLayout to stack title and date/time -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="@dimen/_6sdp"
+            android:paddingBottom="@dimen/_6sdp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"/>
+            <!-- Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Model task title"
-                android:fontFamily="@font/circular_bold"
-                android:singleLine="true"
-                android:textSize="@dimen/_15ssp"
-                android:id="@+id/title"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:textColor="@color/white"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_20sdp"
-                tools:text="Slide to edit the task in any game."
-                android:maxLines="1"
-                android:id="@+id/description"
+                tools:text="Model task title used as a model in post"
                 android:fontFamily="@font/circular_medium"
-                android:textSize="@dimen/_11ssp"
-                android:textColor="@color/gray"/>
+                android:singleLine="true"
+                android:textSize="@dimen/_14ssp"
+                android:id="@+id/title"
+                android:textColor="?attr/textNormal"/>
 
+            <!-- Date and Time -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/_1sdp">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,7 +75,6 @@
                     android:id="@+id/day"
                     android:fontFamily="@font/circular_medium"
                     android:textSize="@dimen/_10ssp"
-                    android:layout_marginTop="@dimen/_1sdp"
                     android:textColor="@color/special_gray"/>
 
                 <TextView
@@ -103,19 +86,19 @@
                     android:id="@+id/date"
                     android:fontFamily="@font/circular_medium"
                     android:textSize="@dimen/_10ssp"
-                    android:layout_marginTop="@dimen/_1sdp"
                     android:textColor="@color/special_gray"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nov"
                     android:singleLine="true"
-                    android:layout_marginEnd="@dimen/_7sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
                     android:id="@+id/month"
                     android:fontFamily="@font/circular_medium"
                     android:textSize="@dimen/_10ssp"
-                    android:layout_marginTop="@dimen/_1sdp"
                     android:textColor="@color/special_gray"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -123,24 +106,11 @@
                     android:singleLine="true"
                     android:layout_marginEnd="@dimen/_3sdp"
                     android:id="@+id/time"
-                    android:fontFamily="@font/circular_medium"
+                    android:fontFamily="@font/circular_bold"
                     android:textSize="@dimen/_10ssp"
-                    android:layout_marginTop="@dimen/_1sdp"
                     android:textColor="@color/special_dark"/>
 
             </LinearLayout>
-
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/delete_task"
-            android:layout_width="@dimen/_24sdp"
-            android:layout_height="@dimen/_24sdp"
-            android:layout_marginEnd="@dimen/_12sdp"
-            android:background="@color/nothing"
-            android:layout_gravity="center"
-            android:src="@drawable/uni_ic_close"
-            app:tint="@color/white" />
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>

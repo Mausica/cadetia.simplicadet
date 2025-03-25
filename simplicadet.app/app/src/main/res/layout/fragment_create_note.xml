@@ -6,7 +6,7 @@
     android:id="@+id/bottomNote"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/backgroundNormal"
     tools:context=".activities.CreateNoteBottom">
 
     <ScrollView
@@ -25,6 +25,7 @@
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:id="@+id/imageBack"
+                android:elevation="3dp"
                 android:layout_marginStart="@dimen/_15sdp"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_12sdp"
@@ -32,7 +33,7 @@
                 android:src="@drawable/uni_ic_close"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/white" />
+                app:tint="?attr/textNormal" />
 
             <Button
                 android:id="@+id/buttonAdd"
@@ -43,6 +44,7 @@
                 android:fontFamily="@font/circular_bold"
                 android:orientation="vertical"
                 android:text="@string/create_note_add"
+                android:elevation="3dp"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp"
@@ -66,8 +68,8 @@
                 android:singleLine="true"
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp"
-                android:textColor="@color/white"
-                android:textColorHint="@color/gray"
+                android:textColor="?attr/textNormal"
+                android:textColorHint="?attr/textDark"
                 android:textSize="@dimen/_13ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/viewTitleIndicator"
@@ -79,7 +81,8 @@
                 android:layout_width="@dimen/_5sdp"
                 android:layout_height="0dp"
                 android:layout_marginStart="@dimen/_17sdp"
-                android:backgroundTint="@color/secondary"
+                android:backgroundTint="?attr/backgroundLight"
+                android:elevation="3dp"
                 android:background="@drawable/home_background_subtitle_indicator"
                 app:layout_constraintBottom_toBottomOf="@id/inputNoteTitle"
                 app:layout_constraintStart_toStartOf="parent"
@@ -100,8 +103,8 @@
                 android:inputType="textMultiLine"
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp"
-                android:textColor="@color/white"
-                android:textColorHint="@color/gray"
+                android:textColor="?attr/textNormal"
+                android:textColorHint="?attr/textDark"
                 android:textSize="@dimen/_13ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
@@ -113,9 +116,10 @@
                 android:id="@+id/viewSubtitleIndicator"
                 android:layout_width="@dimen/_5sdp"
                 android:layout_height="0dp"
+                android:elevation="3dp"
                 android:layout_marginStart="@dimen/_17sdp"
                 android:background="@drawable/home_background_subtitle_indicator"
-                android:backgroundTint="@color/secondary"
+                android:backgroundTint="?attr/backgroundLight"
                 app:layout_constraintBottom_toBottomOf="@id/inputNoteSubtitle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/inputNoteSubtitle"/>
@@ -126,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/circular_medium"
                 android:includeFontPadding="false"
-                android:textColor="@color/special_gray"
+                android:textColor="?attr/textLight"
                 android:textSize="@dimen/_10ssp"
                 android:layout_marginTop="@dimen/_10sdp"
                 app:layout_constraintEnd_toEndOf="@id/inputNoteSubtitle"
@@ -137,41 +141,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginStart="@dimen/_17sdp"
-                android:layout_marginEnd="@dimen/_17sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginEnd="@dimen/_11sdp"
                 android:orientation="horizontal"
+                android:padding="@dimen/_3sdp"
                 android:id="@+id/layoutMiscellaneous"
                 app:layout_constraintTop_toBottomOf="@id/textDateTime">
 
                 <RelativeLayout
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
-                    android:background="@drawable/home_background_note"
-                    android:backgroundTint="@color/secondary">
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:background="@drawable/home_background_quizz"
+                    android:layout_gravity="center_vertical"
+                    android:elevation="5dp">
+
                     <ImageView
                         android:id="@+id/icon_image"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:paddingBottom="@dimen/_2sdp"
                         android:src="@drawable/home_ic_image"
                         android:layout_centerVertical="true"
                         android:layout_centerHorizontal="true"
-                        app:tint="@color/light" />
+                        app:tint="?attr/backgroundDark" />
                 </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/del_note"
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:background="@drawable/home_background_note"
+                    android:layout_marginEnd="@dimen/_3sdp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/home_background_quizz"
                     android:alpha="0.2"
-                    android:clickable="false"
-                    android:backgroundTint="@color/secondary">
+                    android:clickable="false">
                     <ImageView
                         android:id="@+id/icon_delete"
                         android:layout_width="@dimen/_24sdp"
                         android:layout_height="@dimen/_24sdp"
+                        android:paddingBottom="@dimen/_2sdp"
                         android:src="@drawable/home_ic_delete"
                         android:layout_centerVertical="true"
                         android:layout_centerHorizontal="true"
@@ -183,16 +192,17 @@
                     android:layout_height="@dimen/_40sdp"
                     android:orientation="horizontal"
                     android:layout_gravity="center"
+                    android:elevation="3dp"
                     android:gravity="center">
                     <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
                         <View
                             android:id="@+id/color1"
-                            android:layout_width="@dimen/_42sdp"
-                            android:layout_height="@dimen/_40sdp"
+                            android:layout_width="@dimen/_36sdp"
+                            android:layout_height="@dimen/_36sdp"
                             android:layout_gravity="center_vertical"
-                            android:backgroundTint="@color/gray"
+                            android:backgroundTint="?attr/backgroundLight"
                             android:background="@drawable/color_pallette_left" />
                         <ImageView
                             android:id="@+id/image1"
@@ -201,6 +211,7 @@
                             android:padding="@dimen/_10sdp"
                             android:src="@drawable/home_ic_check"
                             android:layout_gravity="center"
+                            app:tint="?attr/textNormal"
                             android:importantForAccessibility="no" />
                     </FrameLayout>
                     <FrameLayout
@@ -208,8 +219,8 @@
                         android:layout_height="wrap_content">
                         <View
                             android:id="@+id/color2"
-                            android:layout_width="@dimen/_42sdp"
-                            android:layout_height="@dimen/_40sdp"
+                            android:layout_width="@dimen/_36sdp"
+                            android:layout_height="@dimen/_36sdp"
                             android:layout_gravity="center_vertical"
                             android:backgroundTint="@color/spearmint"
                             android:background="@drawable/color_pallette_center" />
@@ -226,8 +237,8 @@
                         android:layout_height="wrap_content">
                         <View
                             android:id="@+id/color3"
-                            android:layout_width="@dimen/_42sdp"
-                            android:layout_height="@dimen/_40sdp"
+                            android:layout_width="@dimen/_36sdp"
+                            android:layout_height="@dimen/_36sdp"
                             android:layout_gravity="center_vertical"
                             android:backgroundTint="@color/primary"
                             android:background="@drawable/color_pallette_center" />
@@ -244,8 +255,8 @@
                         android:layout_height="wrap_content">
                         <View
                             android:id="@+id/color4"
-                            android:layout_width="@dimen/_42sdp"
-                            android:layout_height="@dimen/_40sdp"
+                            android:layout_width="@dimen/_36sdp"
+                            android:layout_height="@dimen/_36sdp"
                             android:layout_gravity="center_vertical"
                             android:backgroundTint="@color/citric"
                             android:background="@drawable/color_pallette_right" />
@@ -278,8 +289,8 @@
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp"
                 android:hint="@string/home_type_note_here"
-                android:textColor="@color/white"
-                android:textColorHint="@color/special_gray"
+                android:textColor="?attr/textNormal"
+                android:textColorHint="?attr/textDark"
                 android:textSize="@dimen/_13ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/imageNote"

@@ -62,7 +62,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TextView date;
         TextView month;
         TextView title;
-        TextView description;
+        //TextView description;
         TextView time;
         CheckBox checkBoxGlow;
         View glowedView;
@@ -74,13 +74,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             date = itemView.findViewById(R.id.date);
             month = itemView.findViewById(R.id.month);
             title = itemView.findViewById(R.id.title);
-            description = itemView.findViewById(R.id.description);
+            //description = itemView.findViewById(R.id.description);
             time = itemView.findViewById(R.id.time);
             checkBoxGlow = itemView.findViewById(R.id.checked_task);
             glowedView = itemView.findViewById(R.id.view_glowed);
-            imageButton = itemView.findViewById(R.id.delete_task);
+            //imageButton = itemView.findViewById(R.id.delete_task);
 
-            imageButton.setOnClickListener(v -> deleteTask(getAdapterPosition()));
+            //imageButton.setOnClickListener(v -> deleteTask(getAdapterPosition()));
         }
 
         private class UpdateTaskAsyncTask extends AsyncTask<Task, Void, Void> {
@@ -99,7 +99,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         void bind(Task task) {
             if (task != null) {
                 title.setText(task.getTaskTitle());
-                description.setText(task.getTaskDescription());
+                //description.setText(task.getTaskDescription());
                 time.setText(task.getLastAlarm());
 
                 // Set checkbox state

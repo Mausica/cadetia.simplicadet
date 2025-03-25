@@ -39,6 +39,7 @@ public class HomeFragment3 extends Fragment {
 
     private ZoomLayout zoomLayout;
     private int rotationState = 0;
+    private boolean isRotated = false;
     private final int[] presentCount = new int[PLATOON_COUNT];
     private final int[] homeCount = new int[PLATOON_COUNT];
     private final int[] absentCount = new int[PLATOON_COUNT];
@@ -237,35 +238,41 @@ public class HomeFragment3 extends Fragment {
     public void rotateZoomLayout() {
         if (zoomLayout != null) {
             zoomLayout.post(() -> {
-                int width = zoomLayout.getWidth();
-                int height = zoomLayout.getHeight();
+                int originalWidth = zoomLayout.getMeasuredWidth();
+                int originalHeight = zoomLayout.getMeasuredHeight();
 
-                // Directly toggle between 0 and 90 degrees
-                float rotation = (rotationState == 0) ? 90.0f : 0.0f;
-                rotationState = (rotationState + 1) % 2; // Now just 0 and 1
+                // Toggle rotation state
+                float newRotation = isRotated ? 0.0f : 90.0f;
+                isRotated = !isRotated; // Flip state
 
-                if (rotation == 90.0f) {
-                    zoomLayout.setTranslationX((width - height) / 2);
-                    zoomLayout.setTranslationY((height - width) / 2);
+                // Reset translations before applying new transformations
+                zoomLayout.setTranslationX(0);
+                zoomLayout.setTranslationY(0);
 
-                    ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
-                    params.width = height;
-                    params.height = width;
+                // Swap width and height when rotating
+                ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+                if (newRotation == 90.0f) {
+                    params.width = originalHeight;
+                    params.height = originalWidth;
                     zoomLayout.setLayoutParams(params);
-                } else {
-                    zoomLayout.setTranslationX(0);
-                    zoomLayout.setTranslationY(0);
 
-                    ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
-                    params.width = width;
-                    params.height = height;
+                    // Correct translation to keep it centered
+                    float offsetX = (originalWidth - originalHeight) / 2f;
+                    float offsetY = (originalHeight - originalWidth) / 2f;
+                    zoomLayout.setTranslationX(offsetX);
+                    zoomLayout.setTranslationY(offsetY);
+                } else {
+                    params.width = originalWidth;
+                    params.height = originalHeight;
                     zoomLayout.setLayoutParams(params);
                 }
 
-                zoomLayout.setRotation(rotation);
+                // Apply rotation
+                zoomLayout.setRotation(newRotation);
                 zoomLayout.requestLayout();
             });
         }
     }
+
 
 }

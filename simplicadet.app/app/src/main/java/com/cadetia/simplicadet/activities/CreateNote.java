@@ -21,6 +21,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,8 +144,8 @@ public class CreateNote extends BottomSheetDialogFragment {
         imageRemove = dialog.findViewById(R.id.imageRemoveImage);
         buttonDel = dialog.findViewById(R.id.icon_delete);
         del_note = dialog.findViewById(R.id.del_note);
-        selectedNoteColor = "#2C2C2C";
         selectedImagePath = "";
+        selectedNoteColor = "dynamic";
 
         buttonAdd = dialog.findViewById(R.id.buttonAdd);
         assert buttonAdd != null;
@@ -278,7 +280,7 @@ public class CreateNote extends BottomSheetDialogFragment {
         final ImageView imageColor4 = dialog.findViewById(R.id.image4);
 
         dialog.findViewById(R.id.color1).setOnClickListener(v -> {
-            selectedNoteColor = "#2C2C2C";
+            selectedNoteColor = "dynamic";
             assert imageColor1 != null;
             imageColor1.setImageResource(R.drawable.home_ic_check);
             assert imageColor2 != null;
@@ -302,7 +304,7 @@ public class CreateNote extends BottomSheetDialogFragment {
             setIndicatorColor();
         });
         dialog.findViewById(R.id.color3).setOnClickListener(v -> {
-            selectedNoteColor = "#1DB954";
+            selectedNoteColor = "#4C91CD";
             assert imageColor1 != null;
             imageColor1.setImageResource(0);
             assert imageColor2 != null;
@@ -331,7 +333,7 @@ public class CreateNote extends BottomSheetDialogFragment {
                 case "#4B917D":
                     dialog.findViewById(R.id.color2).performClick();
                     break;
-                case "#1DB954":
+                case "#4C91CD":
                     dialog.findViewById(R.id.color3).performClick();
                     break;
                 case "#CDF564":
@@ -426,11 +428,18 @@ public class CreateNote extends BottomSheetDialogFragment {
     }
 
     private void setIndicatorColor(){
+        // If the stored color is set to "dynamic", resolve the attribute again.
+        if("dynamic".equals(selectedNoteColor)){
+            TypedValue typedValue = new TypedValue();
+            requireContext().getTheme().resolveAttribute(R.attr.backgroundLight, typedValue, true);
+            selectedNoteColor = String.format("#%06X", (0xFFFFFF & typedValue.data));
+        }
         if (viewSubtitleIndicator != null && selectedNoteColor != null) {
             int color = Color.parseColor(selectedNoteColor);
             ViewCompat.setBackgroundTintList(viewSubtitleIndicator, ColorStateList.valueOf(color));
             ViewCompat.setBackgroundTintList(viewTitleIndicator, ColorStateList.valueOf(color));
         }
+        Log.e("ColorDebug", "Selected Color: " + selectedNoteColor);
     }
 
     private void selectImage(){
