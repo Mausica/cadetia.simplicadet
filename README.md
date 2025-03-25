@@ -32,13 +32,22 @@
 
 ---
 
+https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
+
+
 ## Installation ⚙️
 
+<div align = center>
+<br>
 <br>
 
-<kbd> <br> Download <br> </kbd>https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
+[<kbd> <br> Download Simplicadet <br> </kbd>][KBD]
 
+</div>
 <br>
+<br>
+
+[KBD]:https://github.com/Mausica/cadetia.simplicadet/raw/refs/heads/main/releases/simplicadet.apk
 
 ```bash
 git clone https://github.com/YourUsername/simplicadet.git
