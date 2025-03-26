@@ -1,7 +1,7 @@
 
 # Simplicadet `1.1b` 🚀🎖️
 
-<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
+<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone_l.png" />
 
 **Simplicadet** is a cutting‐edge app designed with military precision for cadets and adaptable for all students. Whether you’re preparing for drills or academic exams, Simplicadet helps you stay organized and mission‐ready with elegant task management, live news updates, interactive quizzes, and an innovative formation mindmap for attendance tracking.
 
