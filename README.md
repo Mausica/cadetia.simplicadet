@@ -1,5 +1,5 @@
 
-# Simplicadet [Beta] 🚀🎖️
+# Simplicadet `1.1b` 🚀🎖️
 
 <img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
 
@@ -53,7 +53,7 @@ git clone https://github.com/Mausica/simplicadet.git
 [![My Skills](https://skillicons.dev/icons?i=java,kotlin,firebase,gcp,androidstudio,ae,ps,ai)](https://skillicons.dev)
 
 
-> “In the military, precision isn’t just a habit—it’s a way of >life.” – A Proud Cadet 
+> “In the military, precision isn’t just a habit—it’s a way of life.” – A Proud Cadet 
 
 
 ## 💖 Support the Project
