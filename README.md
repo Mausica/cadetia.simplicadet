@@ -7,8 +7,6 @@
 
 > “Discipline is the soul of an army.” – George Washington
 
----
-
 ### 📝 Elegant Task Management
 - **Organize Tasks with Precision:** Schedule assignments, drills, and academic deadlines.
 - **Smart Reminders & Notifications:** Never miss a critical drill or exam.
