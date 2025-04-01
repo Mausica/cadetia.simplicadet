@@ -9,13 +9,13 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_110sdp"
+        android:layout_height="@dimen/_104sdp"
         android:background="@drawable/background_delete_note"
-        android:layout_marginLeft="@dimen/_46sdp"
-        android:layout_marginRight="@dimen/_46sdp"
+        android:layout_marginLeft="@dimen/_50sdp"
+        android:layout_marginRight="@dimen/_50sdp"
         android:orientation="vertical"
-        android:padding="@dimen/_12sdp"
-        android:elevation="5dp"
+        android:paddingTop="@dimen/_12sdp"
+        android:elevation="7dp"
         android:layout_marginTop="@dimen/_25sdp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="@dimen/_20sdp">
@@ -26,40 +26,52 @@
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_8sdp"
             android:text="Delete Note"
-            android:fontFamily="@font/circular_medium"
+            android:fontFamily="@font/circular_regular"
             android:textAlignment="center"
             android:textColor="?attr/textNormal"
             android:textSize="@dimen/_15ssp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginRight="@dimen/_16sdp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/circular_medium"
+            android:fontFamily="@font/circular_regular"
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_4sdp"
-            android:paddingTop="@dimen/_4sdp"
             android:textAlignment="center"
             android:text="Are You Sure You Want to Delete This Note?"
             android:textColor="?attr/textDark"
-            android:textSize="@dimen/_12ssp" />
+            android:textSize="@dimen/_12ssp"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginRight="@dimen/_16sdp"/>
+
+        <!-- Dividing Line that ignores parent padding -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:background="?android:attr/listDivider" />
 
         <Button
             android:id="@+id/ok_btn_del"
             android:layout_marginEnd="@dimen/_28sdp"
             android:layout_marginStart="@dimen/_28sdp"
             android:layout_marginBottom="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_4sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/circular_bold"
-            android:layout_marginTop="@dimen/_12sdp"
+            android:fontFamily="@font/circular_medium"
             android:textAllCaps="false"
             android:elevation="0dp"
             android:background="@color/nothing"
             android:textSize="@dimen/_14ssp"
             android:textColor="@color/primary"
-            android:text="Ok" />
+            android:text="Ok"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginRight="@dimen/_16sdp"/>
 
     </LinearLayout>
 

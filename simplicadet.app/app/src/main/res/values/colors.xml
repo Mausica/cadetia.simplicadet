@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary_o">#4C91CD</color>
+    <color name="primary_o_transparent">#4C77CD</color>
 
-    <color name="primary">#4C91CD</color>
-    <color name="primary_transparent">#4C77CD</color>
+    <color name="primary">#0070F0</color>
+    <color name="primary_transparent">#990070F0</color>
     <color name="black">#141414</color>
     <color name="white">#FFFFFFFF</color>
 

@@ -23,6 +23,7 @@
         android:layout_marginTop="@dimen/_130sdp"
         android:padding="@dimen/_12sdp"
         android:src="@drawable/ic_launcher_full"
+        android:tintMode="multiply"
         app:tint="@color/primary"
         android:contentDescription="@string/main_title" />
 
