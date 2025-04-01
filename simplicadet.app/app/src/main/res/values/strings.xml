@@ -51,7 +51,8 @@
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
 
     <string name="id_AppOpenAdd">ca-app-pub-8447567589954533/1110300440</string>
-    <string name="id_InterstitialAdd">ca-app-pub-8447567589954533/4813170916</string>
+
+    <string name="id_InterstitialAdd">ca-app-pub-9534691024766923/7270158920</string>
 
     <string name="default_web_client_id">672731390392-c7fkrbjbm5c4nmvnt7v3bk00hadilk8v.apps.googleusercontent.com</string>
 
