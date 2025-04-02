@@ -37,6 +37,7 @@ public class SearchFragment extends Fragment {
             homeActivity.openNavigationDrawer();
         });
 
+        ((Home) getActivity()).hideFab();
 
         retrieveUserData();
         return root;

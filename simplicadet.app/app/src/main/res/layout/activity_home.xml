@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- NavigationView remains unchanged -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
@@ -60,9 +61,10 @@
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp">
 
+                <!-- Modified card view with fixed width -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/nav_card"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/_150sdp"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="@dimen/_24sdp"
                     app:cardElevation="@dimen/_6sdp"

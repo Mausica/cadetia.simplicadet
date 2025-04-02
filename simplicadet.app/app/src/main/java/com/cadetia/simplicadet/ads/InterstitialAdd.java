@@ -35,7 +35,7 @@ public class InterstitialAdd {
                     @Override
                     public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                         mInterstitialAd = interstitialAd;
-                        Log.e(TAG, "Ad loaded.");
+                        Log.i(TAG, "Ad loaded.");
                         //Log.i(TAG, "onAdLoaded");
                     }
 

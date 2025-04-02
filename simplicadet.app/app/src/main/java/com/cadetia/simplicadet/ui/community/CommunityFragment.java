@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.cadetia.simplicadet.activities.Home;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.database.DbQuery;
@@ -34,6 +35,7 @@ public class CommunityFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentCommunityBinding.inflate(inflater, container, false);
+        ((Home) getActivity()).hideFab();
         return binding.getRoot();
     }
 

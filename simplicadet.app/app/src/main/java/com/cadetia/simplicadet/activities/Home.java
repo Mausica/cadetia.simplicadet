@@ -236,10 +236,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                 if (childFragment instanceof HomeFragment1) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    fabMain.setVisibility(View.GONE);
+                    hideFab(); // Use your updated method
                 } else if (childFragment instanceof HomeFragment2) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    fabMain.setVisibility(View.VISIBLE);
+                    showFab(); // Use the new method to restore layout
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
                         HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
@@ -247,7 +247,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     });
                 } else if (childFragment instanceof HomeFragment3) {
                     fabMain.setImageResource(R.drawable.home_ic_rotate);
-                    fabMain.setVisibility(View.VISIBLE);
+                    showFab(); // Use the new method to restore layout
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
                         HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
@@ -255,7 +255,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     });
                 } else if (childFragment instanceof HomeFragment4) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    fabMain.setVisibility(View.VISIBLE);
+                    showFab(); // Use the new method to restore layout
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
                         HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
@@ -263,7 +263,49 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     });
                 }
             }
+        } else {
+            fabMain.setImageResource(R.drawable.home_ic_plus);
+            hideFab(); // Use your updated method
         }
+    }
+
+    public void hideFab() {
+        FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        fabMain.setImageResource(R.drawable.home_ic_plus);
+        fabMain.setVisibility(View.GONE);
+
+        // Get reference to the nav_card
+        androidx.cardview.widget.CardView navCard = findViewById(R.id.nav_card);
+
+        // Update constraints to center the nav_card when FAB is hidden
+        androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
+                (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) navCard.getLayoutParams();
+
+        // Clear the end constraint to fab_container
+        params.endToStart = -1;
+        // Set end constraint to parent
+        params.endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID;
+
+        navCard.setLayoutParams(params);
+    }
+
+    public void showFab() {
+        FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        fabMain.setVisibility(View.VISIBLE);
+
+        // Get reference to the nav_card
+        androidx.cardview.widget.CardView navCard = findViewById(R.id.nav_card);
+
+        // Restore original constraints
+        androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
+                (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) navCard.getLayoutParams();
+
+        // Set end constraint back to fab_container
+        params.endToStart = R.id.fab_container;
+        // Clear end constraint to parent
+        params.endToEnd = -1;
+
+        navCard.setLayoutParams(params);
     }
 
     private void retrieveUserData() {
