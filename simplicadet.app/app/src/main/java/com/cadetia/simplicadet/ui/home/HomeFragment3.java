@@ -1,25 +1,26 @@
 package com.cadetia.simplicadet.ui.home;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.Home;
 import com.otaliastudios.zoom.ZoomLayout;
 
 public class HomeFragment3 extends Fragment {
@@ -27,6 +28,9 @@ public class HomeFragment3 extends Fragment {
     private static final int PLATOON_COUNT = 6;
     private static final int SOLDIERS_PER_PLATOON = 27;
     private static final int TOTAL_SOLDIERS = PLATOON_COUNT * SOLDIERS_PER_PLATOON;
+    private static final String STATE_IS_ROTATED = "isRotated";
+    private static final String STATE_ORIGINAL_WIDTH = "originalWidth";
+    private static final String STATE_ORIGINAL_HEIGHT = "originalHeight";
 
     private static final String[] SOLDIERS = {
             "Radulescu Marius", "Grama Bianca", "Popescu Ion", "Stanescu Maria",
@@ -38,8 +42,11 @@ public class HomeFragment3 extends Fragment {
     private static final int STATE_HOME = 1;
     private static final int STATE_ABSENT = 2;
 
+    private int originalWidth = -1;
+    private int originalHeight = -1;
+
     private ZoomLayout zoomLayout;
-    private int rotationState = 0;
+
     private boolean isRotated = false;
     private final int[] presentCount = new int[PLATOON_COUNT];
     private final int[] homeCount = new int[PLATOON_COUNT];
@@ -52,10 +59,46 @@ public class HomeFragment3 extends Fragment {
         return inflater.inflate(R.layout.fragment_home3, container, false);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_IS_ROTATED, isRotated);
+        outState.putInt(STATE_ORIGINAL_WIDTH, originalWidth);
+        outState.putInt(STATE_ORIGINAL_HEIGHT, originalHeight);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            isRotated = savedInstanceState.getBoolean(STATE_IS_ROTATED, false);
+            originalWidth = savedInstanceState.getInt(STATE_ORIGINAL_WIDTH, -1);
+            originalHeight = savedInstanceState.getInt(STATE_ORIGINAL_HEIGHT, -1);
+
+            // If we were rotated, restore that state
+            if (isRotated && zoomLayout != null) {
+                zoomLayout.post(this::applyRotationState);
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Reset to portrait when leaving the fragment
+        if (isRotated && zoomLayout != null) {
+            resetToPortrait();
+        }
+    }
+
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         zoomLayout = view.findViewById(R.id.zoomLayout);
+        zoomLayout.post(() -> {
+            originalWidth = zoomLayout.getWidth();
+            originalHeight = zoomLayout.getHeight();
+        });
 
         // Main vertical container
         LinearLayout mainContainer = new LinearLayout(requireContext());
@@ -236,69 +279,176 @@ public class HomeFragment3 extends Fragment {
         return typedValue.data;
     }
 
-    public void rotateZoomLayout() {
-        if (zoomLayout != null) {
+    private void restoreOriginalDimensions() {
+        if (zoomLayout != null && originalWidth > 0 && originalHeight > 0) {
             zoomLayout.post(() -> {
-                isRotated = !isRotated;
-                float newRotation = isRotated ? 90.0f : 0.0f;
-
-                ViewGroup parent = (ViewGroup) zoomLayout.getParent();
-                ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
-                int parentWidth = parent.getWidth();
-                int parentHeight = parent.getHeight();
+                // Reset rotation state
+                isRotated = false;
 
                 // Reset transformations
                 zoomLayout.setRotation(0);
                 zoomLayout.setTranslationX(0);
                 zoomLayout.setTranslationY(0);
+                zoomLayout.zoomTo(1.0f, true);
 
-                int currentWidth = zoomLayout.getWidth();
-                int currentHeight = zoomLayout.getHeight();
-
-                if (isRotated) {
-                    // Swap width and height for landscape
-                    params.width = currentHeight;
-                    params.height = currentWidth;
-                    zoomLayout.setLayoutParams(params);
-
-                    // Apply transformations after layout update
-                    zoomLayout.post(() -> {
-                        int newWidth = zoomLayout.getWidth();
-                        int newHeight = zoomLayout.getHeight();
-
-                        float pivotX = newWidth / 2f;
-                        float pivotY = newHeight / 2f;
-                        zoomLayout.setPivotX(pivotX);
-                        zoomLayout.setPivotY(pivotY);
-                        zoomLayout.setRotation(newRotation);
-
-                        // Center the view in the parent
-                        float translationX = (parentWidth - newWidth) / 2f;
-                        float translationY = (parentHeight - newHeight) / 2f - 100;
-                        zoomLayout.setTranslationX(translationX);
-                        zoomLayout.setTranslationY(translationY);
-
-                        zoomLayout.zoomTo(0.9f, true);
-                    });
-                } else {
-                    // Restore original portrait dimensions
-                    params.width = currentHeight; // After rotation, current dimensions are swapped
-                    params.height = currentWidth;
-                    zoomLayout.setLayoutParams(params);
-
-                    zoomLayout.post(() -> {
-                        zoomLayout.setRotation(newRotation);
-                        zoomLayout.zoomTo(1.0f, true);
-                    });
-                }
+                // Restore original dimensions
+                ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+                params.width = originalWidth;
+                params.height = originalHeight;
+                zoomLayout.setLayoutParams(params);
 
                 zoomLayout.requestLayout();
             });
         }
     }
 
+    private void applyRotationState() {
+        if (isRotated) {
+            rotateToLandscape();
+        } else {
+            resetToPortrait();
+        }
+    }
+
+    private void rotateToLandscape() {
+        if (zoomLayout == null) return;
+
+        ViewGroup parent = (ViewGroup) zoomLayout.getParent();
+        ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+        int parentWidth = parent.getWidth();
+        int parentHeight = parent.getHeight();
+
+        // Store current values for animation
+        float currentRotation = zoomLayout.getRotation();
+        float currentTranslationX = zoomLayout.getTranslationX();
+        float currentTranslationY = zoomLayout.getTranslationY();
+        float currentZoom = zoomLayout.getZoom();
+
+        int currentWidth = zoomLayout.getWidth();
+        int currentHeight = zoomLayout.getHeight();
+
+        // Swap width and height for landscape
+        params.width = currentHeight;
+        params.height = currentWidth;
+        zoomLayout.setLayoutParams(params);
+
+        zoomLayout.post(() -> {
+            int newWidth = zoomLayout.getWidth();
+            int newHeight = zoomLayout.getHeight();
+
+            float pivotX = newWidth / 2f;
+            float pivotY = newHeight / 2f;
+            zoomLayout.setPivotX(pivotX);
+            zoomLayout.setPivotY(pivotY);
+
+            // Calculate target translations
+            float targetTranslationX = (parentWidth - newWidth) / 2f;
+            float targetTranslationY = (parentHeight - newHeight) / 2f - 100;
+
+            // Create animation set
+            AnimatorSet animatorSet = new AnimatorSet();
+
+            // Rotation animation
+            ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(zoomLayout, "rotation", currentRotation, 90f);
+            rotationAnim.setDuration(400);
+            rotationAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+
+            // Translation animations
+            ObjectAnimator translationXAnim = ObjectAnimator.ofFloat(zoomLayout, "translationX",
+                    currentTranslationX, targetTranslationX);
+            ObjectAnimator translationYAnim = ObjectAnimator.ofFloat(zoomLayout, "translationY",
+                    currentTranslationY, targetTranslationY);
+
+            // Play all animations together
+            animatorSet.playTogether(rotationAnim, translationXAnim, translationYAnim);
+
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    // Zoom out slightly at start
+                    zoomLayout.zoomTo(currentZoom * 0.9f, true);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // Final zoom with bounce effect
+                    zoomLayout.zoomTo(0.9f, true);
+
+                    // Ensure final state is correct
+                    zoomLayout.setRotation(90f);
+                    zoomLayout.setTranslationX(targetTranslationX);
+                    zoomLayout.setTranslationY(targetTranslationY);
+                }
+            });
+
+            animatorSet.start();
+        });
+    }
+
+    private void resetToPortrait() {
+        if (zoomLayout == null || originalWidth <= 0 || originalHeight <= 0) return;
+
+        isRotated = false;
+
+        // Store current values for animation
+        float currentRotation = zoomLayout.getRotation();
+        float currentTranslationX = zoomLayout.getTranslationX();
+        float currentTranslationY = zoomLayout.getTranslationY();
+        float currentZoom = zoomLayout.getZoom();
+
+        ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
+        params.width = originalWidth;
+        params.height = originalHeight;
+        zoomLayout.setLayoutParams(params);
+
+        zoomLayout.post(() -> {
+            AnimatorSet animatorSet = new AnimatorSet();
+
+            // Rotation animation
+            ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(zoomLayout, "rotation", currentRotation, 0f);
+            rotationAnim.setDuration(400);
+            rotationAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+
+            // Translation animations
+            ObjectAnimator translationXAnim = ObjectAnimator.ofFloat(zoomLayout, "translationX", currentTranslationX, 0f);
+            ObjectAnimator translationYAnim = ObjectAnimator.ofFloat(zoomLayout, "translationY", currentTranslationY, 0f);
+
+            // Play all animations together
+            animatorSet.playTogether(rotationAnim, translationXAnim, translationYAnim);
+
+            animatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    // Zoom out slightly at start
+                    zoomLayout.zoomTo(currentZoom * 0.9f, true);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // Final zoom with bounce effect
+                    zoomLayout.zoomTo(1.0f, true);
+
+                    // Ensure final state is correct
+                    zoomLayout.setRotation(0f);
+                    zoomLayout.setTranslationX(0f);
+                    zoomLayout.setTranslationY(0f);
+                }
+            });
+
+            animatorSet.start();
+        });
+    }
+
+    public void rotateZoomLayout() {
+        if (zoomLayout != null) {
+            isRotated = !isRotated;
+            applyRotationState();
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        restoreOriginalDimensions();
     }
 }
