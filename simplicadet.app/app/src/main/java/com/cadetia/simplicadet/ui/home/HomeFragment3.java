@@ -238,37 +238,57 @@ public class HomeFragment3 extends Fragment {
     public void rotateZoomLayout() {
         if (zoomLayout != null) {
             zoomLayout.post(() -> {
-                int originalWidth = zoomLayout.getMeasuredWidth();
-                int originalHeight = zoomLayout.getMeasuredHeight();
-
                 // Toggle rotation state
-                float newRotation = isRotated ? 0.0f : 90.0f;
-                isRotated = !isRotated; // Flip state
+                isRotated = !isRotated;
+                float newRotation = isRotated ? 90.0f : 0.0f;
 
-                // Reset translations before applying new transformations
+                // Get the parent container dimensions
+                ViewGroup parent = (ViewGroup) zoomLayout.getParent();
+                int parentWidth = parent.getWidth();
+                int parentHeight = parent.getHeight();
+
+                // Reset any previous transformations
+                zoomLayout.setRotation(0);
                 zoomLayout.setTranslationX(0);
                 zoomLayout.setTranslationY(0);
 
-                // Swap width and height when rotating
-                ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
-                if (newRotation == 90.0f) {
-                    params.width = originalHeight;
-                    params.height = originalWidth;
-                    zoomLayout.setLayoutParams(params);
+                // Get original dimensions
+                int width = zoomLayout.getWidth();
+                int height = zoomLayout.getHeight();
 
-                    // Correct translation to keep it centered
-                    float offsetX = (originalWidth - originalHeight) / 2f;
-                    float offsetY = (originalHeight - originalWidth) / 2f;
-                    zoomLayout.setTranslationX(offsetX);
-                    zoomLayout.setTranslationY(offsetY);
+                if (isRotated) {
+                    // Rotate to landscape (90 degrees)
+                    // Center the rotated view within the parent
+                    float pivotX = width / 2f;
+                    float pivotY = height / 2f;
+
+                    zoomLayout.setPivotX(pivotX);
+                    zoomLayout.setPivotY(pivotY);
+                    zoomLayout.setRotation(newRotation);
+
+                    // Calculate translation to center the rotated view
+                    float translationX = (parentWidth - height) / 2f - (width - height) / 2f;
+                    float translationY = (parentHeight - width) / 2f - (height - width) / 2f;
+
+                    zoomLayout.setTranslationX(translationX);
+                    zoomLayout.setTranslationY(translationY);
+
+                    // Apply 2x zoom when in landscape mode
+                    zoomLayout.zoomTo(1.55f, true);
                 } else {
-                    params.width = originalWidth;
-                    params.height = originalHeight;
-                    zoomLayout.setLayoutParams(params);
+                    // Return to portrait (0 degrees)
+                    zoomLayout.setPivotX(width / 2f);
+                    zoomLayout.setPivotY(height / 2f);
+                    zoomLayout.setRotation(newRotation);
+
+                    // No translation needed for portrait mode
+                    zoomLayout.setTranslationX(0);
+                    zoomLayout.setTranslationY(0);
+
+                    // Reset zoom back to 1x for portrait mode
+                    zoomLayout.zoomTo(1.0f, true);
                 }
 
-                // Apply rotation
-                zoomLayout.setRotation(newRotation);
                 zoomLayout.requestLayout();
             });
         }
