@@ -3,6 +3,7 @@ package com.cadetia.simplicadet.ui.home;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -238,55 +239,57 @@ public class HomeFragment3 extends Fragment {
     public void rotateZoomLayout() {
         if (zoomLayout != null) {
             zoomLayout.post(() -> {
-                // Toggle rotation state
                 isRotated = !isRotated;
                 float newRotation = isRotated ? 90.0f : 0.0f;
 
-                // Get the parent container dimensions
                 ViewGroup parent = (ViewGroup) zoomLayout.getParent();
+                ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
                 int parentWidth = parent.getWidth();
                 int parentHeight = parent.getHeight();
 
-                // Reset any previous transformations
+                // Reset transformations
                 zoomLayout.setRotation(0);
                 zoomLayout.setTranslationX(0);
                 zoomLayout.setTranslationY(0);
 
-                // Get original dimensions
-                int width = zoomLayout.getWidth();
-                int height = zoomLayout.getHeight();
+                int currentWidth = zoomLayout.getWidth();
+                int currentHeight = zoomLayout.getHeight();
 
                 if (isRotated) {
-                    // Rotate to landscape (90 degrees)
-                    // Center the rotated view within the parent
-                    float pivotX = width / 2f;
-                    float pivotY = height / 2f;
+                    // Swap width and height for landscape
+                    params.width = currentHeight;
+                    params.height = currentWidth;
+                    zoomLayout.setLayoutParams(params);
 
-                    zoomLayout.setPivotX(pivotX);
-                    zoomLayout.setPivotY(pivotY);
-                    zoomLayout.setRotation(newRotation);
+                    // Apply transformations after layout update
+                    zoomLayout.post(() -> {
+                        int newWidth = zoomLayout.getWidth();
+                        int newHeight = zoomLayout.getHeight();
 
-                    // Calculate translation to center the rotated view
-                    float translationX = (parentWidth - height) / 2f - (width - height) / 2f;
-                    float translationY = (parentHeight - width) / 2f - (height - width) / 2f;
+                        float pivotX = newWidth / 2f;
+                        float pivotY = newHeight / 2f;
+                        zoomLayout.setPivotX(pivotX);
+                        zoomLayout.setPivotY(pivotY);
+                        zoomLayout.setRotation(newRotation);
 
-                    zoomLayout.setTranslationX(translationX);
-                    zoomLayout.setTranslationY(translationY);
+                        // Center the view in the parent
+                        float translationX = (parentWidth - newWidth) / 2f;
+                        float translationY = (parentHeight - newHeight) / 2f - 100;
+                        zoomLayout.setTranslationX(translationX);
+                        zoomLayout.setTranslationY(translationY);
 
-                    // Apply 2x zoom when in landscape mode
-                    zoomLayout.zoomTo(1.55f, true);
+                        zoomLayout.zoomTo(0.9f, true);
+                    });
                 } else {
-                    // Return to portrait (0 degrees)
-                    zoomLayout.setPivotX(width / 2f);
-                    zoomLayout.setPivotY(height / 2f);
-                    zoomLayout.setRotation(newRotation);
+                    // Restore original portrait dimensions
+                    params.width = currentHeight; // After rotation, current dimensions are swapped
+                    params.height = currentWidth;
+                    zoomLayout.setLayoutParams(params);
 
-                    // No translation needed for portrait mode
-                    zoomLayout.setTranslationX(0);
-                    zoomLayout.setTranslationY(0);
-
-                    // Reset zoom back to 1x for portrait mode
-                    zoomLayout.zoomTo(1.0f, true);
+                    zoomLayout.post(() -> {
+                        zoomLayout.setRotation(newRotation);
+                        zoomLayout.zoomTo(1.0f, true);
+                    });
                 }
 
                 zoomLayout.requestLayout();
@@ -294,5 +297,8 @@ public class HomeFragment3 extends Fragment {
         }
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }
