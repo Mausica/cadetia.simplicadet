@@ -37,6 +37,7 @@ import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.Task;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,10 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private List<JournalEntry> journalList = new ArrayList<>();
     private LruCache<String, Bitmap> memCache;
 
+    // Shimmer layout
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private View contentView;
+
     public HomeFragment1() {
         // Required empty public constructor
     }
@@ -63,9 +68,18 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home1, container, false);
+
+        // Initialize shimmer layout
+        shimmerFrameLayout = view.findViewById(R.id.shimmerLayout);
+        contentView = view.findViewById(R.id.contentLayout);
+
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
+
+        // Start shimmer and hide content
+        showShimmer(true);
+
         return view;
     }
 
@@ -88,9 +102,27 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     @Override
     public void onResume() {
         super.onResume();
-        loadJournals();
-        loadTaskFirstLayout();
-        loadCategories();
+        // Show shimmer when the fragment is resumed
+        showShimmer(true);
+
+        // Load data with a slight delay to show the shimmer effect
+        new Handler().postDelayed(() -> {
+            loadJournals();
+            loadTaskFirstLayout();
+            loadCategories();
+        }, 1000); // 1 second delay to show shimmer
+    }
+
+    private void showShimmer(boolean show) {
+        if (show) {
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            contentView.setVisibility(View.GONE);
+        } else {
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
+            contentView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void loadTaskFirstLayout() {
@@ -116,11 +148,16 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 journalList.clear();
                 journalList.addAll(DbQuery.g_journalList);
                 journalAdapter.notifyDataSetChanged();
+
+                // Check if we should hide shimmer
+                checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load journals");
+                // Even on failure, we should still check if shimmer should be hidden
+                checkAllDataLoaded();
             }
         });
     }
@@ -146,10 +183,13 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 if (mainTaskAdapter == null) {
                     mainTaskAdapter = new MainTaskAdapter(tasks);
                     mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-                    mainTasksRecycler.setAdapter(mainTaskAdapter); // Ensure adapter is set here after data is ready
+                    mainTasksRecycler.setAdapter(mainTaskAdapter);
                 } else {
                     mainTaskAdapter.notifyDataSetChanged();
                 }
+
+                // Check if we should hide shimmer
+                checkAllDataLoaded();
             }
         }
 
@@ -160,7 +200,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private void setUpAdapter() {
         mainTaskAdapter = new MainTaskAdapter(tasks);
         mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-        mainTasksRecycler.setAdapter(mainTaskAdapter); // Set the adapter for the RecyclerView
+        mainTasksRecycler.setAdapter(mainTaskAdapter);
     }
 
     @Override
@@ -183,19 +223,55 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 } else {
                     Log.e(TAG, "Category list is empty");
                 }
+
+                // Check if we should hide shimmer
+                checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load categories");
+                // Even on failure, we should still check if shimmer should be hidden
+                checkAllDataLoaded();
             }
         });
+    }
+
+    // Helper method to check if all data is loaded
+    private boolean tasksLoaded = false;
+    private boolean journalsLoaded = false;
+    private boolean categoriesLoaded = false;
+
+    private void checkAllDataLoaded() {
+        if (!tasksLoaded && mainTaskAdapter != null && !tasks.isEmpty()) {
+            tasksLoaded = true;
+        }
+
+        if (!journalsLoaded && journalAdapter != null && !journalList.isEmpty()) {
+            journalsLoaded = true;
+        }
+
+        if (!categoriesLoaded && categoryAdapter != null) {
+            categoriesLoaded = true;
+        }
+
+        // If all data is loaded, hide shimmer
+        if (tasksLoaded && journalsLoaded && categoriesLoaded) {
+            showShimmer(false);
+        } else {
+            // Fallback: hide shimmer after a timeout even if not all data is loaded
+            new Handler().postDelayed(() -> {
+                if (isAdded()) {
+                    showShimmer(false);
+                }
+            }, 3000); // 3 seconds max waiting time
+        }
     }
 
     private void setUpCategoryRecyclerView(List<CategoryModel> categoryList) {
         if (isAdded()) { // Check if the fragment is attached
             categoryAdapter = new CategoryAdapter(categoryList, requireContext(), this);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
             categoryRecyclerView.setLayoutManager(layoutManager);
             categoryRecyclerView.setAdapter(categoryAdapter);
         } else {
@@ -231,7 +307,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -243,7 +318,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             long totalTime = data.getLongExtra("totalTime", 0L);
             float totalResponseTime = (float) totalTime / 1000;
             handler.postDelayed(() -> showRedeemDialog(totalScore, correctAnswers, totalQuestions, totalResponseTime), 1000);
-
 
             // Update the total score in the database
             DbQuery.updateTotalScore(userEmail, totalScore, new MyCompleteListener() {

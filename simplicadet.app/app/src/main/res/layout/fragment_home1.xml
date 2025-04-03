@@ -6,11 +6,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.home.HomeFragment1">
 
+    <!-- Shimmer layout -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <include layout="@layout/shimmer_layout_home_fragment"/>
+
+        </androidx.core.widget.NestedScrollView>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <!-- Content layout (this will be shown after loading) -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,7 +69,6 @@
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:paddingBottom="@dimen/_40sdp"
                 android:nestedScrollingEnabled="false"/>
-
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

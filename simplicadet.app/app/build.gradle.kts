@@ -86,6 +86,7 @@ dependencies {
     implementation ("com.airbnb.android:lottie:4.2.0")
     implementation ("androidx.transition:transition:1.5.1")
     implementation ("nl.dionsegijn:konfetti-xml:2.0.4")
+    implementation ("com.facebook.shimmer:shimmer:0.5.0")
 
     // Room Database Dependencies
     implementation ("androidx.room:room-runtime:2.6.1")
