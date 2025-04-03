@@ -26,6 +26,9 @@
         <item name="backgroundDark">@color/background_l_dark</item>
         <item name="backgroundNormal">@color/background_l_normal</item>
 
+        <item name="shimmerLight">#DDDDDD</item>
+        <item name="shimmerDark">#BBBBBB</item>
+
         <item name="transparentLight">#0D000000</item>
 
         <item name="textLight">@color/text_l_light</item>

@@ -10,7 +10,8 @@
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:shimmer_highlight_alpha="0">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

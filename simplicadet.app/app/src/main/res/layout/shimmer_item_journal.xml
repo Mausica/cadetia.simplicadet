@@ -14,7 +14,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/_160sdp"
-        android:background="#DDDDDD"
+        android:background="?attr/shimmerLight"
         android:layout_margin="@dimen/_5sdp" />
 
     <!-- Title placeholder -->
@@ -24,7 +24,7 @@
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_13sdp"
-        android:background="#BBBBBB" />
+        android:background="?attr/shimmerDark" />
 
     <!-- Subtitle placeholder (multiple lines) -->
     <View
@@ -33,7 +33,7 @@
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_13sdp"
-        android:background="#BBBBBB" />
+        android:background="?attr/shimmerDark" />
 
     <View
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_4sdp"
         android:layout_marginEnd="@dimen/_80sdp"
-        android:background="#BBBBBB" />
+        android:background="?attr/shimmerDark" />
 
     <!-- Date placeholder -->
     <View
@@ -50,5 +50,5 @@
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_13sdp"
-        android:background="#BBBBBB" />
+        android:background="?attr/shimmerDark" />
 </LinearLayout>

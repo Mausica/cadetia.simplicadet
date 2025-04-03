@@ -4,6 +4,9 @@
     <attr name="backgroundLight" format="color" />
     <attr name="backgroundDark" format="color" />
 
+    <attr name="shimmerLight" format="color" />
+    <attr name="shimmerDark" format="color" />
+
     <attr name="transparentLight" format="color" />
 
     <attr name="textNormal" format="color" />
