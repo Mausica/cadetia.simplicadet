@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- First row - 2 items with consistent heights -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- First item -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:background="@drawable/background_light_r12"
+            android:elevation="3dp"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/_12sdp">
+
+            <!-- Image placeholder with exact same attributes as your item_note -->
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp"
+                android:adjustViewBounds="true"
+                android:src="?attr/shimmerLight"
+                android:maxHeight="@dimen/_160sdp"
+                android:scaleType="centerCrop"
+                android:cropToPadding="false"
+                android:padding="@dimen/_5sdp"
+                app:riv_corner_radius="8dp" />
+
+            <!-- Title placeholder -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <!-- Subtitle placeholder -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <!-- Date/Time placeholder -->
+            <View
+                android:layout_width="@dimen/_70sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerLight" />
+        </LinearLayout>
+
+        <!-- Second item - shorter variant -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:background="@drawable/background_light_r12"
+            android:elevation="3dp"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/_12sdp">
+
+            <!-- Image placeholder - shorter -->
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_70sdp"
+                android:adjustViewBounds="true"
+                android:src="?attr/shimmerLight"
+                android:maxHeight="@dimen/_160sdp"
+                android:scaleType="centerCrop"
+                android:cropToPadding="false"
+                android:padding="@dimen/_5sdp"
+                app:riv_corner_radius="8dp" />
+
+            <!-- Title placeholder -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <!-- Subtitle placeholder -->
+            <View
+                android:layout_width="@dimen/_120sdp"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <!-- Date/Time placeholder -->
+            <View
+                android:layout_width="@dimen/_70sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerLight" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Second row - 2 items with different characteristics -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Text-only item -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:background="@drawable/background_light_r12"
+            android:elevation="3dp"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_12sdp">
+
+            <!-- Title placeholder -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <!-- Subtitle placeholder (using exact height from your item_note) -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <View
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="@dimen/_22sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerDark" />
+
+            <!-- Date/Time placeholder -->
+            <View
+                android:layout_width="@dimen/_90sdp"
+                android:layout_height="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_13sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_13sdp"
+                android:background="?attr/shimmerLight" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="0dp">
+        </View>
+
+    </LinearLayout>
+</LinearLayout>

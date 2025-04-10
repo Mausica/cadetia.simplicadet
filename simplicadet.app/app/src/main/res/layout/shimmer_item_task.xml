@@ -7,7 +7,7 @@
     android:layout_marginStart="@dimen/_16sdp"
     android:layout_marginEnd="@dimen/_16sdp"
     android:elevation="@dimen/_5sdp"
-    android:backgroundTint="?attr/shimmerLight"
+    android:backgroundTint="?attr/backgroundLight"
     app:cardElevation="@dimen/_4sdp"
     app:cardCornerRadius="@dimen/_6sdp"
     android:layout_height="@dimen/_40sdp">

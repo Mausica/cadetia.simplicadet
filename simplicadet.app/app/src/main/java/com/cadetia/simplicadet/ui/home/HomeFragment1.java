@@ -70,8 +70,8 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         View view = inflater.inflate(R.layout.fragment_home1, container, false);
 
         // Initialize shimmer layout
-        shimmerFrameLayout = view.findViewById(R.id.shimmerLayout);
-        contentView = view.findViewById(R.id.contentLayout);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout_1);
+        contentView = view.findViewById(R.id.contentLayout1);
 
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);

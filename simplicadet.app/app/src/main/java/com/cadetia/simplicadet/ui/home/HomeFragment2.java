@@ -24,6 +24,7 @@ import com.cadetia.simplicadet.adapters.NotesAdapter;
 import com.cadetia.simplicadet.database.NotesDatabase;
 import com.cadetia.simplicadet.entities.Note;
 import com.cadetia.simplicadet.listeners.NotesListener;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     public static final int REQUEST_CODE_UPDATE_NOTE = 2;
     public static final int REQUEST_CODE_SHOW_NOTES = 3;
 
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private View contentView;
     private List<Note> noteList;
     private NotesAdapter notesAdapter;
     public int noteClickedPosition = -1;
@@ -54,6 +57,7 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     public HomeFragment2() {
         // Required empty public constructor
     }
+
     @Override
     public void onNoteDeleted() {
         // Reload note list when a note is deleted
@@ -71,14 +75,49 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
         //fabMain = view.findViewById(R.id.fabMain);
         // fabMain.setOnClickListener(v -> showCreateNote(null, false));
 
+        // Initialize shimmer layout
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout_2);
+        contentView = view.findViewById(R.id.contentLayout2);
+
+        // Show shimmer initially
+        showShimmer(true);
+
         RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         noteList = new ArrayList<>();
         notesAdapter = new NotesAdapter(noteList, this);
         notesRecyclerView.setAdapter(notesAdapter);
 
-        loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
+        // Load notes with delay to show shimmer effect
+        new Handler().postDelayed(() -> {
+            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
+        }, 1000); // 1 second delay to show shimmer
+
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Show shimmer when the fragment is resumed
+        showShimmer(true);
+
+        // Load data with a slight delay to show the shimmer effect
+        new Handler().postDelayed(() -> {
+            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
+        }, 1000); // 1 second delay to show shimmer
+    }
+
+    private void showShimmer(boolean show) {
+        if (show) {
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            contentView.setVisibility(View.GONE);
+        } else {
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
+            contentView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -114,10 +153,19 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
                                 noteList.set(noteClickedPosition, notes.get(noteClickedPosition));
                                 notesAdapter.notifyItemChanged(noteClickedPosition);
                             }
-
                         }
                         break;
                 }
+
+                // Hide shimmer after data is loaded
+                showShimmer(false);
+
+                // Fallback: hide shimmer after a timeout even if loading fails
+                new Handler().postDelayed(() -> {
+                    if (isAdded()) {
+                        showShimmer(false);
+                    }
+                }, 3000); // 3 seconds max waiting time
             });
         });
     }
@@ -147,6 +195,5 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     @Override
     public void onNoteSaved(boolean isNoteDeleted) {
         loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, isNoteDeleted);
-
     }
 }
