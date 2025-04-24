@@ -64,9 +64,9 @@
                 <!-- Modified card view with fixed width -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/nav_card"
-                    android:layout_width="@dimen/_150sdp"
+                    android:layout_width="@dimen/_140sdp"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="@dimen/_24sdp"
+                    app:cardCornerRadius="18dp"
                     app:cardElevation="@dimen/_6sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/fab_container"
@@ -81,12 +81,12 @@
                         android:paddingStart="@dimen/_8sdp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?attr/backgroundLight"
+                        android:background="@drawable/button_outline_nav"
                         app:backgroundTint="@null"
                         app:itemBackground="@null"
                         app:labelVisibilityMode="unlabeled"
                         app:itemHorizontalTranslationEnabled="true"
-                        app:itemIconSize="@dimen/_19sdp"
+                        app:itemIconSize="@dimen/_18sdp"
                         app:itemIconTint="?attr/colorSecondary"
                         app:menu="@menu/bottom_nav_menu" />
                 </androidx.cardview.widget.CardView>
@@ -111,7 +111,7 @@
                         app:layout_anchor="@id/nav_view"
                         app:backgroundTint="@color/primary"
                         app:fabCustomSize="@dimen/_42sdp"
-                        app:maxImageSize="@dimen/_20sdp"
+                        app:maxImageSize="@dimen/_22sdp"
                         app:rippleColor="@color/blur"
                         app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
                         app:srcCompat="@drawable/home_ic_plus"
