@@ -103,61 +103,71 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         super.onResume();
         showLoading(true);
         new Handler().postDelayed(() -> {
-            loadJournals();
-            loadTaskFirstLayout();
-            loadCategories();
-        }, 1000); // 1 second delay to show
+            if (isAdded()) {
+                loadJournals();
+                loadTaskFirstLayout();
+                loadCategories();
+            } else {
+                Log.w(TAG, "Fragment not attached in postDelayed");
+            }
+        }, 1000);
     }
 
     private void showLoading(boolean show) {
         if (loadingLayout != null && contentView != null) {
             if (show) {
-                // Reset the flag when showing loading
                 isLoadingDismissed = false;
-
-                // Show loading immediately
                 loadingLayout.setVisibility(View.VISIBLE);
                 contentView.setVisibility(View.GONE);
-            } else if (!isLoadingDismissed) { // Only hide if not already dismissed
-                // Set flag to prevent multiple dismissals
+            } else if (!isLoadingDismissed) {
                 isLoadingDismissed = true;
 
-                // Hide loading with animation
-                loadingLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out));
-                new Handler().postDelayed(() -> {
-                    if (loadingLayout != null) { // Safety check in case the fragment is destroyed
-                        loadingLayout.setVisibility(View.GONE);
-
-                        // Show content with animation
-                        contentView.setVisibility(View.VISIBLE);
-                        contentView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in));
-                    }
-                }, 250); // Match the duration of the fade-out animation
+                Context context = getContext();
+                if (context != null) {
+                    loadingLayout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
+                    new Handler().postDelayed(() -> {
+                        if (loadingLayout != null && isAdded()) {
+                            loadingLayout.setVisibility(View.GONE);
+                            contentView.setVisibility(View.VISIBLE);
+                            contentView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
+                        }
+                    }, 250);
+                } else {
+                    Log.w(TAG, "Context is null, skipping animations");
+                }
             }
         }
     }
 
 
+
     private void loadTaskFirstLayout() {
-        setUpAdapter();
-        getSavedTasks();
+        if (isAdded()) {
+            setUpAdapter();
+            getSavedTasks();
+        } else {
+            Log.w(TAG, "Fragment not attached, skipping task layout load");
+        }
     }
+
 
     private void loadJournals() {
         DbQuery.loadJournals(new MyCompleteListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSucces() {
-                // Create the adapter if it doesn't exist
+                if (!isAdded()) {
+                    Log.w(TAG, "Fragment not attached, skipping journal load.");
+                    return;
+                }
+
                 if (journalAdapter == null) {
                     journalAdapter = new JournalAdapter(journalList, HomeFragment1.this, memCache);
                 }
 
-                // Always set the adapter and layout manager to ensure the RecyclerView is properly initialized
                 journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
                 journalRecyclerView.setAdapter(journalAdapter);
 
-                // Update the data
                 journalList.clear();
                 journalList.addAll(DbQuery.g_journalList);
                 journalAdapter.notifyDataSetChanged();
@@ -172,6 +182,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             }
         });
     }
+
 
     private void getSavedTasks() {
         @SuppressLint("StaticFieldLeak")

@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -60,7 +61,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         Window window = getWindow();
         window.setStatusBarColor(getResources().getColor(R.color.focus));
 
-        // Detectează tema curentă
+        // Detect current theme
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         boolean isDarkTheme = (currentNightMode == Configuration.UI_MODE_NIGHT_YES);
 
@@ -68,30 +69,59 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        //navView.setBackgroundResource(R.drawable.gradient_bottom_light);
         navView.setItemRippleColor(ColorStateList.valueOf(Color.TRANSPARENT));
 
         int[][] states = new int[][] {
-                new int[] { android.R.attr.state_selected }, // Selecționată
-                new int[] {} // Neselectată
+                new int[] { android.R.attr.state_selected },
+                new int[] {}
         };
 
         int[] colors;
         if (isDarkTheme) {
-            colors = new int[] {Color.WHITE, Color.GRAY}; // Alb pentru tema dark
+            colors = new int[] {Color.WHITE, Color.GRAY};
         } else {
-            colors = new int[] {Color.BLACK, Color.GRAY}; // Negru pentru tema light
+            colors = new int[] {Color.BLACK, Color.GRAY};
         }
 
         ColorStateList colorStateList = new ColorStateList(states, colors);
         navView.setItemIconTintList(colorStateList);
 
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_search, R.id.navigation_liked)
-                .build();
-
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+
+        // Custom navigation with fade animations
+        navView.setOnNavigationItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            // Prevent re-navigation if already on the destination
+            if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() == itemId) {
+                return false;
+            }
+
+            // Build navigation options with animations
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setEnterAnim(R.anim.fade_in)
+                    .setExitAnim(R.anim.fade_out)
+                    .setPopEnterAnim(R.anim.fade_in)
+                    .setPopExitAnim(R.anim.fade_out)
+                    .setLaunchSingleTop(true)
+                    .build();
+
+            try {
+                navController.navigate(itemId, null, navOptions);
+                return true;
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                return false;
+            }
+        });
+
+        // Sync BottomNavigationView with current destination
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            int destId = destination.getId();
+            if (destId == R.id.navigation_home || destId == R.id.navigation_search || destId == R.id.navigation_liked) {
+                navView.setSelectedItemId(destId);
+            }
+        });
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
@@ -105,8 +135,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         drawerNameTextView = headerView.findViewById(R.id.drawer_name);
         drawerloadingButton = headerView.findViewById(R.id.loading_button);
-
-
 
         // Retrieve and set user data
         retrieveUserData();

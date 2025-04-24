@@ -1,11 +1,14 @@
 package com.cadetia.simplicadet.ui.home;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.ContentValues.TAG;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,30 +108,29 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     private void showLoading(boolean show) {
         if (loadingLayout != null && contentView != null) {
             if (show) {
-                // Reset the flag when showing loading
                 isLoadingDismissed = false;
-
-                // Show loading immediately
                 loadingLayout.setVisibility(View.VISIBLE);
                 contentView.setVisibility(View.GONE);
-            } else if (!isLoadingDismissed) { // Only hide if not already dismissed
-                // Set flag to prevent multiple dismissals
+            } else if (!isLoadingDismissed) {
                 isLoadingDismissed = true;
 
-                // Hide loading with animation
-                loadingLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out));
-                new Handler().postDelayed(() -> {
-                    if (loadingLayout != null) { // Safety check in case the fragment is destroyed
-                        loadingLayout.setVisibility(View.GONE);
-
-                        // Show content with animation
-                        contentView.setVisibility(View.VISIBLE);
-                        contentView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in));
-                    }
-                }, 250); // Match the duration of the fade-out animation
+                Context context = getContext();
+                if (context != null) {
+                    loadingLayout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
+                    new Handler().postDelayed(() -> {
+                        if (loadingLayout != null && isAdded()) {
+                            loadingLayout.setVisibility(View.GONE);
+                            contentView.setVisibility(View.VISIBLE);
+                            contentView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
+                        }
+                    }, 250);
+                } else {
+                    Log.w(TAG, "Context is null, skipping animations");
+                }
             }
         }
     }
+
 
 
     @Override
