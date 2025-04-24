@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,7 +25,6 @@ import com.cadetia.simplicadet.adapters.NotesAdapter;
 import com.cadetia.simplicadet.database.NotesDatabase;
 import com.cadetia.simplicadet.entities.Note;
 import com.cadetia.simplicadet.listeners.NotesListener;
-import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +36,8 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     public static final int REQUEST_CODE_ADD_NOTE = 1;
     public static final int REQUEST_CODE_UPDATE_NOTE = 2;
     public static final int REQUEST_CODE_SHOW_NOTES = 3;
-
-    private ShimmerFrameLayout shimmerFrameLayout;
+    private boolean isLoadingDismissed = false;
+    private View loadingLayout;
     private View contentView;
     private List<Note> noteList;
     private NotesAdapter notesAdapter;
@@ -75,12 +75,10 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
         //fabMain = view.findViewById(R.id.fabMain);
         // fabMain.setOnClickListener(v -> showCreateNote(null, false));
 
-        // Initialize shimmer layout
-        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout_2);
+        loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout2);
 
-        // Show shimmer initially
-        showShimmer(true);
+        showLoading(true);
 
         RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
@@ -88,10 +86,9 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
         notesAdapter = new NotesAdapter(noteList, this);
         notesRecyclerView.setAdapter(notesAdapter);
 
-        // Load notes with delay to show shimmer effect
         new Handler().postDelayed(() -> {
             loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show shimmer
+        }, 1000); // 1 second delay to show
 
         return view;
     }
@@ -99,26 +96,40 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     @Override
     public void onResume() {
         super.onResume();
-        // Show shimmer when the fragment is resumed
-        showShimmer(true);
-
-        // Load data with a slight delay to show the shimmer effect
+        showLoading(true);
         new Handler().postDelayed(() -> {
             loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show shimmer
+        }, 1000); // 1 second delay to show
     }
 
-    private void showShimmer(boolean show) {
-        if (show) {
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.startShimmer();
-            contentView.setVisibility(View.GONE);
-        } else {
-            shimmerFrameLayout.stopShimmer();
-            shimmerFrameLayout.setVisibility(View.GONE);
-            contentView.setVisibility(View.VISIBLE);
+    private void showLoading(boolean show) {
+        if (loadingLayout != null && contentView != null) {
+            if (show) {
+                // Reset the flag when showing loading
+                isLoadingDismissed = false;
+
+                // Show loading immediately
+                loadingLayout.setVisibility(View.VISIBLE);
+                contentView.setVisibility(View.GONE);
+            } else if (!isLoadingDismissed) { // Only hide if not already dismissed
+                // Set flag to prevent multiple dismissals
+                isLoadingDismissed = true;
+
+                // Hide loading with animation
+                loadingLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out));
+                new Handler().postDelayed(() -> {
+                    if (loadingLayout != null) { // Safety check in case the fragment is destroyed
+                        loadingLayout.setVisibility(View.GONE);
+
+                        // Show content with animation
+                        contentView.setVisibility(View.VISIBLE);
+                        contentView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in));
+                    }
+                }, 250); // Match the duration of the fade-out animation
+            }
         }
     }
+
 
     @Override
     public void onNoteClicked(Note note, int position) {
@@ -156,16 +167,7 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
                         }
                         break;
                 }
-
-                // Hide shimmer after data is loaded
-                showShimmer(false);
-
-                // Fallback: hide shimmer after a timeout even if loading fails
-                new Handler().postDelayed(() -> {
-                    if (isAdded()) {
-                        showShimmer(false);
-                    }
-                }, 3000); // 3 seconds max waiting time
+                showLoading(false);
             });
         });
     }

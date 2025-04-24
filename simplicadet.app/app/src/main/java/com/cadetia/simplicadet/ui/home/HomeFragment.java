@@ -102,11 +102,20 @@ public class HomeFragment extends Fragment{
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        // Add custom fade in/out transitions
+        transaction.setCustomAnimations(
+                R.anim.fade_in,  // enter animation
+                R.anim.fade_out, // exit animation
+                R.anim.fade_in,  // pop enter animation
+                R.anim.fade_out  // pop exit animation
+        );
+
         transaction.replace(R.id.smallerFragmentContainer, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
 
-        // Add callback after transaction completes
+        // Rest of the code remains the same
         fragmentManager.executePendingTransactions();
         new Handler().post(() -> {
             if (getActivity() instanceof Home) {
@@ -114,6 +123,7 @@ public class HomeFragment extends Fragment{
             }
         });
     }
+
 
     private void selectButton(Button button) {
         // Select the button programmatically

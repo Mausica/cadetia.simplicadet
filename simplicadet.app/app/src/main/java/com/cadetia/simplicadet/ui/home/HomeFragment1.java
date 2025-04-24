@@ -17,6 +17,7 @@ import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +38,6 @@ import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.Task;
-import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,14 +51,15 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private CategoryAdapter categoryAdapter;
     private List<Task> tasks = new ArrayList<>();
     private Handler handler = new Handler();
+    private boolean isLoadingDismissed = false;
     private String userEmail;
     private RecyclerView journalRecyclerView;
     private JournalAdapter journalAdapter;
     private List<JournalEntry> journalList = new ArrayList<>();
     private LruCache<String, Bitmap> memCache;
 
-    // Shimmer layout
-    private ShimmerFrameLayout shimmerFrameLayout;
+    private View loadingLayout;
+
     private View contentView;
 
     public HomeFragment1() {
@@ -69,16 +70,14 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home1, container, false);
 
-        // Initialize shimmer layout
-        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout_1);
+        loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout1);
 
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
 
-        // Start shimmer and hide content
-        showShimmer(true);
+        showLoading(true);
 
         return view;
     }
@@ -102,28 +101,42 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     @Override
     public void onResume() {
         super.onResume();
-        // Show shimmer when the fragment is resumed
-        showShimmer(true);
-
-        // Load data with a slight delay to show the shimmer effect
+        showLoading(true);
         new Handler().postDelayed(() -> {
             loadJournals();
             loadTaskFirstLayout();
             loadCategories();
-        }, 1000); // 1 second delay to show shimmer
+        }, 1000); // 1 second delay to show
     }
 
-    private void showShimmer(boolean show) {
-        if (show) {
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.startShimmer();
-            contentView.setVisibility(View.GONE);
-        } else {
-            shimmerFrameLayout.stopShimmer();
-            shimmerFrameLayout.setVisibility(View.GONE);
-            contentView.setVisibility(View.VISIBLE);
+    private void showLoading(boolean show) {
+        if (loadingLayout != null && contentView != null) {
+            if (show) {
+                // Reset the flag when showing loading
+                isLoadingDismissed = false;
+
+                // Show loading immediately
+                loadingLayout.setVisibility(View.VISIBLE);
+                contentView.setVisibility(View.GONE);
+            } else if (!isLoadingDismissed) { // Only hide if not already dismissed
+                // Set flag to prevent multiple dismissals
+                isLoadingDismissed = true;
+
+                // Hide loading with animation
+                loadingLayout.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out));
+                new Handler().postDelayed(() -> {
+                    if (loadingLayout != null) { // Safety check in case the fragment is destroyed
+                        loadingLayout.setVisibility(View.GONE);
+
+                        // Show content with animation
+                        contentView.setVisibility(View.VISIBLE);
+                        contentView.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in));
+                    }
+                }, 250); // Match the duration of the fade-out animation
+            }
         }
     }
+
 
     private void loadTaskFirstLayout() {
         setUpAdapter();
@@ -149,14 +162,12 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 journalList.addAll(DbQuery.g_journalList);
                 journalAdapter.notifyDataSetChanged();
 
-                // Check if we should hide shimmer
                 checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load journals");
-                // Even on failure, we should still check if shimmer should be hidden
                 checkAllDataLoaded();
             }
         });
@@ -187,8 +198,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 } else {
                     mainTaskAdapter.notifyDataSetChanged();
                 }
-
-                // Check if we should hide shimmer
                 checkAllDataLoaded();
             }
         }
@@ -223,15 +232,12 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 } else {
                     Log.e(TAG, "Category list is empty");
                 }
-
-                // Check if we should hide shimmer
                 checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load categories");
-                // Even on failure, we should still check if shimmer should be hidden
                 checkAllDataLoaded();
             }
         });
@@ -255,16 +261,9 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             categoriesLoaded = true;
         }
 
-        // If all data is loaded, hide shimmer
+        // If all data is loaded, hide
         if (tasksLoaded && journalsLoaded && categoriesLoaded) {
-            showShimmer(false);
-        } else {
-            // Fallback: hide shimmer after a timeout even if not all data is loaded
-            new Handler().postDelayed(() -> {
-                if (isAdded()) {
-                    showShimmer(false);
-                }
-            }, 3000); // 3 seconds max waiting time
+            showLoading(false);
         }
     }
 

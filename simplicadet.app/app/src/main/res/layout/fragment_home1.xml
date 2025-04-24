@@ -6,23 +6,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.home.HomeFragment1">
 
-    <!-- Shimmer layout -->
-    <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_layout_1"
+    <FrameLayout
+        android:id="@+id/layout_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:shimmer_highlight_alpha="0">
+        android:layout_gravity="center"
+        android:gravity="center">
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:scrollbars="none">
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimationView"
+            android:layout_width="@dimen/_140sdp"
+            android:layout_height="@dimen/_140sdp"
+            android:layout_gravity="center_horizontal"
+            app:lottie_rawRes="@raw/uni_loading"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true" />
 
-            <include layout="@layout/shimmer_layout_home_fragment_1"/>
-
-        </androidx.core.widget.NestedScrollView>
-    </com.facebook.shimmer.ShimmerFrameLayout>
+    </FrameLayout>
 
     <!-- Content layout (this will be shown after loading) -->
     <androidx.core.widget.NestedScrollView
