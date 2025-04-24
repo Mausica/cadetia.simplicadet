@@ -99,10 +99,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
             // Build navigation options with animations
             NavOptions navOptions = new NavOptions.Builder()
-                    .setEnterAnim(R.anim.fade_in)
-                    .setExitAnim(R.anim.fade_out)
-                    .setPopEnterAnim(R.anim.fade_in)
-                    .setPopExitAnim(R.anim.fade_out)
+                    .setEnterAnim(R.anim.fade_in_d)
+                    .setExitAnim(R.anim.fade_out_d)
+                    .setPopEnterAnim(R.anim.fade_in_d)
+                    .setPopExitAnim(R.anim.fade_out_d)
                     .setLaunchSingleTop(true)
                     .build();
 

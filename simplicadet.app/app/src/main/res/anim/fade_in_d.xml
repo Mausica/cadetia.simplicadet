@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background is black at the start -->
+    <scale
+        android:duration="1"
+        android:fillAfter="true"
+        android:fromXScale="1.0"
+        android:toXScale="1.0" />
+    <!-- Fade in new fragment -->
+    <alpha
+        android:duration="250"
+        android:startOffset="1"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+</set>
