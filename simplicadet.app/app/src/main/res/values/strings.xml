@@ -24,7 +24,7 @@
     <string name="title_activity_home">Home</string>
     <string name="title_home">Home</string>
     <string name="title_search">Search</string>
-    <string name="title_liked">Liked</string>
+    <string name="title_military">Military</string>
     <string name="title_premium">Premium</string>
 
     <string name="acc_name">Marius Gabriel</string>
@@ -36,7 +36,9 @@
 
     <string name="home_search">Search</string>
     <string name="home_order">Order</string>
+    <string name="home_notes">Notes</string>
     <string name="home_formation">Formation</string>
+    <string name="home_flow">Flow</string>
     <string name="home_tasks">Tasks</string>
     <string name="home_all">All</string>
 

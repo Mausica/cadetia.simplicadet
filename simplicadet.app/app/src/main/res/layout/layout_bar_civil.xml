@@ -69,7 +69,7 @@
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
-            android:text="@string/home_order"
+            android:text="@string/home_notes"
             android:textAllCaps="false"
             android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
@@ -77,7 +77,7 @@
 
         <Button
             android:id="@+id/home_ac3"
-            android:layout_width="@dimen/_70sdp"
+            android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_25sdp"
             android:layout_marginStart="@dimen/_7sdp"
             app:backgroundTint="@null"
@@ -85,10 +85,12 @@
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
-            android:text="@string/home_formation"
+            android:text="@string/home_flow"
             android:textAllCaps="false"
             android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
+            android:alpha="0.4"
+            android:clickable="false"
             tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
         <Button

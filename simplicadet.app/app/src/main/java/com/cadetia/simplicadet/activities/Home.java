@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -117,7 +118,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         // Sync BottomNavigationView with current destination
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destId = destination.getId();
-            if (destId == R.id.navigation_home || destId == R.id.navigation_search || destId == R.id.navigation_liked) {
+            if (destId == R.id.navigation_home || destId == R.id.navigation_search || destId == R.id.navigation_military) {
                 navView.setSelectedItemId(destId);
             }
         });
@@ -155,10 +156,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
             ShapeableImageView profileButton = view.findViewById(R.id.mainProfileButton);
 
-            if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
-                Glide.with(this).load(R.raw.guest).into(profileButton);
+            if (profileButton != null) {
+                if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
+                    Glide.with(this).load(R.raw.guest).into(profileButton);
+                } else {
+                    Glide.with(this).load(userPhoto).into(profileButton);
+                }
             } else {
-                Glide.with(this).load(userPhoto).into(profileButton);
+                Log.e("navigationDrawer", "mainProfileButton not found in header layout!");
             }
 
         }
@@ -298,19 +303,18 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     public void hideFab() {
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        if (fabMain == null) return; // prevent crash
+
         fabMain.setImageResource(R.drawable.home_ic_plus);
         fabMain.setVisibility(View.GONE);
 
-        // Get reference to the nav_card
         androidx.cardview.widget.CardView navCard = findViewById(R.id.nav_card);
+        if (navCard == null) return;
 
-        // Update constraints to center the nav_card when FAB is hidden
         androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
                 (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) navCard.getLayoutParams();
 
-        // Clear the end constraint to fab_container
         params.endToStart = -1;
-        // Set end constraint to parent
         params.endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID;
 
         navCard.setLayoutParams(params);

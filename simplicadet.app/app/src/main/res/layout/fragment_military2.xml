@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context=".ui.home.HomeFragment2">
+
+    <FrameLayout
+        android:id="@+id/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimationView"
+            android:layout_width="@dimen/_140sdp"
+            android:layout_height="@dimen/_140sdp"
+            android:layout_gravity="center_horizontal"
+            app:lottie_rawRes="@raw/uni_loading"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true" />
+
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/contentLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/notesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:clipToPadding="false"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/_3sdp"
+                android:paddingBottom="@dimen/_16sdp"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        android:layout_marginEnd="@dimen/_16sdp"
+        app:layout_anchor="@id/nav_view"
+        android:layout_marginBottom="@dimen/_54sdp"
+        app:backgroundTint="@color/primary"
+        app:fabCustomSize="@dimen/_42sdp"
+        app:maxImageSize="@dimen/_20sdp"
+        app:rippleColor="@color/blur"
+        app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
+        app:srcCompat="@drawable/home_ic_plus"
+        android:elevation="8dp"
+        android:tint="@android:color/black"
+        android:contentDescription="@string/home_add_note" />
+
+</FrameLayout>

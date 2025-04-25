@@ -30,21 +30,57 @@
         android:id="@+id/homeFragment1"
         android:name="com.cadetia.simplicadet.ui.home.HomeFragment1"
         tools:layout="@layout/fragment_home1" />
-
     <fragment
         android:id="@+id/homeFragment2"
         android:name="com.cadetia.simplicadet.ui.home.HomeFragment2"
         tools:layout="@layout/fragment_home2" />
-
     <fragment
         android:id="@+id/homeFragment3"
         android:name="com.cadetia.simplicadet.ui.home.HomeFragment3"
         tools:layout="@layout/fragment_home3" />
-
     <fragment
         android:id="@+id/homeFragment4"
         android:name="com.cadetia.simplicadet.ui.home.HomeFragment4"
         tools:layout="@layout/fragment_home4" />
+
+    <fragment
+        android:id="@+id/navigation_military"
+        android:name="com.cadetia.simplicadet.ui.military.MilitaryFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_military" >
+        <action
+            android:id="@+id/action_navigation_military_to_militaryFragment1"
+            app:destination="@id/militaryFragment1" />
+
+        <action
+            android:id="@+id/action_navigation_military_to_militaryFragment2"
+            app:destination="@id/militaryFragment2" />
+
+        <action
+            android:id="@+id/action_navigation_military_to_militaryFragment3"
+            app:destination="@id/militaryFragment3" />
+
+        <action
+            android:id="@+id/action_navigation_military_to_militaryFragment4"
+            app:destination="@id/militaryFragment4" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/militaryFragment1"
+        android:name="com.cadetia.simplicadet.ui.military.MilitaryFragment1"
+        tools:layout="@layout/fragment_military1" />
+    <fragment
+        android:id="@+id/militaryFragment2"
+        android:name="com.cadetia.simplicadet.ui.military.MilitaryFragment2"
+        tools:layout="@layout/fragment_military2" />
+    <fragment
+        android:id="@+id/militaryFragment3"
+        android:name="com.cadetia.simplicadet.ui.military.MilitaryFragment3"
+        tools:layout="@layout/fragment_military3" />
+    <fragment
+        android:id="@+id/militaryFragment4"
+        android:name="com.cadetia.simplicadet.ui.military.MilitaryFragment4"
+        tools:layout="@layout/fragment_military4" />
 
     <fragment
         android:id="@+id/navigation_search"
@@ -53,7 +89,7 @@
         tools:layout="@layout/fragment_search" />
 
     <fragment
-        android:id="@+id/navigation_liked"
+        android:id="@+id/navigation_community"
         android:name="com.cadetia.simplicadet.ui.community.CommunityFragment"
         android:label="Community"
         tools:layout="@layout/fragment_community"/>
