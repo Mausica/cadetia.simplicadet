@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/backgroundColor"
-        app:headerLayout="@layout/drawer_header"
+        app:headerLayout="@layout/layout_drawer"
         android:layout_gravity="start"
         app:itemIconSize="@dimen/_22sdp"
         app:itemTextColor="?attr/textAppearanceBody1"

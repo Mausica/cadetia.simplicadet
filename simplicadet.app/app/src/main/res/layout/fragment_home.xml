@@ -35,7 +35,7 @@
         android:layout_below="@+id/appBarLayout"
         android:elevation="-1dp">
 
-        <include layout="@layout/app_bar_layout" />
+        <include layout="@layout/layout_bar_civil" />
 
         <FrameLayout
             android:id="@+id/smallerFragmentContainer"

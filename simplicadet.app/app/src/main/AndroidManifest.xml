@@ -21,10 +21,6 @@
         tools:ignore="DiscouragedApi,LockedOrientationActivity"
         tools:targetApi="34">
         <activity
-            android:name=".activities.StartTestActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
             android:name=".activities.QuestionsActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
@@ -40,12 +36,6 @@
             android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ga_ad_services_config"
             tools:replace="android:resource" />
-
-        <activity
-            android:name=".activities.CreateNoteBottom"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

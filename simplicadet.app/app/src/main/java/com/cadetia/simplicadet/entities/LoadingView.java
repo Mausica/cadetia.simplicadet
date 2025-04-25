@@ -32,7 +32,7 @@ public class LoadingView extends FrameLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.loading_animation, this, true);
+        LayoutInflater.from(context).inflate(R.layout.animation_loading, this, true);
 
         loadingAnimationView = findViewById(R.id.loadingAnimationView);
         darkOverlay = findViewById(R.id.darkOverlay);

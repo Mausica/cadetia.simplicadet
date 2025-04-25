@@ -15,6 +15,7 @@
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:navigationBarColor">@color/background</item>
 
+        <item name="contrastColor">@color/background</item>
         <!-- Secondary Colors -->
         <item name="backgroundColor">@color/background</item>
         <!-- <item name="backgroundTint">@color/white</item> -->

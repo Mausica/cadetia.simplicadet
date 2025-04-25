@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -91,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
         animationDrawable.setEnterFadeDuration(2000);
         animationDrawable.setExitFadeDuration(4000);
         animationDrawable.start();
+
+        Window window = getWindow();
+        window.setStatusBarColor(getResources().getColor(R.color.nothing));
+        window.setNavigationBarColor(getResources().getColor(R.color.nothing));
 
         // Use WindowCompat to set fitsSystemWindows to false
         View decorView = getWindow().getDecorView();

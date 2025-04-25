@@ -6,8 +6,7 @@
     android:id="@+id/bottomQuestion"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".activities.CreateNoteBottom">
+    android:background="@color/background">
 
     <ScrollView
         android:layout_width="match_parent"

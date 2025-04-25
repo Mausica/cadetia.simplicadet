@@ -6,8 +6,7 @@
     android:id="@+id/bottomRedeem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColor"
-    tools:context=".activities.CreateNoteBottom">
+    android:background="?attr/backgroundColor">
 
     <ScrollView
         android:layout_width="match_parent"

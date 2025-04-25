@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appBarLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/backgroundColor"
+    android:elevation="0dp"
+    app:elevation="0dp">
+
+    <LinearLayout
+        android:id="@+id/container_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/img_profile"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginStart="@dimen/_10sdp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/mainProfileButton"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_gravity="center"
+                android:src="@raw/guest"
+                app:shapeAppearanceOverlay="@style/circleImageView"
+                />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_gravity="center"
+                android:indeterminateOnly="false"
+                android:progress="58"
+                android:progressDrawable="@drawable/home_profile_loading"
+                android:rotation="-90" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/home_ac1"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_marginStart="@dimen/_13sdp"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
+            android:fontFamily="@font/circular_bold"
+            android:orientation="vertical"
+            app:rippleColor="@color/transparent"
+            android:text="@string/home_all"
+            android:textAllCaps="false"
+            android:textColor="?attr/textAppearanceBody1"
+            android:textSize="@dimen/_10ssp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/home_ac2"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_marginStart="@dimen/_7sdp"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
+            android:fontFamily="@font/circular_bold"
+            android:orientation="vertical"
+            app:rippleColor="@color/transparent"
+            android:text="@string/home_order"
+            android:textAllCaps="false"
+            android:textColor="?attr/textAppearanceBody1"
+            android:textSize="@dimen/_10ssp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/home_ac3"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_marginStart="@dimen/_7sdp"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
+            android:fontFamily="@font/circular_bold"
+            android:orientation="vertical"
+            app:rippleColor="@color/transparent"
+            android:text="@string/home_formation"
+            android:textAllCaps="false"
+            android:textColor="?attr/textAppearanceBody1"
+            android:textSize="@dimen/_10ssp"
+            tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
+
+        <Button
+            android:id="@+id/home_ac4"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_marginStart="@dimen/_7sdp"
+            app:backgroundTint="@null"
+            android:background="@drawable/button_social"
+            android:fontFamily="@font/circular_bold"
+            android:orientation="vertical"
+            app:rippleColor="@color/transparent"
+            android:text="@string/home_tasks"
+            android:textAllCaps="false"
+            android:textColor="?attr/textAppearanceBody1"
+            android:textSize="@dimen/_10ssp"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+</com.google.android.material.appbar.AppBarLayout>

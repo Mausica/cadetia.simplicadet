@@ -61,7 +61,7 @@ public class CommunityFragment extends Fragment {
             LinearLayout leaderView = binding.leaderView;
 
             LayoutInflater inflater = LayoutInflater.from(requireContext());
-            leaderboardFirstLayout = inflater.inflate(R.layout.layout_leaderboard_first, leaderView, false);
+            leaderboardFirstLayout = inflater.inflate(R.layout.item_leaderboard_first, leaderView, false);
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -43,6 +44,9 @@ public class Login extends AppCompatActivity {
 
 
         loadingView = findViewById(R.id.loadingView);
+
+        Window window = getWindow();
+        window.setStatusBarColor(getResources().getColor(R.color.nothing));
 
         // Use WindowCompat to set fitsSystemWindows to false
         View decorView = getWindow().getDecorView();

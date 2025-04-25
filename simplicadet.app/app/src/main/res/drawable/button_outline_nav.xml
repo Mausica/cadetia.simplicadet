@@ -1,6 +1,6 @@
 <!-- res/drawable/custom_icon_outline.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/backgroundLight" />
-    <stroke android:color="?attr/shimmerLight" android:width="0.5dp" />
+    <solid android:color="?attr/contrastColor" />
+    <stroke android:color="?attr/colorSecondary" android:width="@dimen/_1sdp" />
     <corners android:radius="18dp" />
 </shape>

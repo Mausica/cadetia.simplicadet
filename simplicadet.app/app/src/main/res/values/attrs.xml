@@ -8,6 +8,7 @@
     <attr name="shimmerDark" format="color" />
 
     <attr name="transparentLight" format="color" />
+    <attr name="contrastColor" format="color" />
 
     <attr name="textNormal" format="color" />
     <attr name="textLight" format="color" />

@@ -6,8 +6,7 @@
     android:id="@+id/bottomTask"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundNormal"
-    tools:context=".activities.CreateNoteBottom">
+    android:background="?attr/backgroundNormal">
 
     <ScrollView
         android:layout_width="match_parent"
