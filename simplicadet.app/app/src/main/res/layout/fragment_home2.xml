@@ -46,7 +46,8 @@
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:clipToPadding="false"
                 android:paddingStart="0dp"
-                android:paddingEnd="@dimen/_3sdp" />
+                android:paddingEnd="@dimen/_3sdp"
+                android:paddingBottom="@dimen/_16sdp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

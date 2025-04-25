@@ -63,6 +63,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.constraintlayout.v214)
     implementation("com.otaliastudios:zoomlayout:1.9.0")
+    implementation ("androidx.core:core-splashscreen:1.0.1")
 
     // SDP and SSP libraries
     implementation("com.intuit.sdp:sdp-android:1.1.0")
@@ -75,7 +76,7 @@ dependencies {
 
 
     // Ads
-    implementation("com.google.android.gms:play-services-ads:24.1.0")
+    implementation("com.google.android.gms:play-services-ads:24.2.0")
 
     // ImageView
     implementation("com.makeramen:roundedimageview:2.3.0")
@@ -84,20 +85,20 @@ dependencies {
 
     // Aesthetics
     implementation ("com.airbnb.android:lottie:4.2.0")
-    implementation ("androidx.transition:transition:1.5.1")
+    implementation ("androidx.transition:transition:1.6.0")
     implementation ("nl.dionsegijn:konfetti-xml:2.0.4")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
 
     // Room Database Dependencies
-    implementation ("androidx.room:room-runtime:2.6.1")
-    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-runtime:2.7.1")
+    annotationProcessor ("androidx.room:room-compiler:2.7.1")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
-    implementation("com.google.firebase:firebase-firestore:25.1.3")
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-firestore:25.1.4")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-functions:21.2.0")
+    implementation("com.google.firebase:firebase-functions:21.2.1")
 
     //Facebook
     implementation ("com.facebook.android:facebook-login:latest.release")

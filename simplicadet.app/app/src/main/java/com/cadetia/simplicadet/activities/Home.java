@@ -59,7 +59,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         super.onCreate(savedInstanceState);
 
         Window window = getWindow();
-        window.setStatusBarColor(getResources().getColor(R.color.focus));
 
         // Detect current theme
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
@@ -99,10 +98,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
             // Build navigation options with animations
             NavOptions navOptions = new NavOptions.Builder()
-                    .setEnterAnim(R.anim.fade_in_d)
-                    .setExitAnim(R.anim.fade_out_d)
-                    .setPopEnterAnim(R.anim.fade_in_d)
-                    .setPopExitAnim(R.anim.fade_out_d)
+                    //.setEnterAnim(R.anim.fade_in_d)
+                    //.setExitAnim(R.anim.fade_out_d)
+                    //.setPopEnterAnim(R.anim.fade_in_d)
+                    //.setPopExitAnim(R.anim.fade_out_d)
                     .setLaunchSingleTop(true)
                     .build();
 
