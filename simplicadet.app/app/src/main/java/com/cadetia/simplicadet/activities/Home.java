@@ -12,12 +12,14 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -35,6 +37,11 @@ import com.cadetia.simplicadet.ui.home.HomeFragment1;
 import com.cadetia.simplicadet.ui.home.HomeFragment2;
 import com.cadetia.simplicadet.ui.home.HomeFragment3;
 import com.cadetia.simplicadet.ui.home.HomeFragment4;
+import com.cadetia.simplicadet.ui.military.MilitaryFragment;
+import com.cadetia.simplicadet.ui.military.MilitaryFragment1;
+import com.cadetia.simplicadet.ui.military.MilitaryFragment2;
+import com.cadetia.simplicadet.ui.military.MilitaryFragment3;
+import com.cadetia.simplicadet.ui.military.MilitaryFragment4;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -120,6 +127,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             int destId = destination.getId();
             if (destId == R.id.navigation_home || destId == R.id.navigation_search || destId == R.id.navigation_military) {
                 navView.setSelectedItemId(destId);
+                new Handler().postDelayed(() -> navigationDrawer(window), 100);
             }
         });
 
@@ -144,30 +152,63 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         handler.postDelayed(() -> navigationDrawer(window), 100);
     }
 
+    // Add this method to your Home class
     private void navigationDrawer(Window view) {
-        NavigationView navigationView = this.findViewById(R.id.navigation_view);
-        drawerLayout = this.findViewById(R.id.drawer_layout);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
-            navigationView.bringToFront();
+        // Get the current active fragment
+        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
+        if (navHostFragment instanceof NavHostFragment) {
+            Fragment primaryFragment = ((NavHostFragment) navHostFragment).getChildFragmentManager().getPrimaryNavigationFragment();
+            boolean isMilitary = (primaryFragment instanceof MilitaryFragment);
 
-            SharedPreferences sharedPreferences = this.getSharedPreferences("UserData", MODE_PRIVATE);
-            String userPhoto = sharedPreferences.getString("userPhoto", "");
+            // Get the navigation view and header
+            NavigationView navigationView = findViewById(R.id.navigation_view);
+            if (navigationView != null) {
+                View headerView = navigationView.getHeaderView(0);
+                navigationView.setNavigationItemSelectedListener(this);
+                navigationView.bringToFront();
 
-            ShapeableImageView profileButton = view.findViewById(R.id.mainProfileButton);
+                SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
+                String userPhoto = sharedPreferences.getString("userPhoto", "");
 
-            if (profileButton != null) {
-                if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
-                    Glide.with(this).load(R.raw.guest).into(profileButton);
-                } else {
-                    Glide.with(this).load(userPhoto).into(profileButton);
+                // Find views in header
+                ShapeableImageView profileButton = headerView.findViewById(R.id.loading_button);
+                ProgressBar progressBar = headerView.findViewById(R.id.drawer_progress_bar);
+
+                // Update profile image
+                if (profileButton != null) {
+                    if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
+                        // Use different guest avatar based on section
+                        if (isMilitary) {
+                            Glide.with(this).load(R.raw.guest_military).into(profileButton);
+                        } else {
+                            Glide.with(this).load(R.raw.guest).into(profileButton);
+                        }
+                    } else {
+                        Glide.with(this).load(userPhoto).into(profileButton);
+                    }
                 }
-            } else {
-                Log.e("navigationDrawer", "mainProfileButton not found in header layout!");
-            }
 
+                // Update progress bar
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setIndeterminate(false);
+
+                    if (isMilitary) {
+                        progressBar.setProgressDrawable(ContextCompat.getDrawable(this, R.drawable.home_loading_military));
+                    } else {
+                        progressBar.setProgressDrawable(ContextCompat.getDrawable(this, R.drawable.home_loading_civil));
+                    }
+
+                    progressBar.setMax(100);
+                    progressBar.setProgress(0);
+                    progressBar.setProgress(58);
+
+                    Log.d("ProgressBar", "Progress updated to 58 for " + (isMilitary ? "military" : "civil"));
+                }
+            }
         }
     }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -256,6 +297,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     public void updateFabIcon(Fragment fragment) {
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
+        ProgressBar progressBar = findViewById(R.id.progress_bar);
 
         // Get the actual visible fragment from NavHost
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
@@ -264,6 +306,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
             if (primaryFragment instanceof HomeFragment) {
                 // Check child fragment for HomeFragment
+                fabMain.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.primary)));
                 Fragment childFragment = primaryFragment.getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
 
                 if (childFragment instanceof HomeFragment1) {
@@ -294,7 +337,41 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         homeFragment.actionController();
                     });
                 }
+            } else if (primaryFragment instanceof MilitaryFragment) {
+                // Check child fragment for MilitaryFragment
+                fabMain.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.military)));
+                Fragment childFragment = primaryFragment.getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
+
+                if (childFragment instanceof MilitaryFragment1) {
+                    fabMain.setImageResource(R.drawable.home_ic_plus);
+                    hideFab();
+                } else if (childFragment instanceof MilitaryFragment2) {
+                    fabMain.setImageResource(R.drawable.home_ic_plus);
+                    showFab(); // Use the new method to restore layout
+                    fabMain.setOnClickListener(v -> {
+                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        MilitaryFragment militaryFragment = (MilitaryFragment) primaryNavigationFragment;
+                        militaryFragment.actionController();
+                    });
+                } else if (childFragment instanceof MilitaryFragment3) {
+                    fabMain.setImageResource(R.drawable.home_ic_rotate);
+                    showFab(); // Use the new method to restore layout
+                    fabMain.setOnClickListener(v -> {
+                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        MilitaryFragment militaryFragment = (MilitaryFragment) primaryNavigationFragment;
+                        militaryFragment.actionController();
+                    });
+                } else if (childFragment instanceof MilitaryFragment4) {
+                    fabMain.setImageResource(R.drawable.home_ic_time);
+                    showFab(); // Use the new method to restore layout
+                    fabMain.setOnClickListener(v -> {
+                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
+                        MilitaryFragment militaryFragment = (MilitaryFragment) primaryNavigationFragment;
+                        militaryFragment.actionController();
+                    });
+                }
             }
+
         } else {
             fabMain.setImageResource(R.drawable.home_ic_plus);
             hideFab(); // Use your updated method

@@ -47,7 +47,7 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:layout_weight="0.5"
-                    android:background="@drawable/button_green"
+                    android:background="@drawable/button_blue"
                     android:fontFamily="@font/circular_bold"
                     android:text="Weekly"
                     android:textAllCaps="false"

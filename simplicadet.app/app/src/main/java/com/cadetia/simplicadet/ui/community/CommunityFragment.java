@@ -166,14 +166,14 @@ public class CommunityFragment extends Fragment {
         return v -> {
             AppCompatButton clickedButton = (AppCompatButton) v;
             AppCompatButton otherButton = clickedButton.getId() == weeklyButtonId ? binding.leaderboardAll : binding.leaderboardWeekly;
-            Drawable greenDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.button_green);
+            Drawable greenDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.button_blue);
 
             if (Objects.equals(clickedButton.getBackground().getConstantState(), Objects.requireNonNull(greenDrawable).getConstantState())) {
                 clickedButton.setBackgroundResource(R.drawable.background_nothing);
                 otherButton.setTextColor(Color.BLACK);
                 clickedButton.setTextColor(Color.WHITE);
             } else {
-                clickedButton.setBackgroundResource(R.drawable.button_green);
+                clickedButton.setBackgroundResource(R.drawable.button_blue);
                 otherButton.setBackgroundResource(R.drawable.background_nothing);
                 otherButton.setTextColor(Color.WHITE);
                 clickedButton.setTextColor(Color.BLACK);

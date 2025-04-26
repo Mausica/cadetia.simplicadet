@@ -193,7 +193,7 @@
         android:layout_width="@dimen/_160sdp"
         android:layout_height="@dimen/_38sdp"
         android:layout_marginTop="@dimen/_30sdp"
-        android:background="@drawable/button_green"
+        android:background="@drawable/button_blue"
         android:fontFamily="@font/circular_bold"
         android:text="Next"
         android:textAllCaps="false"

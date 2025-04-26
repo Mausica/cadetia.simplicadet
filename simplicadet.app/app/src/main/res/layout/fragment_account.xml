@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:indeterminateOnly="false"
             android:progress="58"
-            android:progressDrawable="@drawable/home_profile_loading"
+            android:progressDrawable="@drawable/home_loading_civil"
             android:rotation="-90" />
 
     </FrameLayout>

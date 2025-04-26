@@ -1,7 +1,6 @@
 package com.cadetia.simplicadet.ui.home;
 
 import static android.content.Context.MODE_PRIVATE;
-import static android.icu.text.DisplayOptions.DisplayLength.LENGTH_SHORT;
 
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -11,18 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.Home;
@@ -131,7 +127,7 @@ public class HomeFragment extends Fragment{
 
     private void updateButtonState(Button button, boolean isChecked) {
         if (isChecked) {
-            button.setBackgroundResource(R.drawable.button_green);
+            button.setBackgroundResource(R.drawable.button_blue);
             button.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         } else {
             button.setBackgroundResource(R.drawable.button_social);
