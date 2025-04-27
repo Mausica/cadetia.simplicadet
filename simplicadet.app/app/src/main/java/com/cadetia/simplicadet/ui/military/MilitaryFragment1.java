@@ -45,8 +45,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
     private static final String TAG = "MilitaryFragment1";
     private RecyclerView categoryRecyclerView;
-    private RecyclerView mainTasksRecycler;
-    private MainTaskAdapter mainTaskAdapter;
     private CategoryAdapter categoryAdapter;
     private List<Task> tasks = new ArrayList<>();
     private Handler handler = new Handler();
@@ -73,7 +71,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         contentView = view.findViewById(R.id.contentLayout1);
 
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
-        mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
 
         showLoading(true);
@@ -104,7 +101,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         new Handler().postDelayed(() -> {
             if (isAdded()) {
                 loadJournals();
-                loadTaskFirstLayout();
                 loadCategories();
             } else {
                 Log.w(TAG, "Fragment not attached in postDelayed");
@@ -135,17 +131,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                     Log.w(TAG, "Context is null, skipping animations");
                 }
             }
-        }
-    }
-
-
-
-    private void loadTaskFirstLayout() {
-        if (isAdded()) {
-            setUpAdapter();
-            getSavedTasks();
-        } else {
-            Log.w(TAG, "Fragment not attached, skipping task layout load");
         }
     }
 
@@ -181,47 +166,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             }
         });
     }
-
-
-    private void getSavedTasks() {
-        @SuppressLint("StaticFieldLeak")
-        class GetSavedTasks extends AsyncTask<Void, Void, List<Task>> {
-            @Override
-            protected List<Task> doInBackground(Void... voids) {
-                return DatabaseClient
-                        .getInstance(requireContext())
-                        .getAppDatabase()
-                        .dataBaseAction()
-                        .getAllTasksList();
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            protected void onPostExecute(List<Task> fetchedTasks) {
-                super.onPostExecute(fetchedTasks);
-                tasks.clear();
-                tasks.addAll(fetchedTasks);
-                if (mainTaskAdapter == null) {
-                    mainTaskAdapter = new MainTaskAdapter(tasks);
-                    mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-                    mainTasksRecycler.setAdapter(mainTaskAdapter);
-                } else {
-                    mainTaskAdapter.notifyDataSetChanged();
-                }
-                checkAllDataLoaded();
-            }
-        }
-
-        GetSavedTasks savedTasks = new GetSavedTasks();
-        savedTasks.execute();
-    }
-
-    private void setUpAdapter() {
-        mainTaskAdapter = new MainTaskAdapter(tasks);
-        mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-        mainTasksRecycler.setAdapter(mainTaskAdapter);
-    }
-
     @Override
     public void onJournalClick(String journalLink) {
         if (journalLink != null && !journalLink.isEmpty()) {
@@ -254,15 +198,10 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     // Helper method to check if all data is loaded
-    private boolean tasksLoaded = false;
     private boolean journalsLoaded = false;
     private boolean categoriesLoaded = false;
 
     private void checkAllDataLoaded() {
-        if (!tasksLoaded && mainTaskAdapter != null && !tasks.isEmpty()) {
-            tasksLoaded = true;
-        }
-
         if (!journalsLoaded && journalAdapter != null && !journalList.isEmpty()) {
             journalsLoaded = true;
         }
@@ -272,7 +211,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         }
 
         // If all data is loaded, hide
-        if (tasksLoaded && journalsLoaded && categoriesLoaded) {
+        if (journalsLoaded && categoriesLoaded) {
             showLoading(false);
         }
     }
