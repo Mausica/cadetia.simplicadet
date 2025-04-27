@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLoadingAnimation() {
-        loadingViewMain.startLoadingAnimation(R.raw.uni_loading, true);
+        loadingViewMain.startLoadingAnimation(R.raw.anim_loading_blue, true);
     }
 
     private void stopLoadingAnimation() {

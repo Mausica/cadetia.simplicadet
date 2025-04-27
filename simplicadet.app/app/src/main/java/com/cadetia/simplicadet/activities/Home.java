@@ -27,8 +27,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.database.TextUpload;
@@ -181,7 +179,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                         if (isMilitary) {
                             Glide.with(this).load(R.raw.guest_military).into(profileButton);
                         } else {
-                            Glide.with(this).load(R.raw.guest).into(profileButton);
+                            Glide.with(this).load(R.raw.guest_civil).into(profileButton);
                         }
                     } else {
                         Glide.with(this).load(userPhoto).into(profileButton);
@@ -208,6 +206,29 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             }
         }
     }
+    // Add this method to your Home class
+    public void navigateToHome() {
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+
+        // Simulează un click ca să updateze iconița și fragmentul corect
+        navView.setSelectedItemId(R.id.navigation_home);
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
+
+        NavOptions navOptions = new NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setPopUpTo(navController.getGraph().getStartDestinationId(), false)
+                .build();
+
+        navController.navigate(R.id.navigation_home, null, navOptions);
+
+        // Apelează update pentru FAB și drawer după navigare
+        new Handler().postDelayed(() -> {
+            updateFabIcon(null);
+            navigationDrawer(getWindow());
+        }, 150);
+    }
+
 
 
     @Override
@@ -425,7 +446,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         drawerNameTextView.setText(userName);
 
         if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){
-            Glide.with(this).load(R.raw.guest).into(drawerloadingButton);
+            Glide.with(this).load(R.raw.guest_civil).into(drawerloadingButton);
         } else {
             Glide.with(this).load(userPhoto).into(drawerloadingButton);
         }

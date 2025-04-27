@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +102,7 @@ public class ShowRedeem extends BottomSheetDialogFragment {
 
 
     private void preloadLottieAnimation() {
-        int animationRes = R.raw.uni_redeem;
+        int animationRes = R.raw.anim_redeem;
         animationView.setAnimation(animationRes);
         animationView.setRepeatCount(7);
         animationView.setRepeatMode(LottieDrawable.RESTART);

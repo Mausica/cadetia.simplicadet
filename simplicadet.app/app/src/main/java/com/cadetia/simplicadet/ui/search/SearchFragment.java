@@ -57,7 +57,7 @@ public class SearchFragment extends Fragment {
         String userPhoto = sharedPreferences.getString("userPhoto", "");
 
         if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){
-            Glide.with(this).load(R.raw.guest).into(searchImage);
+            Glide.with(this).load(R.raw.guest_civil).into(searchImage);
         }else {
             Glide.with(this).load(userPhoto).into(searchImage);
         }

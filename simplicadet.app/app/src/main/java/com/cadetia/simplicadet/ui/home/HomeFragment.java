@@ -154,7 +154,7 @@ public class HomeFragment extends Fragment{
         String userPhoto = sharedPreferences.getString("userPhoto", "");
 
         if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){
-            Glide.with(this).load(R.raw.guest).into(mainProfileButton);
+            Glide.with(this).load(R.raw.guest_civil).into(mainProfileButton);
         }else {
             Glide.with(this).load(userPhoto).into(mainProfileButton);
         }

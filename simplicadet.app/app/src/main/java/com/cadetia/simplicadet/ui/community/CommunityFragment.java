@@ -122,7 +122,7 @@ public class CommunityFragment extends Fragment {
 
     private void loadUserIntoView(ShapeableImageView imageView, TextView nameTextView, TextView scoreTextView, UserModel user) {
         if (user.getPHOTO().isEmpty() || user.getPHOTO().equals("no_photo") || user.getPHOTO().equals("null")) {
-            Glide.with(this).load(R.raw.guest).into(imageView);
+            Glide.with(this).load(R.raw.guest_civil).into(imageView);
         } else {
             Glide.with(this).load(user.getPHOTO()).into(imageView);
         }
@@ -144,7 +144,7 @@ public class CommunityFragment extends Fragment {
 
             ShapeableImageView imageView = leaderboardItem.findViewById(R.id.image_leaderboard);
             if (user.getPHOTO().isEmpty() || user.getPHOTO().equals("no_photo") || user.getPHOTO().equals("null")) {
-                Glide.with(this).load(R.raw.guest).into(imageView);
+                Glide.with(this).load(R.raw.guest_civil).into(imageView);
             } else {
                 Glide.with(this).load(user.getPHOTO()).into(imageView);
             }

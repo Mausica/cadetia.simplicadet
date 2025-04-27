@@ -25,7 +25,7 @@
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:layout_gravity="center"
-                android:src="@raw/guest"
+                android:src="@raw/guest_civil"
                 app:shapeAppearanceOverlay="@style/circleImageView"
                 />
 

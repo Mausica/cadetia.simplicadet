@@ -120,7 +120,7 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void loadQuestions(String categoryId, String testId) {
-        loadingView.startLoadingAnimation(R.raw.uni_loading, true);
+        loadingView.startLoadingAnimation(R.raw.anim_loading_blue, true);
 
         DbQuery.loadQuestions(categoryId, testId, new MyCompleteListener() {
             @Override

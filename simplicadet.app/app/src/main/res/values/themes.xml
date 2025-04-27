@@ -60,6 +60,14 @@
         <item name="android:headerBackground">@color/text_l_dark</item>
     </style>
 
+    <style name="TransparentDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
+
     <!-- Date Picker -->
     <style name="DatePickerDark" parent="Theme.AppCompat.Light.Dialog">
         <item name="cornerSize">16dp</item>

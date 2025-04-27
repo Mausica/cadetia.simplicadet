@@ -19,7 +19,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.model.Quizz;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
 
@@ -99,7 +98,7 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
                                 if (profileImage != null && !profileImage.isEmpty()) {
                                     Glide.with(context).load(profileImage).into(createdProfile);
                                 } else {
-                                    Glide.with(context).load(R.raw.guest).into(createdProfile);
+                                    Glide.with(context).load(R.raw.guest_civil).into(createdProfile);
                                 }
                             }
                         })

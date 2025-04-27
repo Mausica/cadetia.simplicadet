@@ -2,14 +2,17 @@ package com.cadetia.simplicadet.ui.military;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,24 +24,36 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.Home;
+import com.cadetia.simplicadet.activities.MainActivity;
 import com.cadetia.simplicadet.databinding.FragmentMilitaryBinding;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MilitaryFragment extends Fragment{
+public class MilitaryFragment extends Fragment {
 
+    private static final String TAG = "MilitaryFragment";
     private FragmentMilitaryBinding binding;
     private Button selectedButton;
     ShapeableImageView mainProfileButton;
+    private FirebaseFirestore firestore;
+    private FirebaseAuth firebaseAuth;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        FragmentMilitaryBinding binding = FragmentMilitaryBinding.inflate(inflater, container, false);
+        binding = FragmentMilitaryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        replaceFragment(new MilitaryFragment1());
-        setupButtons(root);
+        // Initialize Firebase instances
+        firestore = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        // Check user authorization before loading fragment content
+        checkUserAuthorization(root);
+
         mainProfileButton = root.findViewById(R.id.mainProfileButton);
         mainProfileButton.setOnClickListener(v -> {
             Home homeActivity = (Home) requireActivity();
@@ -49,6 +64,86 @@ public class MilitaryFragment extends Fragment{
         return root;
     }
 
+    private void checkUserAuthorization(View root) {
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser == null) {
+            // Not logged in
+            showAccessDeniedDialog();
+            return;
+        }
+
+        String userEmail = currentUser.getEmail();
+        if (userEmail == null || userEmail.isEmpty()) {
+            showAccessDeniedDialog();
+            return;
+        }
+
+        // Check if user email is in the authorized list
+        firestore.collection("MILITARY")
+                .document("RO")
+                .collection("CNMTV")
+                .document("STUDENTS")
+                .collection("CP2")
+                .document(userEmail)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // User is authorized
+                        Log.d(TAG, "User is authorized: " + userEmail);
+                        initializeFragment();
+                    } else {
+                        // User is not authorized
+                        Log.d(TAG, "User is not authorized: " + userEmail);
+                        showAccessDeniedDialog();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error checking user authorization", e);
+                    Toast.makeText(requireContext(), "Error checking authorization", Toast.LENGTH_SHORT).show();
+                    showAccessDeniedDialog();
+                });
+    }
+
+    private void showAccessDeniedDialog() {
+        // Create dialog view with transparent background
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.popup_acces_denied, null);
+
+        // Set up the dialog
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.TransparentDialogTheme);
+        builder.setView(dialogView);
+
+        // Create and set dialog properties
+        final androidx.appcompat.app.AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        // Set up the logout button click listener
+        Button logoutButton = dialogView.findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            // Navigate to login screen instead of finishing activity
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+
+        // Set up dismiss text click listener
+        View dismissText = dialogView.findViewById(R.id.dismiss_text);
+        dismissText.setOnClickListener(v -> {
+            dialog.dismiss();
+            // Navigate to Home fragment
+            Home homeActivity = (Home) requireActivity();
+            homeActivity.navigateToHome();
+        });
+
+        dialog.show();
+    }
+
+    private void initializeFragment() {
+        // Initialize the fragment content after successful authorization
+        replaceFragment(new MilitaryFragment1());
+        setupButtons(binding.getRoot());
+    }
 
     private void setupButtons(View view) {
         // Buttons for your options
@@ -71,7 +166,6 @@ public class MilitaryFragment extends Fragment{
         button.setOnClickListener(view -> {
             if (view.isSelected()) {
                 // Refresh data when an activated button is clicked again
-                //loadNotesInBackground();
                 return;
             }
 
@@ -94,6 +188,7 @@ public class MilitaryFragment extends Fragment{
             replaceFragment(fragment);
         });
     }
+
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -154,12 +249,10 @@ public class MilitaryFragment extends Fragment{
         String userPhoto = sharedPreferences.getString("userPhoto", "");
 
         if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){
-            Glide.with(this).load(R.raw.guest).into(mainProfileButton);
+            Glide.with(this).load(R.raw.guest_civil).into(mainProfileButton);
         }else {
             Glide.with(this).load(userPhoto).into(mainProfileButton);
         }
-
-
     }
 
     public void actionController() {
@@ -177,6 +270,4 @@ public class MilitaryFragment extends Fragment{
             frag4.showCreateTask();
         }
     }
-
-
 }

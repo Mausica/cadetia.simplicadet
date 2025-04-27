@@ -186,7 +186,7 @@ public class Login extends AppCompatActivity {
                 .start();
     }
     private void startLoadingAnimation() {
-        loadingView.startLoadingAnimation(R.raw.uni_loading, true);
+        loadingView.startLoadingAnimation(R.raw.anim_loading_blue, true);
     }
     private void stopLoadingAnimation() {
         loadingView.stopLoadingAnimation();
