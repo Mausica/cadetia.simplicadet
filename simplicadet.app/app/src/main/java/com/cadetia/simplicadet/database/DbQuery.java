@@ -162,66 +162,59 @@ public class DbQuery {
                     completeListener.onFailure();
                 });
     }
+
     public static void loadCategories(Context context, MyCompleteListener listener) {
         g_catList.clear();
-        Log.e(TAG, "Starting loadCategories");
+        Log.d(TAG, "Starting loadCategories with new structure");
 
-        g_firestore.collection("QUIZES")
+        // First, we'll get all categories by grouping quizzes
+        g_firestore.collection("QUIZZES")
                 .get()
-                .addOnSuccessListener(categorySnapshots -> {
-                    int totalCategories = categorySnapshots.size();
-                    AtomicInteger processedCategories = new AtomicInteger(0);
+                .addOnSuccessListener(quizSnapshots -> {
+                    Map<String, List<Quizz>> categoriesMap = new HashMap<>();
 
-                    if (totalCategories == 0) {
-                        listener.onSucces();
-                        return;
-                    }
+                    for (QueryDocumentSnapshot quizDoc : quizSnapshots) {
+                        try {
+                            String quizId = quizDoc.getId();
+                            String title = quizDoc.getString("title");
+                            String category = quizDoc.getString("category");
+                            String imageUrl = quizDoc.getString("imageUrl");
+                            String createdBy = quizDoc.getString("createdBy");
 
-                    for (QueryDocumentSnapshot catDoc : categorySnapshots) {
-                        String catID = catDoc.getId();
-                        int noOfTests = catDoc.contains("noTests") ? catDoc.getLong("noTests").intValue() : 0;
-                        List<String> subCollectionNames = (List<String>) catDoc.get("subcollections");
-
-                        if (subCollectionNames == null || subCollectionNames.isEmpty()) {
-                            Log.e(TAG, "No subcollections found for category: " + catID);
-                            if (processedCategories.incrementAndGet() == totalCategories) {
-                                listener.onSucces();
+                            if (category == null || category.isEmpty()) {
+                                Log.w(TAG, "Quiz missing category: " + quizId);
+                                continue;
                             }
-                            continue;
-                        }
 
-                        List<Quizz> quizzList = new ArrayList<>();
-                        AtomicInteger processedTests = new AtomicInteger(0);
+                            // Create quiz object
+                            Quizz quiz = new Quizz(title, imageUrl, quizId, true, createdBy);
 
-                        for (String subCollectionName : subCollectionNames) {
-                            g_firestore.collection("QUIZES").document(catID)
-                                    .collection(subCollectionName)
-                                    .document("Info")
-                                    .get()
-                                    .addOnSuccessListener(infoDoc -> {
-                                        if (infoDoc.exists()) {
-                                            String quizzImage = infoDoc.getString("imageUrl");
-                                            String createdBy = infoDoc.getString("createdBy");
-                                            Quizz quizz = new Quizz(subCollectionName, quizzImage, subCollectionName, true, createdBy);
-                                            quizzList.add(quizz);
-                                        } else {
-                                            Log.e(TAG, "Document 'Info' does not exist in subcollection: " + subCollectionName);
-                                            Toast.makeText(context, "Incompatible quiz: " + subCollectionName, Toast.LENGTH_LONG).show();
-                                        }
-
-                                        if (processedTests.incrementAndGet() == subCollectionNames.size()) {
-                                            createCategory(catID, noOfTests, quizzList, processedCategories, totalCategories, listener);
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e(TAG, "Error fetching 'Info' document: " + e.getMessage());
-                                        if (processedTests.incrementAndGet() == subCollectionNames.size()) {
-                                            createCategory(catID, noOfTests, quizzList, processedCategories, totalCategories, listener);
-                                        }
-                                        Toast.makeText(context, "Error fetching 'Info' document", Toast.LENGTH_LONG).show();
-                                    });
+                            // Add to the appropriate category list
+                            if (!categoriesMap.containsKey(category)) {
+                                categoriesMap.put(category, new ArrayList<>());
+                            }
+                            categoriesMap.get(category).add(quiz);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing quiz: " + e.getMessage());
                         }
                     }
+
+                    // Convert map to category list
+                    for (Map.Entry<String, List<Quizz>> entry : categoriesMap.entrySet()) {
+                        String categoryName = entry.getKey();
+                        List<Quizz> quizzes = entry.getValue();
+
+                        CategoryModel category = new CategoryModel(
+                                categoryName,
+                                categoryName,
+                                quizzes.size(),
+                                quizzes
+                        );
+                        g_catList.add(category);
+                    }
+
+                    Log.d(TAG, "Loaded " + g_catList.size() + " categories");
+                    listener.onSucces();
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error loading categories: " + e.getMessage());
@@ -230,30 +223,25 @@ public class DbQuery {
                 });
     }
 
-
-
-    private static void createCategory(String catID, int noTests, List<Quizz> quizzes,
-                                       AtomicInteger counter, int total, MyCompleteListener listener) {
-        CategoryModel category = new CategoryModel(catID, catID, noTests, quizzes);
-        g_catList.add(category);
-
-        if (counter.incrementAndGet() == total) {
-            listener.onSucces();
-        }
-    }
-
-    
-    public static void loadQuestions(String categoryId, String testTitle, MyCompleteListener completeListener) {
+    public static void loadQuestions(String categoryId, String quizId, MyCompleteListener completeListener) {
         g_quesList.clear();
+        Log.d(TAG, "Loading questions for quiz: " + quizId);
 
-        g_firestore.collection("QUIZES").document(categoryId).collection(testTitle)
+        g_firestore.collection("QUIZZES").document(quizId).collection("QUESTIONS")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        if (!doc.getId().equals("Info")) {
+                        try {
                             List<String> options = (List<String>) doc.get("options");
-
                             if (options == null || options.size() < 4) {
+                                Log.w(TAG, "Question with insufficient options: " + doc.getId());
+                                continue;
+                            }
+
+                            Long correctAnswerIndex = doc.getLong("correctAnswerIndex");
+                            Long points = doc.getLong("points");
+                            if (correctAnswerIndex == null || points == null) {
+                                Log.w(TAG, "Question missing correctAnswerIndex or points: " + doc.getId());
                                 continue;
                             }
 
@@ -261,16 +249,22 @@ public class DbQuery {
                                     doc.getString("question"),
                                     doc.getString("imageUrl"),
                                     options,
-                                    doc.getLong("correctAnswerIndex").intValue(),
-                                    doc.getLong("points").intValue()
+                                    correctAnswerIndex.intValue(),
+                                    points.intValue()
                             ));
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing question: " + e.getMessage());
                         }
                     }
+
+                    Log.d(TAG, "Loaded " + g_quesList.size() + " questions");
                     completeListener.onSucces();
                 })
-                .addOnFailureListener(e -> completeListener.onFailure());
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading questions: " + e.getMessage());
+                    completeListener.onFailure();
+                });
     }
-
 
     public static void loadJournals(MyCompleteListener listener) {
         g_journalList.clear();
@@ -294,6 +288,4 @@ public class DbQuery {
                     listener.onFailure();
                 });
     }
-
-
 }
