@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutRank"
+    android:orientation="vertical"
+    android:layout_width="@dimen/_120sdp"
+    android:layout_height="wrap_content"
+    android:elevation="3dp"
+    android:alpha="1"
+    android:layout_marginEnd="@dimen/_12sdp"
+    android:background="@drawable/home_background_quizz">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imageRank"
+            android:padding="@dimen/_4sdp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:cropToPadding="false"
+            android:src="@drawable/background_nothing_rounded"
+            android:visibility="visible"
+            app:riv_corner_radius="5dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/rankTitle"
+        android:text="Rank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:layout_marginStart="@dimen/_6sdp"
+        android:layout_marginEnd="@dimen/_6sdp"
+        android:maxLines="2"
+        android:layout_marginBottom="@dimen/_9sdp"
+        android:fontFamily="@font/circular_medium"
+        android:includeFontPadding="false"
+        android:textColor="?attr/textAppearanceBody1"
+        android:textSize="@dimen/_10ssp"/>
+
+
+</LinearLayout>

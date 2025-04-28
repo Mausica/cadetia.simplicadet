@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cadetia.simplicadet.model.JournalEntry;
+import com.cadetia.simplicadet.model.RankModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,6 +35,7 @@ public class DbQuery {
     public static List<JournalEntry> g_journalList = new ArrayList<>();
     public static List<CategoryModel> g_catList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
+    public static List<RankModel> g_rankList = new ArrayList<>();
 
     public static int g_selected_cat_index = 0;
     public static int g_selected_test_index = 0;
@@ -125,6 +127,41 @@ public class DbQuery {
                 });
     }
 
+    public static void loadRanks(MyCompleteListener completeListener) {
+        g_rankList.clear();
+
+        // Correct path to access the RANKS document
+        FirebaseFirestore.getInstance()
+                .document("MILITARY/RO/CNMTV/RANKS")  // This is a document path (even segments)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Loop through each field in the RANKS document
+                        Map<String, Object> data = documentSnapshot.getData();
+                        if (data != null) {
+                            for (Map.Entry<String, Object> entry : data.entrySet()) {
+                                try {
+                                    String rankId = entry.getKey();
+                                    ArrayList<String> rankData = (ArrayList<String>) entry.getValue();
+
+                                    if (rankData != null && rankData.size() >= 2) {
+                                        String name = rankData.get(0);
+                                        String imageUrl = rankData.get(1);
+                                        g_rankList.add(new RankModel(name, imageUrl));
+                                    }
+                                } catch (Exception e) {
+                                    Log.e("DbQuery", "Error parsing rank data: " + e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                    completeListener.onSucces();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DbQuery", "Error loading ranks: " + e.getMessage());
+                    completeListener.onFailure();
+                });
+    }
     public static void loadCategories(Context context, MyCompleteListener listener) {
         g_catList.clear();
         Log.e(TAG, "Starting loadCategories");

@@ -62,8 +62,14 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
-                android:paddingBottom="@dimen/_40sdp"
+                android:paddingBottom="@dimen/_28sdp"
                 android:nestedScrollingEnabled="false"/>
+
+            <include
+                android:id="@+id/rankCategoryLayout"
+                layout="@layout/layout_rank_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoryRecyclerView"

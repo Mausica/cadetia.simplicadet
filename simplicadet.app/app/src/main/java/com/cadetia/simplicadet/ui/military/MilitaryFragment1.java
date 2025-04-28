@@ -31,11 +31,13 @@ import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
 import com.cadetia.simplicadet.adapters.JournalAdapter;
 import com.cadetia.simplicadet.adapters.MainTaskAdapter;
+import com.cadetia.simplicadet.adapters.RankAdapter;
 import com.cadetia.simplicadet.database.DatabaseClient;
 import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
+import com.cadetia.simplicadet.model.RankModel;
 import com.cadetia.simplicadet.model.Task;
 
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     private RecyclerView categoryRecyclerView;
     private CategoryAdapter categoryAdapter;
     private List<Task> tasks = new ArrayList<>();
+    private RecyclerView rankRecyclerView;
+    private RankAdapter rankAdapter;
+    private List<RankModel> rankList = new ArrayList<>();
     private Handler handler = new Handler();
     private boolean isLoadingDismissed = false;
     private String userEmail;
@@ -70,6 +75,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout1);
 
+        rankRecyclerView = view.findViewById(R.id.rankRecyclerView);
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
 
@@ -102,6 +108,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             if (isAdded()) {
                 loadJournals();
                 loadCategories();
+                loadRanks();
             } else {
                 Log.w(TAG, "Fragment not attached in postDelayed");
             }
@@ -134,6 +141,39 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         }
     }
 
+    private void loadRanks() {
+        DbQuery.loadRanks(new MyCompleteListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onSucces() {
+                if (!isAdded()) {
+                    Log.w(TAG, "Fragment not attached, skipping rank load.");
+                    return;
+                }
+
+                if (rankAdapter == null) {
+                    rankAdapter = new RankAdapter(rankList, requireContext(), memCache);
+                }
+
+                LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                rankRecyclerView.setLayoutManager(layoutManager);
+                rankRecyclerView.setAdapter(rankAdapter);
+
+                rankList.clear();
+                rankList.addAll(DbQuery.g_rankList);
+                rankAdapter.notifyDataSetChanged();
+
+                ranksLoaded = true;
+                checkAllDataLoaded();
+            }
+
+            @Override
+            public void onFailure() {
+                Log.e(TAG, "Failed to load ranks");
+                checkAllDataLoaded();
+            }
+        });
+    }
 
     private void loadJournals() {
         DbQuery.loadJournals(new MyCompleteListener() {
@@ -200,7 +240,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     // Helper method to check if all data is loaded
     private boolean journalsLoaded = false;
     private boolean categoriesLoaded = false;
-
+    private boolean ranksLoaded = false;
     private void checkAllDataLoaded() {
         if (!journalsLoaded && journalAdapter != null && !journalList.isEmpty()) {
             journalsLoaded = true;
@@ -210,8 +250,12 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             categoriesLoaded = true;
         }
 
-        // If all data is loaded, hide
-        if (journalsLoaded && categoriesLoaded) {
+        if (!ranksLoaded && rankAdapter != null && !rankList.isEmpty()) {
+            ranksLoaded = true;
+        }
+
+        // If all data is loaded, hide loading
+        if (journalsLoaded && categoriesLoaded && ranksLoaded) {
             showLoading(false);
         }
     }
