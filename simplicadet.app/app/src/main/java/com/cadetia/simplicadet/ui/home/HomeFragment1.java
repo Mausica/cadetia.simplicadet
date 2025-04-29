@@ -172,12 +172,14 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 journalList.addAll(DbQuery.g_journalList);
                 journalAdapter.notifyDataSetChanged();
 
+                journalsLoaded = true;
                 checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load journals");
+                journalsLoaded = true;
                 checkAllDataLoaded();
             }
         });
@@ -209,6 +211,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 } else {
                     mainTaskAdapter.notifyDataSetChanged();
                 }
+                tasksLoaded = true;
                 checkAllDataLoaded();
             }
         }
@@ -243,12 +246,14 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 } else {
                     Log.e(TAG, "Category list is empty");
                 }
+                categoriesLoaded = true;
                 checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load categories");
+                categoriesLoaded = true;
                 checkAllDataLoaded();
             }
         });
@@ -260,18 +265,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private boolean categoriesLoaded = false;
 
     private void checkAllDataLoaded() {
-        if (!tasksLoaded && mainTaskAdapter != null && !tasks.isEmpty()) {
-            tasksLoaded = true;
-        }
-
-        if (!journalsLoaded && journalAdapter != null && !journalList.isEmpty()) {
-            journalsLoaded = true;
-        }
-
-        if (!categoriesLoaded && categoryAdapter != null) {
-            categoriesLoaded = true;
-        }
-
         // If all data is loaded, hide
         if (tasksLoaded && journalsLoaded && categoriesLoaded) {
             showLoading(false);
