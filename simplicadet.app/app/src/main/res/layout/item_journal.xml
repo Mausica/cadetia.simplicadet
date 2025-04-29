@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutJournal"
     android:orientation="vertical"
     android:layout_marginStart="@dimen/_12sdp"
@@ -13,17 +14,44 @@
     android:elevation="3dp"
     android:background="@drawable/home_background_quizz">
 
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/journal_image"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:src="@color/secondary"
-        android:maxHeight="@dimen/_160sdp"
-        android:scaleType="fitXY"
-        android:cropToPadding="false"
-        android:padding="@dimen/_5sdp"
-        app:riv_corner_radius="8dp"/>
+        android:layout_height="wrap_content">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/journal_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@color/secondary"
+            android:maxHeight="@dimen/_160sdp"
+            android:scaleType="fitXY"
+            android:cropToPadding="false"
+            app:riv_corner_radius="25dp" />
+
+        <TextView
+            android:id="@+id/journal_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:text=""
+            android:maxLines="1"
+            android:textAlignment="center"
+            android:fontFamily="@font/circular_bold"
+            android:includeFontPadding="false"
+            android:textColor="?attr/textLight"
+            android:textSize="@dimen/_8ssp"
+            android:background="@drawable/home_background_quizz_low"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:paddingBottom="10dp"
+            tools:ignore="RtlCompat" />
+    </FrameLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/_25sdp"
@@ -51,26 +79,14 @@
         android:text="@string/lorem_ipsum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="5"
+        android:maxLines="3"
         android:lineSpacingExtra="3dp"
-        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_13sdp"
-        android:fontFamily="@font/circular_medium"
-        android:includeFontPadding="false"
-        android:textColor="?attr/textNormal"
-        android:textSize="@dimen/_12ssp"/>
-    <TextView
-        android:id="@+id/journal_date"
-        android:text="@string/lorem_ipsum"
-        android:maxLines="1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_13sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
         android:textColor="?attr/textLight"
-        android:textSize="@dimen/_8ssp"/>
+        android:textSize="@dimen/_12ssp"/>
 </LinearLayout>

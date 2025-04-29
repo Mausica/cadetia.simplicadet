@@ -23,12 +23,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.QuestionsActivity;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
+import com.cadetia.simplicadet.adapters.DestinationAdapter;
 import com.cadetia.simplicadet.adapters.JournalAdapter;
 import com.cadetia.simplicadet.adapters.MainTaskAdapter;
 import com.cadetia.simplicadet.adapters.RankAdapter;
@@ -36,14 +39,19 @@ import com.cadetia.simplicadet.database.DatabaseClient;
 import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
+import com.cadetia.simplicadet.model.DestinationItem;
 import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.RankModel;
 import com.cadetia.simplicadet.model.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener, JournalAdapter.OnJournalClickListener {
+public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener, JournalAdapter.OnJournalClickListener, DestinationAdapter.OnDestinationClickListener {
 
     private static final String TAG = "MilitaryFragment1";
     private RecyclerView categoryRecyclerView;
@@ -60,8 +68,13 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     private List<JournalEntry> journalList = new ArrayList<>();
     private LruCache<String, Bitmap> memCache;
 
-    private View loadingLayout;
+    // New variables for destination feature
+    private RecyclerView destinationRecyclerView;
+    private DestinationAdapter destinationAdapter;
+    private List<DestinationItem> destinationItems = new ArrayList<>();
+    private FirebaseFirestore db;
 
+    private View loadingLayout;
     private View contentView;
 
     public MilitaryFragment1() {
@@ -79,6 +92,9 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
 
+        // Initialize destination RecyclerView - make sure to add this to your layout XML
+        destinationRecyclerView = view.findViewById(R.id.destinationRecyclerView);
+
         showLoading(true);
 
         return view;
@@ -87,6 +103,9 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Initialize Firebase
+        db = FirebaseFirestore.getInstance();
+
         // Calculate the maximum memory available for caching (in kilobytes)
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8; // Cache size is 1/8th of the max memory
@@ -109,6 +128,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 loadJournals();
                 loadCategories();
                 loadRanks();
+                loadDestinations();
             } else {
                 Log.w(TAG, "Fragment not attached in postDelayed");
             }
@@ -141,6 +161,79 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         }
     }
 
+    private void loadDestinations() {
+        db.document("MILITARY/RO/CNMTV/PICTURES")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        destinationItems.clear();
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            for (String key : document.getData().keySet()) {
+                                String imageUrl = document.getString(key);
+                                if (imageUrl != null && !imageUrl.isEmpty()) {
+                                    DestinationItem item = new DestinationItem(key, imageUrl);
+                                    destinationItems.add(item);
+                                }
+                            }
+
+                            // Shuffle the items if there are more than 3
+                            if (destinationItems.size() > 3) {
+                                Collections.shuffle(destinationItems);
+                            }
+
+                            setupDestinationRecyclerView();
+                        }
+
+                        destinationsLoaded = true;
+                        checkAllDataLoaded();
+                    } else {
+                        Log.e(TAG, "Error getting destinations: ", task.getException());
+                        destinationsLoaded = true;
+                        checkAllDataLoaded();
+                    }
+                });
+    }
+
+
+    // Set up the destination RecyclerView with PagerSnapHelper for swipe animation
+    private void setupDestinationRecyclerView() {
+        if (!isAdded()) return;
+
+        Context context = requireContext();
+
+        // Create and set up adapter
+        destinationAdapter = new DestinationAdapter(destinationItems, context, memCache, this);
+
+        // Use LinearLayoutManager with horizontal orientation
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        destinationRecyclerView.setLayoutManager(layoutManager);
+
+        // Add PagerSnapHelper for snapping behavior (similar to ViewPager)
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(destinationRecyclerView);
+
+        // Set adapter
+        destinationRecyclerView.setAdapter(destinationAdapter);
+
+        // Add scroll listener to handle pagination effects
+        destinationRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // Animation already happening in adapter
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onDestinationClick(DestinationItem destination) {
+        // Handle destination click if needed
+        Log.d(TAG, "Destination clicked: " + destination.getId());
+    }
+
     private void loadRanks() {
         DbQuery.loadRanks(new MyCompleteListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -170,6 +263,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load ranks");
+                ranksLoaded = true;
                 checkAllDataLoaded();
             }
         });
@@ -196,16 +290,19 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 journalList.addAll(DbQuery.g_journalList);
                 journalAdapter.notifyDataSetChanged();
 
+                journalsLoaded = true;
                 checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load journals");
+                journalsLoaded = true;
                 checkAllDataLoaded();
             }
         });
     }
+
     @Override
     public void onJournalClick(String journalLink) {
         if (journalLink != null && !journalLink.isEmpty()) {
@@ -226,12 +323,14 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 } else {
                     Log.e(TAG, "Category list is empty");
                 }
+                categoriesLoaded = true;
                 checkAllDataLoaded();
             }
 
             @Override
             public void onFailure() {
                 Log.e(TAG, "Failed to load categories");
+                categoriesLoaded = true;
                 checkAllDataLoaded();
             }
         });
@@ -241,21 +340,11 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     private boolean journalsLoaded = false;
     private boolean categoriesLoaded = false;
     private boolean ranksLoaded = false;
+    private boolean destinationsLoaded = false;
+
     private void checkAllDataLoaded() {
-        if (!journalsLoaded && journalAdapter != null && !journalList.isEmpty()) {
-            journalsLoaded = true;
-        }
-
-        if (!categoriesLoaded && categoryAdapter != null) {
-            categoriesLoaded = true;
-        }
-
-        if (!ranksLoaded && rankAdapter != null && !rankList.isEmpty()) {
-            ranksLoaded = true;
-        }
-
         // If all data is loaded, hide loading
-        if (journalsLoaded && categoriesLoaded && ranksLoaded) {
+        if (journalsLoaded && categoriesLoaded && ranksLoaded && destinationsLoaded) {
             showLoading(false);
         }
     }

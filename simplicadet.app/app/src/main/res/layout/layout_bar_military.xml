@@ -46,7 +46,7 @@
         <Button
             android:id="@+id/military_ac1"
             android:layout_width="@dimen/_40sdp"
-            android:layout_height="@dimen/_25sdp"
+            android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_13sdp"
             app:backgroundTint="@null"
             android:background="@drawable/button_social"
@@ -62,7 +62,7 @@
         <Button
             android:id="@+id/military_ac2"
             android:layout_width="@dimen/_50sdp"
-            android:layout_height="@dimen/_25sdp"
+            android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_7sdp"
             app:backgroundTint="@null"
             android:background="@drawable/button_social"
@@ -78,7 +78,7 @@
         <Button
             android:id="@+id/military_ac3"
             android:layout_width="@dimen/_70sdp"
-            android:layout_height="@dimen/_25sdp"
+            android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_7sdp"
             app:backgroundTint="@null"
             android:background="@drawable/button_social"
@@ -94,7 +94,7 @@
         <Button
             android:id="@+id/military_ac4"
             android:layout_width="@dimen/_40sdp"
-            android:layout_height="@dimen/_25sdp"
+            android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_7sdp"
             app:backgroundTint="@null"
             android:background="@drawable/button_social"
@@ -102,6 +102,7 @@
             android:orientation="vertical"
             app:rippleColor="@color/transparent"
             android:text="Map"
+            android:visibility="gone"
             android:clickable="false"
             android:alpha="0.4"
             android:textAllCaps="false"
