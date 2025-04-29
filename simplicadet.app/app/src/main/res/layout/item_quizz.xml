@@ -8,7 +8,7 @@
     android:elevation="3dp"
     android:alpha="1"
     android:layout_marginEnd="@dimen/_12sdp"
-    android:background="@drawable/home_background_quizz">
+    android:background="@drawable/home_background_quizz_light">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,16 +16,15 @@
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/imageQuizz"
-            android:padding="@dimen/_4sdp"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_90sdp"
+            android:layout_height="@dimen/_100sdp"
             android:layout_marginBottom="@dimen/_2sdp"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:cropToPadding="false"
             android:src="@drawable/background_nothing_rounded"
             android:visibility="visible"
-            app:riv_corner_radius="5dp" />
+            app:riv_corner_radius="15dp" />
 
     </RelativeLayout>
 
@@ -35,9 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:lineSpacingExtra="@dimen/_2sdp"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:layout_marginStart="@dimen/_6sdp"
-        android:layout_marginEnd="@dimen/_6sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_7sdp"
+        android:layout_marginEnd="@dimen/_7sdp"
         android:maxLines="2"
         android:layout_marginBottom="@dimen/_3sdp"
         android:fontFamily="@font/circular_medium"
@@ -48,10 +47,10 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_6sdp"
-        android:layout_marginEnd="@dimen/_6sdp"
-        android:layout_marginTop="@dimen/_6sdp"
-        android:layout_marginBottom="@dimen/_9sdp"
+        android:layout_marginStart="@dimen/_7sdp"
+        android:layout_marginEnd="@dimen/_7sdp"
+        android:layout_marginTop="@dimen/_7sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:layout_gravity="bottom">
 
         <com.google.android.material.imageview.ShapeableImageView

@@ -296,11 +296,13 @@ public class QuestionsActivity extends AppCompatActivity {
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.ALL);
 
-            Glide.with(this)
-                    .load(imageUrl)
-                    .apply(requestOptions)
-                    .into(questionImage);
-            loadedImages[0]++;
+            if (!isFinishing() && !isDestroyed()) {
+                Glide.with(this)
+                        .load(imageUrl)
+                        .apply(requestOptions)
+                        .into(questionImage);
+                loadedImages[0]++;
+            }
 
             if (loadedImages[0] == imageUrls.size()) {
                 onPreloadComplete.run();
@@ -309,7 +311,12 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
 
+
     private void displayQuestion(int index) {
+        if (isFinishing() || isDestroyed()) {
+            return; // Skip loading if the activity is finishing or destroyed
+        }
+
         if (index >= 0 && index < DbQuery.g_quesList.size()) {
             QuestionModel question = DbQuery.g_quesList.get(index);
             currentQuestion = question;
@@ -339,7 +346,9 @@ public class QuestionsActivity extends AppCompatActivity {
             textNumberQuestion.setText("Question " + (index + 1));
             if (question.getImage() != null && !question.getImage().isEmpty()) {
                 questionImage.setVisibility(View.VISIBLE);
-                Glide.with(this).load(question.getImage()).into(questionImage);
+                if (!isFinishing() && !isDestroyed()) {
+                    Glide.with(this).load(question.getImage()).into(questionImage);
+                }
             } else {
                 questionImage.setVisibility(View.GONE);
             }
@@ -349,6 +358,7 @@ public class QuestionsActivity extends AppCompatActivity {
             showNoQuestionsMessage();
         }
     }
+
 
 
     private void startQuestionTimer() {

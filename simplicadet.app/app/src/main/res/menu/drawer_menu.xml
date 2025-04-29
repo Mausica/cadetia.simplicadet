@@ -7,8 +7,8 @@
             android:icon="@drawable/home_ic_new"/>
         <item
             android:id="@+id/drawer_settings"
-            android:title="Settings menu"
-            android:icon="@drawable/home_ic_settings"/>
+            android:title="Change theme"
+            android:icon="@drawable/home_ic_theme"/>
         <item
             android:id="@+id/drawer_upload"
             android:title="Upload file"

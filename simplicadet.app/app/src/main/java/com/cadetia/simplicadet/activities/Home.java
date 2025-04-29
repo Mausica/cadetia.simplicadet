@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -251,7 +252,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(browserIntent);
 
         } else if (itemId == R.id.drawer_settings) {
-            //Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
+            int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+            if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+            recreate();
         } else if (itemId == R.id.drawer_upload) {
             if (userEmail.equals("marius.gabryel2017@gmail.com")){
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);

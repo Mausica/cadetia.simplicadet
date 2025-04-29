@@ -206,10 +206,16 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         destinationAdapter = new DestinationAdapter(destinationItems, context, memCache, this);
 
         // Use LinearLayoutManager with horizontal orientation
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-        destinationRecyclerView.setLayoutManager(layoutManager);
+        if (destinationRecyclerView.getLayoutManager() == null) {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            destinationRecyclerView.setLayoutManager(layoutManager);
+        }
 
-        // Add PagerSnapHelper for snapping behavior (similar to ViewPager)
+        // Safely attach SnapHelper (avoid IllegalStateException)
+        if (destinationRecyclerView.getOnFlingListener() != null) {
+            destinationRecyclerView.setOnFlingListener(null);
+        }
+
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(destinationRecyclerView);
 
@@ -227,6 +233,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             }
         });
     }
+
 
     @Override
     public void onDestinationClick(DestinationItem destination) {
