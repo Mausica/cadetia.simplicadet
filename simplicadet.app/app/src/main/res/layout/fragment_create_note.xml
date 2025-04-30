@@ -150,7 +150,7 @@
                 <RelativeLayout
                     android:layout_width="@dimen/_35sdp"
                     android:layout_height="@dimen/_35sdp"
-                    android:background="@drawable/home_background_quizz"
+                    android:background="@drawable/home_background_shadow"
                     android:layout_gravity="center_vertical"
                     android:elevation="5dp">
 
@@ -172,7 +172,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_3sdp"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/home_background_quizz"
+                    android:background="@drawable/home_background_shadow"
                     android:alpha="0.2"
                     android:clickable="false">
                     <ImageView

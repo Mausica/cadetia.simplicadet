@@ -136,9 +136,10 @@
                 app:layout_constraintTop_toBottomOf="@id/viewDescriptionIndicator">
 
                 <RelativeLayout
-                    android:layout_width="@dimen/_115sdp"
+                    android:layout_width="@dimen/_118sdp"
                     android:layout_height="@dimen/_36sdp"
-                    android:background="@drawable/home_background_quizz">
+                    android:padding="@dimen/_1sdp"
+                    android:background="@drawable/home_background_shadow">
 
                     <EditText
                         android:id="@+id/taskDate"
@@ -172,10 +173,11 @@
 
 
                 <RelativeLayout
-                    android:layout_width="@dimen/_85sdp"
+                    android:layout_width="@dimen/_88sdp"
                     android:layout_height="@dimen/_36sdp"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:background="@drawable/home_background_quizz">
+                    android:padding="@dimen/_1sdp"
+                    android:background="@drawable/home_background_shadow">
 
                     <EditText
                         android:id="@+id/taskTime"
@@ -214,7 +216,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_3sdp"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/home_background_quizz"
+                    android:background="@drawable/home_background_shadow"
                     android:alpha="0.2"
                     android:clickable="false">
                     <ImageView

@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.constraintlayout.v214)
+    implementation("com.google.android.material:material:1.9.0")
     implementation("com.otaliastudios:zoomlayout:1.9.0")
     implementation ("androidx.core:core-splashscreen:1.0.1")
 

@@ -257,9 +257,22 @@ public class CreateTaskBottom extends BottomSheetDialogFragment {
         final Calendar c = Calendar.getInstance();
         mHour = c.get(Calendar.HOUR_OF_DAY);
         mMinute = c.get(Calendar.MINUTE);
-        timePickerDialog = new TimePickerDialog(getActivity(), R.style.TimePickerDark, (view, hourOfDay, minute) -> {
-            taskTime.setText(hourOfDay + ":" + minute);
-        }, mHour, mMinute, false);
+
+        // Create the TimePickerDialog with the proper style
+        timePickerDialog = new TimePickerDialog(
+                getActivity(),
+                R.style.TimePickerDark,
+                (view, hourOfDay, minute) -> {
+                    // Format minutes to always show two digits (e.g., 01, 02, etc.)
+                    String formattedMinute = minute < 10 ? "0" + minute : String.valueOf(minute);
+                    taskTime.setText(hourOfDay + ":" + formattedMinute);
+                },
+                mHour,
+                mMinute,
+                false
+        );
+
+        // Show the time picker
         timePickerDialog.show();
     }
 

@@ -45,13 +45,37 @@
     <!-- Custom Theme -->
     <style name="Theme.Simplicadet" parent="Base.Theme.Simplify"/>
 
-    <!-- Time Picker -->
-    <style name="TimePickerDark" parent="@style/ThemeOverlay.MaterialComponents.Dialog">
+    <style name="TimePickerDark" parent="@style/ThemeOverlay.MaterialComponents.TimePicker">
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSurface">@color/background_l_light</item>
+        <item name="colorOnSurface">@color/text_l_dark</item>
+
+        <!-- Legacy attributes (for backwards compatibility) -->
         <item name="colorAccent">@color/primary</item>
         <item name="colorSecondaryFixed">@color/primary</item>
-        <item name="android:numbersBackgroundColor">@color/secondary</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:headerBackground">@color/secondary</item>
+        <item name="android:headerBackground">@color/primary</item>
+        <item name="android:numbersBackgroundColor">@android:color/white</item>
+        <item name="android:windowBackground">@color/background_l_light</item>
+        <item name="android:textColorPrimary">@color/text_l_dark</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+
+        <!-- Material TimePicker specific attributes -->
+        <item name="materialTimePickerStyle">@style/Widget.MaterialComponents.TimePicker</item>
+        <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
+        <item name="materialTimePickerClockStyle">@style/Widget.MaterialComponents.TimePicker.Clock</item>
+        <item name="materialTimePickerHeaderBackground">@color/primary</item>
+        <item name="materialTimePickerClockFaceBackgroundColor">@android:color/white</item>
+        <item name="clockFaceBackgroundColor">@android:color/white</item>
+
+        <!-- Button styles -->
+        <item name="android:buttonBarPositiveButtonStyle">@style/TimePickerButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/TimePickerButtonStyle</item>
+    </style>
+
+    <style name="TimePickerButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <style name="TransparentDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -64,14 +88,13 @@
 
     <!-- Date Picker -->
     <style name="DatePickerDark" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorAccent">@color/secondary</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="colorSecondaryFixed">@color/primary</item>
         <item name="colorControlActivated">@color/primary</item>
-        <item name="android:selectableItemBackgroundBorderless">@color/background</item>
         <item name="colorControlHighlight">@color/primary</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:textColor">@color/secondary</item>
-        <item name="backgroundTint">@color/black</item>
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:windowBackground">@color/background_l_light</item>
+        <item name="android:selectableItemBackgroundBorderless">@color/background_l_light</item>
         <item name="android:textColorPrimaryInverse">@color/white</item>
         <item name="android:textColorSecondaryInverse">@color/light</item>
     </style>

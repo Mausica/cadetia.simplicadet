@@ -48,11 +48,6 @@
 
     <!-- Time Picker -->
     <style name="TimePickerDark" parent="@style/ThemeOverlay.MaterialComponents.Dialog">
-        <item name="cornerSize">16dp</item>
-        <item name="cornerRadius">16dp</item>
-        <item name="cornerFamily">rounded</item>
-        <item name="fontFamily">@font/circular_medium</item>
-        <item name="android:fontFamily">@font/circular_medium</item>
         <item name="colorAccent">@color/primary</item>
         <item name="colorSecondaryFixed">@color/primary</item>
         <item name="android:numbersBackgroundColor">@color/text_l_dark</item>
@@ -70,18 +65,13 @@
 
     <!-- Date Picker -->
     <style name="DatePickerDark" parent="Theme.AppCompat.Light.Dialog">
-        <item name="cornerSize">16dp</item>
-        <item name="cornerRadius">16dp</item>
-        <item name="cornerFamily">rounded</item>
-        <item name="fontFamily">@font/circular_medium</item>
-        <item name="android:fontFamily">@font/circular_medium</item>
         <item name="colorAccent">@color/primary</item>
+        <item name="colorSecondaryFixed">@color/primary</item>
         <item name="colorControlActivated">@color/primary</item>
         <item name="colorControlHighlight">@color/primary</item>
         <item name="android:textColor">@color/primary</item>
         <item name="android:windowBackground">@color/background_l_light</item>
         <item name="android:selectableItemBackgroundBorderless">@color/background_l_light</item>
-        <item name="android:textColorPrimary">@color/text_l_dark</item>
         <item name="android:textColorPrimaryInverse">@color/white</item>
         <item name="android:textColorSecondaryInverse">@color/light</item>
     </style>
