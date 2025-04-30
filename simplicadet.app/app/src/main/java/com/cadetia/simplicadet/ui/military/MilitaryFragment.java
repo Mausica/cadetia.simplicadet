@@ -114,7 +114,7 @@ public class MilitaryFragment extends Fragment {
 
         // Create and set dialog properties
         final androidx.appcompat.app.AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCanceledOnTouchOutside(false); // Changed from false to true
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // Set up the logout button click listener
@@ -125,15 +125,6 @@ public class MilitaryFragment extends Fragment {
             Intent intent = new Intent(requireActivity(), MainActivity.class);
             startActivity(intent);
             dialog.dismiss();
-        });
-
-        // Set up dismiss text click listener
-        View dismissText = dialogView.findViewById(R.id.dismiss_text);
-        dismissText.setOnClickListener(v -> {
-            dialog.dismiss();
-            // Navigate to Home fragment
-            Home homeActivity = (Home) requireActivity();
-            homeActivity.navigateToHome();
         });
 
         dialog.show();

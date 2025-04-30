@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_104sdp"
+        android:layout_height="wrap_content"
         android:background="@drawable/background_delete_note"
         android:layout_marginLeft="@dimen/_50sdp"
         android:layout_marginRight="@dimen/_50sdp"
@@ -41,7 +41,7 @@
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_4sdp"
             android:textAlignment="center"
-            android:text="Are You Sure You Want to Delete This Note?"
+            android:text="Are you sure you want to delete this note?"
             android:textColor="?attr/textDark"
             android:textSize="@dimen/_12ssp"
             android:layout_marginLeft="@dimen/_16sdp"
@@ -56,22 +56,23 @@
 
         <Button
             android:id="@+id/ok_btn_del"
-            android:layout_marginEnd="@dimen/_28sdp"
-            android:layout_marginStart="@dimen/_28sdp"
-            android:layout_marginBottom="@dimen/_4sdp"
-            android:layout_marginTop="@dimen/_4sdp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_24sdp"
             android:layout_gravity="center"
-            android:fontFamily="@font/circular_medium"
-            android:textAllCaps="false"
-            android:elevation="0dp"
-            android:background="@color/nothing"
-            android:textSize="@dimen/_14ssp"
-            android:textColor="@color/primary"
-            android:text="Ok"
+            android:layout_marginStart="@dimen/_28sdp"
             android:layout_marginLeft="@dimen/_16sdp"
-            android:layout_marginRight="@dimen/_16sdp"/>
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_28sdp"
+            android:layout_marginRight="@dimen/_16sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:background="@color/nothing"
+            android:elevation="0dp"
+            android:fontFamily="@font/circular_medium"
+            android:text="Ok"
+            android:textAllCaps="false"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/_14ssp"
+            tools:ignore="TouchTargetSizeCheck" />
 
     </LinearLayout>
 
