@@ -36,6 +36,8 @@ public class DbQuery {
     public static List<CategoryModel> g_catList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
     public static List<RankModel> g_rankList = new ArrayList<>();
+    public static List<JournalEntry> g_militaryJournalList = new ArrayList<>();
+    public static List<JournalEntry> g_homeJournalList = new ArrayList<>();
 
     public static int g_selected_cat_index = 0;
     public static int g_selected_test_index = 0;
@@ -129,6 +131,61 @@ public class DbQuery {
                     Log.e(TAG, "Error updating total score: ", e);
                     completeListener.onFailure();
                 });
+    }
+    // Add these lists
+
+    // Modify loadJournals() to categorize by JOURNAL_TAG
+    public static void loadJournals(MyCompleteListener listener) {
+        g_journalList.clear();
+        g_militaryJournalList.clear();
+        g_homeJournalList.clear();
+
+        g_firestore.collection("JOURNAL")
+                .orderBy("JOURNAL_DATE")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        JournalEntry entry = new JournalEntry(
+                                doc.getString("JOURNAL_TITLE"),
+                                doc.getString("JOURNAL_SUBTITLE"),
+                                doc.getString("JOURNAL_DATE"),
+                                doc.getString("JOURNAL_IMAGE"),
+                                doc.getString("JOURNAL_LINK")
+                        );
+
+                        // Check for JOURNAL_TAG (default to home if missing)
+                        String tag = doc.getString("JOURNAL_TAG");
+                        if ("CNMTV".equals(tag)) {
+                            g_militaryJournalList.add(entry); // Military journals
+                        } else {
+                            g_homeJournalList.add(entry); // Home journals
+                        }
+
+                        g_journalList.add(entry); // Optional: keep global list
+                    }
+                    listener.onSucces();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading journals: ", e);
+                    listener.onFailure();
+                });
+    }
+
+    // Add military/home journal loaders (similar to categories)
+    public static void loadMilitaryJournals(Context context, MyCompleteListener listener) {
+        if (g_militaryJournalList.isEmpty()) {
+            loadJournals(listener); // Reload if empty
+        } else {
+            listener.onSucces();
+        }
+    }
+
+    public static void loadHomeJournals(Context context, MyCompleteListener listener) {
+        if (g_homeJournalList.isEmpty()) {
+            loadJournals(listener); // Reload if empty
+        } else {
+            listener.onSucces();
+        }
     }
 
     public static void loadRanks(MyCompleteListener completeListener) {
@@ -349,26 +406,4 @@ public class DbQuery {
                 });
     }
 
-    public static void loadJournals(MyCompleteListener listener) {
-        g_journalList.clear();
-
-        g_firestore.collection("JOURNAL").orderBy("JOURNAL_DATE")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        g_journalList.add(new JournalEntry(
-                                doc.getString("JOURNAL_TITLE"),
-                                doc.getString("JOURNAL_SUBTITLE"),
-                                doc.getString("JOURNAL_DATE"),
-                                doc.getString("JOURNAL_IMAGE"),
-                                doc.getString("JOURNAL_LINK")
-                        ));
-                    }
-                    listener.onSucces();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading journals: ", e);
-                    listener.onFailure();
-                });
-    }
 }

@@ -294,7 +294,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 journalRecyclerView.setAdapter(journalAdapter);
 
                 journalList.clear();
-                journalList.addAll(DbQuery.g_journalList);
+                journalList.addAll(DbQuery.g_militaryJournalList);
                 journalAdapter.notifyDataSetChanged();
 
                 journalsLoaded = true;

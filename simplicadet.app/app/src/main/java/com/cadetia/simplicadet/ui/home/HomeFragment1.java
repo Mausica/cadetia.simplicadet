@@ -169,7 +169,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 journalRecyclerView.setAdapter(journalAdapter);
 
                 journalList.clear();
-                journalList.addAll(DbQuery.g_journalList);
+                journalList.addAll(DbQuery.g_homeJournalList);
                 journalAdapter.notifyDataSetChanged();
 
                 journalsLoaded = true;
