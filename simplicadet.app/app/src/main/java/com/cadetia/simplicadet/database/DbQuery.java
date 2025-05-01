@@ -40,6 +40,10 @@ public class DbQuery {
     public static int g_selected_cat_index = 0;
     public static int g_selected_test_index = 0;
 
+    // Added separate lists for military and home fragments
+    public static List<CategoryModel> g_militaryCatList = new ArrayList<>();
+    public static List<CategoryModel> g_homeCatList = new ArrayList<>();
+
     public interface UserScoreListener {
         void onUserScoresReceived(List<UserModel> userList);
         void onFailure();
@@ -165,13 +169,17 @@ public class DbQuery {
 
     public static void loadCategories(Context context, MyCompleteListener listener) {
         g_catList.clear();
+        g_militaryCatList.clear();
+        g_homeCatList.clear();
+
         Log.d(TAG, "Starting loadCategories with new structure");
 
         // First, we'll get all categories by grouping quizzes
         g_firestore.collection("QUIZZES")
                 .get()
                 .addOnSuccessListener(quizSnapshots -> {
-                    Map<String, List<Quizz>> categoriesMap = new HashMap<>();
+                    Map<String, List<Quizz>> cnmtvCategoriesMap = new HashMap<>();
+                    Map<String, List<Quizz>> otherCategoriesMap = new HashMap<>();
 
                     for (QueryDocumentSnapshot quizDoc : quizSnapshots) {
                         try {
@@ -181,6 +189,18 @@ public class DbQuery {
                             String imageUrl = quizDoc.getString("imageUrl");
                             String createdBy = quizDoc.getString("createdBy");
 
+                            // Check for tags - extract the tag field (could be a string or array)
+                            Object tagsObj = quizDoc.get("tags");
+                            boolean isCNMTV = false;
+
+                            // Process different tag formats
+                            if (tagsObj instanceof String) {
+                                isCNMTV = "CNMTV".equals(tagsObj);
+                            } else if (tagsObj instanceof List) {
+                                List<String> tags = (List<String>) tagsObj;
+                                isCNMTV = tags.contains("CNMTV");
+                            }
+
                             if (category == null || category.isEmpty()) {
                                 Log.w(TAG, "Quiz missing category: " + quizId);
                                 continue;
@@ -189,18 +209,21 @@ public class DbQuery {
                             // Create quiz object
                             Quizz quiz = new Quizz(title, imageUrl, quizId, true, createdBy);
 
-                            // Add to the appropriate category list
-                            if (!categoriesMap.containsKey(category)) {
-                                categoriesMap.put(category, new ArrayList<>());
+                            // Add to the appropriate category list based on tag
+                            Map<String, List<Quizz>> targetMap = isCNMTV ? cnmtvCategoriesMap : otherCategoriesMap;
+
+                            if (!targetMap.containsKey(category)) {
+                                targetMap.put(category, new ArrayList<>());
                             }
-                            categoriesMap.get(category).add(quiz);
+                            targetMap.get(category).add(quiz);
                         } catch (Exception e) {
                             Log.e(TAG, "Error processing quiz: " + e.getMessage());
                         }
                     }
 
-                    // Convert map to category list
-                    for (Map.Entry<String, List<Quizz>> entry : categoriesMap.entrySet()) {
+                    // Convert maps to category lists
+                    // CNMTV categories for military fragment
+                    for (Map.Entry<String, List<Quizz>> entry : cnmtvCategoriesMap.entrySet()) {
                         String categoryName = entry.getKey();
                         List<Quizz> quizzes = entry.getValue();
 
@@ -210,10 +233,30 @@ public class DbQuery {
                                 quizzes.size(),
                                 quizzes
                         );
-                        g_catList.add(category);
+                        g_militaryCatList.add(category);
                     }
 
-                    Log.d(TAG, "Loaded " + g_catList.size() + " categories");
+                    // Other categories for home fragment
+                    for (Map.Entry<String, List<Quizz>> entry : otherCategoriesMap.entrySet()) {
+                        String categoryName = entry.getKey();
+                        List<Quizz> quizzes = entry.getValue();
+
+                        CategoryModel category = new CategoryModel(
+                                categoryName,
+                                categoryName,
+                                quizzes.size(),
+                                quizzes
+                        );
+                        g_homeCatList.add(category);
+                    }
+
+                    // Combine all categories for backward compatibility
+                    g_catList.addAll(g_militaryCatList);
+                    g_catList.addAll(g_homeCatList);
+
+                    Log.d(TAG, "Loaded " + g_militaryCatList.size() + " CNMTV categories");
+                    Log.d(TAG, "Loaded " + g_homeCatList.size() + " other categories");
+
                     listener.onSucces();
                 })
                 .addOnFailureListener(e -> {
@@ -221,6 +264,46 @@ public class DbQuery {
                     Toast.makeText(context, "Error loading categories", Toast.LENGTH_LONG).show();
                     listener.onFailure();
                 });
+    }
+
+    public static void loadMilitaryCategories(Context context, MyCompleteListener listener) {
+        // First ensure all categories are loaded
+        if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) {
+            loadCategories(context, new MyCompleteListener() {
+                @Override
+                public void onSucces() {
+                    listener.onSucces();
+                }
+
+                @Override
+                public void onFailure() {
+                    listener.onFailure();
+                }
+            });
+        } else {
+            // Categories already loaded
+            listener.onSucces();
+        }
+    }
+
+    public static void loadHomeCategories(Context context, MyCompleteListener listener) {
+        // First ensure all categories are loaded
+        if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) {
+            loadCategories(context, new MyCompleteListener() {
+                @Override
+                public void onSucces() {
+                    listener.onSucces();
+                }
+
+                @Override
+                public void onFailure() {
+                    listener.onFailure();
+                }
+            });
+        } else {
+            // Categories already loaded
+            listener.onSucces();
+        }
     }
 
     public static void loadQuestions(String categoryId, String quizId, MyCompleteListener completeListener) {

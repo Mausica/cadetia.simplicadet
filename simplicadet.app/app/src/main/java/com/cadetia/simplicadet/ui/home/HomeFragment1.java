@@ -237,14 +237,15 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     }
 
     private void loadCategories() {
-        DbQuery.loadCategories(requireContext(), new MyCompleteListener() {
+        DbQuery.loadHomeCategories(requireContext(), new MyCompleteListener() {
             @Override
             public void onSucces() {
-                List<CategoryModel> categoryList = DbQuery.g_catList;
+                // Use the home-specific list
+                List<CategoryModel> categoryList = DbQuery.g_homeCatList;
                 if (categoryList != null && !categoryList.isEmpty()) {
                     setUpCategoryRecyclerView(categoryList);
                 } else {
-                    Log.e(TAG, "Category list is empty");
+                    Log.e(TAG, "Home category list is empty");
                 }
                 categoriesLoaded = true;
                 checkAllDataLoaded();
@@ -252,7 +253,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
 
             @Override
             public void onFailure() {
-                Log.e(TAG, "Failed to load categories");
+                Log.e(TAG, "Failed to load home categories");
                 categoriesLoaded = true;
                 checkAllDataLoaded();
             }

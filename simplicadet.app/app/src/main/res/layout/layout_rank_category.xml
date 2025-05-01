@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/catName"
-        android:text="Ierarhia Elevilor Colegiului"
+        android:text="Grade Onorifice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_15sdp"

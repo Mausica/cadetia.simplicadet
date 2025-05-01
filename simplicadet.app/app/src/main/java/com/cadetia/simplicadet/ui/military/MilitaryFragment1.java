@@ -321,14 +321,15 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     private void loadCategories() {
-        DbQuery.loadCategories(requireContext(), new MyCompleteListener() {
+        DbQuery.loadMilitaryCategories(requireContext(), new MyCompleteListener() {
             @Override
             public void onSucces() {
-                List<CategoryModel> categoryList = DbQuery.g_catList;
+                // Use the military-specific list
+                List<CategoryModel> categoryList = DbQuery.g_militaryCatList;
                 if (categoryList != null && !categoryList.isEmpty()) {
                     setUpCategoryRecyclerView(categoryList);
                 } else {
-                    Log.e(TAG, "Category list is empty");
+                    Log.e(TAG, "Military category list is empty");
                 }
                 categoriesLoaded = true;
                 checkAllDataLoaded();
@@ -336,7 +337,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
             @Override
             public void onFailure() {
-                Log.e(TAG, "Failed to load categories");
+                Log.e(TAG, "Failed to load military categories");
                 categoriesLoaded = true;
                 checkAllDataLoaded();
             }
