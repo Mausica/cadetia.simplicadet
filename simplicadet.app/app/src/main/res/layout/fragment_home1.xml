@@ -59,7 +59,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
-                android:paddingBottom="@dimen/_40sdp"
+                android:paddingBottom="@dimen/_30sdp"
                 android:nestedScrollingEnabled="false"/>
 
             <androidx.recyclerview.widget.RecyclerView

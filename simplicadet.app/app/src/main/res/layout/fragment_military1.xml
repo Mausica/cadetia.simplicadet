@@ -71,6 +71,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <TextView
+                android:id="@+id/destinationName"
+                android:text="Imagini din Colegiu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:maxLines="1"
+                android:layout_gravity="bottom"
+                android:fontFamily="@font/circular_medium"
+                android:includeFontPadding="false"
+                android:textColor="?attr/textNormal"
+                android:textSize="@dimen/_18ssp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/destinationRecyclerView"
                 android:layout_width="match_parent"
