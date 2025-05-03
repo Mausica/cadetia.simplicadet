@@ -288,7 +288,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private void setUpCategoryRecyclerView(List<CategoryModel> categoryList) {
         if (isAdded()) { // Check if the fragment is attached
             categoryAdapter = new CategoryAdapter(categoryList, requireContext(), this);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
             categoryRecyclerView.setLayoutManager(layoutManager);
             categoryRecyclerView.setAdapter(categoryAdapter);
         } else {

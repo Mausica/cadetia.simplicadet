@@ -207,7 +207,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
         // Use LinearLayoutManager with horizontal orientation
         if (destinationRecyclerView.getLayoutManager() == null) {
-            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
             destinationRecyclerView.setLayoutManager(layoutManager);
         }
 
