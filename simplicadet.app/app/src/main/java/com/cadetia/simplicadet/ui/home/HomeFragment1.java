@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,7 @@ import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.Task;
+import com.cadetia.simplicadet.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,9 +106,15 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         showLoading(true);
         new Handler().postDelayed(() -> {
             if (isAdded()) {
-                loadJournals();
                 loadTaskFirstLayout();
-                loadCategories();
+                if (NetworkUtils.isNetworkAvailable(requireContext())) {
+                    loadJournals();
+                    loadCategories();
+                } else {
+                    journalsLoaded = true;
+                    categoriesLoaded = true;
+                    checkAllDataLoaded();
+                }
             } else {
                 Log.w(TAG, "Fragment not attached in postDelayed");
             }
@@ -228,6 +236,11 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
 
     @Override
     public void onJournalClick(String journalLink) {
+        if (!NetworkUtils.isNetworkAvailable(requireContext())) {
+            Toast.makeText(requireContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (journalLink != null && !journalLink.isEmpty()) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(journalLink));
             startActivity(intent);

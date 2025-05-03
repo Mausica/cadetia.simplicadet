@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.cadetia.simplicadet.utils.NetworkUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.Home;
@@ -147,19 +148,15 @@ public class HomeFragment extends Fragment{
     }
 
     private void retrieveUserData() {
-        // Get the SharedPreferences object
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserData", MODE_PRIVATE);
-
-        // Retrieve the values using the keys
         String userPhoto = sharedPreferences.getString("userPhoto", "");
 
-        if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){
+        boolean isOnline = NetworkUtils.isNetworkAvailable(requireContext());
+        if (!isOnline || userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
             Glide.with(this).load(R.raw.guest_civil).into(mainProfileButton);
-        }else {
+        } else {
             Glide.with(this).load(userPhoto).into(mainProfileButton);
         }
-
-
     }
 
     public void actionController() {

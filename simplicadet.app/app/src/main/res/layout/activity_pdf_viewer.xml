@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activities.PdfViewerActivity">
 
     <com.github.barteksc.pdfviewer.PDFView
@@ -10,11 +11,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
+    <ImageView
+        android:id="@+id/pdf_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible" />
+        android:contentDescription="@string/back_button"
+        android:minWidth="24dp"
+        android:minHeight="24dp"
+        android:elevation="12dp"
+        android:layout_margin="@dimen/_10sdp"
+        android:src="@drawable/uni_ic_back"
+        android:tint="@color/black"
+        tools:ignore="RedundantDescriptionCheck,UseAppTint" />
 
+    <FrameLayout
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimationView"
+            android:layout_width="@dimen/_140sdp"
+            android:layout_height="@dimen/_140sdp"
+            android:layout_gravity="center"
+            app:lottie_rawRes="@raw/anim_loading_green"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true" />
+
+    </FrameLayout>
 </RelativeLayout>

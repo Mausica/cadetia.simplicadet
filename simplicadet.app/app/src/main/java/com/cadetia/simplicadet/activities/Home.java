@@ -1,10 +1,16 @@
 package com.cadetia.simplicadet.activities;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +18,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +48,7 @@ import com.cadetia.simplicadet.ui.military.MilitaryFragment1;
 import com.cadetia.simplicadet.ui.military.MilitaryFragment2;
 import com.cadetia.simplicadet.ui.military.MilitaryFragment3;
 import com.cadetia.simplicadet.ui.military.MilitaryFragment4;
+import com.cadetia.simplicadet.utils.NetworkUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -59,6 +67,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     private TextView drawerNameTextView;
     ShapeableImageView drawerloadingButton;
     private DrawerLayout drawerLayout;
+    private boolean isNetworkAvailable = true;
     private String userEmail;
 
     @Override
@@ -94,21 +103,26 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
 
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, filter);
+
         // Custom navigation with fade animations
         navView.setOnNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
+
+            // Check if trying to navigate away from home without internet
+            if (!isNetworkAvailable && itemId != R.id.navigation_home) {
+                showNoInternetDialog();
+                return false;
+            }
 
             // Prevent re-navigation if already on the destination
             if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() == itemId) {
                 return false;
             }
 
-            // Build navigation options with animations
+            // Rest of your existing code...
             NavOptions navOptions = new NavOptions.Builder()
-                    //.setEnterAnim(R.anim.fade_in_d)
-                    //.setExitAnim(R.anim.fade_out_d)
-                    //.setPopEnterAnim(R.anim.fade_in_d)
-                    //.setPopExitAnim(R.anim.fade_out_d)
                     .setLaunchSingleTop(true)
                     .build();
 
@@ -149,9 +163,31 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         final Handler handler = new Handler();
         handler.postDelayed(() -> navigationDrawer(window), 100);
+        checkInternetConnection();
     }
 
-    // Add this method to your Home class
+    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean previousStatus = isNetworkAvailable;
+            isNetworkAvailable = NetworkUtils.isNetworkAvailable(Home.this);
+
+            if (!previousStatus && isNetworkAvailable) {
+                // Connection was restored
+                handleConnectionRestored();
+            } else if (previousStatus && !isNetworkAvailable) {
+                // Connection was lost
+                handleConnectionLost();
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(networkChangeReceiver);
+    }
+
     private void navigationDrawer(Window view) {
         // Get the current active fragment
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
@@ -175,7 +211,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                 // Update profile image
                 if (profileButton != null) {
-                    if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
+                    if (!isNetworkAvailable || userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
                         // Use different guest avatar based on section
                         if (isMilitary) {
                             Glide.with(this).load(R.raw.guest_military).into(profileButton);
@@ -207,34 +243,57 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             }
         }
     }
-    // Add this method to your Home class
-    public void navigateToHome() {
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+    private void checkInternetConnection() {
+        boolean previousStatus = isNetworkAvailable;
+        isNetworkAvailable = NetworkUtils.isNetworkAvailable(this);
 
-        // Simulează un click ca să updateze iconița și fragmentul corect
-        navView.setSelectedItemId(R.id.navigation_home);
-
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
-
-        NavOptions navOptions = new NavOptions.Builder()
-                .setLaunchSingleTop(true)
-                .setPopUpTo(navController.getGraph().getStartDestinationId(), false)
-                .build();
-
-        navController.navigate(R.id.navigation_home, null, navOptions);
-
-        // Apelează update pentru FAB și drawer după navigare
-        new Handler().postDelayed(() -> {
-            updateFabIcon(null);
-            navigationDrawer(getWindow());
-        }, 150);
+        if (previousStatus != isNetworkAvailable) {
+            if (isNetworkAvailable) {
+                handleConnectionRestored();
+            } else {
+                handleConnectionLost();
+            }
+        }
     }
 
+    private Fragment getCurrentFragment() {
+        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
+        if (navHostFragment instanceof NavHostFragment) {
+            return ((NavHostFragment) navHostFragment).getChildFragmentManager().getPrimaryNavigationFragment();
+        }
+        return null;
+    }
 
+    private void showNoInternetDialog() {
+        final androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.TransparentDialogTheme);
+        final View dialogView = getLayoutInflater().inflate(R.layout.popup_no_internet, null);
+        builder.setView(dialogView);
+        final androidx.appcompat.app.AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+        Button okButton = dialogView.findViewById(R.id.ok_btn_internet);
+
+        okButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            Fragment currentFragment = getCurrentFragment();
+            if (currentFragment instanceof HomeFragment) {
+                recreate();
+            }
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int itemId = menuItem.getItemId();
+
+        if (!isNetworkAvailable && itemId != R.id.drawer_logout && itemId != R.id.drawer_settings) {
+            showNoInternetDialog();
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+        }
+
         //BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
 
@@ -275,6 +334,35 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         return true;
     }
 
+    private void forceNavigationToHome() {
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView.setSelectedItemId(R.id.navigation_home);
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
+        navController.popBackStack(R.id.navigation_home, false);
+    }
+
+    private void handleConnectionRestored() {
+        runOnUiThread(() -> {
+            recreate();
+            // Update UI
+            retrieveUserData();
+            Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void handleConnectionLost() {
+        runOnUiThread(() -> {
+            // Force navigation to home
+            if (!(getCurrentFragment() instanceof HomeFragment)) {
+                forceNavigationToHome();
+            }
+            // Update UI
+            retrieveUserData();
+            showNoInternetDialog();
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -285,14 +373,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 if (fileUri != null) {
                     String mimeType = getContentResolver().getType(fileUri);
 
-                    // Verifică tipul fișierului
                     if (mimeType != null && mimeType.contains("text/plain")) {
-                        // Procesează fișier text
                         TextUpload textUpload = new TextUpload();
                         textUpload.uploadQuestionsFromText(this, fileUri);
                     } else if (mimeType != null && (mimeType.contains("excel") || mimeType.contains("sheet"))) {
-                        // Procesează fișier Excel
-                        // Dacă vrei să păstrezi și suportul pentru Excel, adaugă aici codul pentru ExcelUpload
+
                         Toast.makeText(this, "Fișierele Excel nu mai sunt acceptate. Folosiți formatul text.", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(this, "Format de fișier neacceptat. Folosiți fișiere text (.txt).", Toast.LENGTH_LONG).show();
@@ -326,7 +411,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     public void updateFabIcon(Fragment fragment) {
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
+        //ProgressBar progressBar = findViewById(R.id.progress_bar);
 
         // Get the actual visible fragment from NavHost
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
@@ -453,10 +538,16 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         drawerNameTextView.setText(userName);
 
-        if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){
+        // Always show guest icon when offline
+        if (!isNetworkAvailable) {
             Glide.with(this).load(R.raw.guest_civil).into(drawerloadingButton);
         } else {
-            Glide.with(this).load(userPhoto).into(drawerloadingButton);
+            // Only load user photo if we have internet AND a valid photo URL
+            if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
+                Glide.with(this).load(R.raw.guest_civil).into(drawerloadingButton);
+            } else {
+                Glide.with(this).load(userPhoto).into(drawerloadingButton);
+            }
         }
     }
 }

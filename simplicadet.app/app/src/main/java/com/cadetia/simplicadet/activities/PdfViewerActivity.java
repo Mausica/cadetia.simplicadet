@@ -27,7 +27,7 @@ import okio.Okio;
 public class PdfViewerActivity extends AppCompatActivity {
 
     private PDFView pdfView;
-    private ProgressBar progressBar;
+    private View progressBar;
     private String pdfUrl;
     private String pdfTitle;
 
@@ -36,6 +36,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pdf_viewer);
 
+        findViewById(R.id.pdf_back).setOnClickListener(v -> finish());
         pdfView = findViewById(R.id.pdfView);
         progressBar = findViewById(R.id.progressBar);
 
@@ -57,11 +58,17 @@ public class PdfViewerActivity extends AppCompatActivity {
 
     private void downloadAndShowPdf(String url) {
         progressBar.setVisibility(View.VISIBLE);
+        String uniqueFilename = pdfTitle.replaceAll("[^a-zA-Z0-9.-]", "_") + ".pdf";
+        File targetFile = new File(getExternalFilesDir(null), uniqueFilename);
+
+        if (targetFile.exists()) {
+            progressBar.setVisibility(View.GONE);
+            loadPdfFromFile(targetFile);
+            return;
+        }
 
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Request request = new Request.Builder().url(url).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -81,36 +88,52 @@ public class PdfViewerActivity extends AppCompatActivity {
                         Toast.makeText(PdfViewerActivity.this, "Failed to download PDF: " + response.code(), Toast.LENGTH_SHORT).show();
                         finish();
                     });
+                    response.close();
                     return;
                 }
 
-                File file = new File(getCacheDir(), "temp.pdf");
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-                sink.writeAll(response.body().source());
-                sink.close();
+                try {
+                    BufferedSink sink = Okio.buffer(Okio.sink(targetFile));
+                    sink.writeAll(response.body().source());
+                    sink.close();
 
-                runOnUiThread(() -> {
-                    pdfView.fromFile(file)
-                            .defaultPage(0)
-                            .enableSwipe(true)
-                            .scrollHandle(new DefaultScrollHandle(PdfViewerActivity.this))
-                            .spacing(10)
-                            .onLoad(new OnLoadCompleteListener() {
-                                @Override
-                                public void loadComplete(int nbPages) {
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            })
-                            .onError(new OnErrorListener() {
-                                @Override
-                                public void onError(Throwable t) {
-                                    progressBar.setVisibility(View.GONE);
-                                    Toast.makeText(PdfViewerActivity.this, "Error loading PDF: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .load();
-                });
+                    runOnUiThread(() -> {
+                        loadPdfFromFile(targetFile);
+                    });
+
+                } catch (IOException e) {
+                    runOnUiThread(() -> {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(PdfViewerActivity.this, "Failed to save PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                } finally {
+                    response.close();
+                }
             }
         });
     }
+
+    private void loadPdfFromFile(File file) {
+        pdfView.fromFile(file)
+                .defaultPage(0)
+                .enableSwipe(true)
+                .scrollHandle(new DefaultScrollHandle(PdfViewerActivity.this))
+                .spacing(10)
+                .onLoad(new OnLoadCompleteListener() {
+                    @Override
+                    public void loadComplete(int nbPages) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                })
+                .onError(new OnErrorListener() {
+                    @Override
+                    public void onError(Throwable t) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(PdfViewerActivity.this, "Error loading PDF: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .load();
+    }
+
 }
