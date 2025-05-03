@@ -250,7 +250,7 @@ public class MilitaryFragment extends Fragment {
         Fragment fragment = getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
         if (fragment instanceof MilitaryFragment2) {
             MilitaryFragment2 frag2 = (MilitaryFragment2) fragment;
-            frag2.showCreateNote(null, false);
+            //frag2.showCreateNote(null, false);
         }
         else if (fragment instanceof MilitaryFragment3) {
             MilitaryFragment3 frag3 = (MilitaryFragment3) fragment;

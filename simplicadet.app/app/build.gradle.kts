@@ -73,6 +73,9 @@ dependencies {
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
 
+    //PDF
+    implementation ("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
+    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
 
     // Ads
     implementation("com.google.android.gms:play-services-ads:24.2.0")

@@ -56,6 +56,10 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
+            android:name=".activities.PdfViewerActivity"
+            android:exported="false"
+            android:label="PDF Viewer" />
+        <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait"
             android:exported="true">

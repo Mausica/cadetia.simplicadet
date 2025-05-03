@@ -1,8 +1,5 @@
 package com.cadetia.simplicadet.ui.military;
 
-import static android.app.Activity.RESULT_OK;
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,56 +11,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.CreateNote;
-import com.cadetia.simplicadet.adapters.NotesAdapter;
-import com.cadetia.simplicadet.database.NotesDatabase;
-import com.cadetia.simplicadet.entities.Note;
-import com.cadetia.simplicadet.listeners.NotesListener;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.cadetia.simplicadet.activities.PdfViewerActivity;
+import com.cadetia.simplicadet.adapters.FirestoreDocumentsAdapter;
+import com.cadetia.simplicadet.entities.FirestoreDocument;
+import com.cadetia.simplicadet.listeners.DocumentListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MilitaryFragment2 extends Fragment implements NotesListener, CreateNote.NoteSavedListener, CreateNote.NoteDeletedListener {
+public class MilitaryFragment2 extends Fragment implements DocumentListener {
 
-    public static final int REQUEST_CODE_ADD_NOTE = 1;
-    public static final int REQUEST_CODE_UPDATE_NOTE = 2;
-    public static final int REQUEST_CODE_SHOW_NOTES = 3;
+    private static final String TAG = "MilitaryFragment2";
     private boolean isLoadingDismissed = false;
     private View loadingLayout;
     private View contentView;
-    private List<Note> noteList;
-    private NotesAdapter notesAdapter;
-    public int noteClickedPosition = -1;
-    private FloatingActionButton fabMain;
+    private List<FirestoreDocument> documentList;
+    private FirestoreDocumentsAdapter documentsAdapter;
+    private FirebaseFirestore db;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final ActivityResultLauncher<Intent> createNoteLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-                }
-            }
-    );
 
     public MilitaryFragment2() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onNoteDeleted() {
-        // Reload note list when a note is deleted
-        loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, true);
     }
 
     public static MilitaryFragment2 newInstance() {
@@ -74,23 +52,20 @@ public class MilitaryFragment2 extends Fragment implements NotesListener, Create
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_military2, container, false);
 
-        //fabMain = view.findViewById(R.id.fabMain);
-        // fabMain.setOnClickListener(v -> showCreateNote(null, false));
-
         loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout2);
 
         showLoading(true);
 
-        RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
-        notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        noteList = new ArrayList<>();
-        notesAdapter = new NotesAdapter(noteList, this);
-        notesRecyclerView.setAdapter(notesAdapter);
+        db = FirebaseFirestore.getInstance();
 
-        new Handler().postDelayed(() -> {
-            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show
+        RecyclerView documentsRecyclerView = view.findViewById(R.id.notesRecyclerView);
+        documentsRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        documentList = new ArrayList<>();
+        documentsAdapter = new FirestoreDocumentsAdapter(documentList, this);
+        documentsRecyclerView.setAdapter(documentsAdapter);
+
+        new Handler().postDelayed(this::loadDocumentsFromFirestore, 1000);
 
         return view;
     }
@@ -99,9 +74,7 @@ public class MilitaryFragment2 extends Fragment implements NotesListener, Create
     public void onResume() {
         super.onResume();
         showLoading(true);
-        new Handler().postDelayed(() -> {
-            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show
+        new Handler().postDelayed(this::loadDocumentsFromFirestore, 1000);
     }
 
     private void showLoading(boolean show) {
@@ -130,73 +103,79 @@ public class MilitaryFragment2 extends Fragment implements NotesListener, Create
         }
     }
 
-
-
-    @Override
-    public void onNoteClicked(Note note, int position) {
-        noteClickedPosition = position;
-        showCreateNote(note, false);
-    }
-
-    @Override
-    public void onNoteSaved() {
-
-    }
-
-    public void loadNotesInBackground(final int requestCode, final boolean isNoteDeleted) {
+    private void loadDocumentsFromFirestore() {
         executorService.execute(() -> {
-            List<Note> notes = NotesDatabase.getDatabase(requireContext()).noteDao().getAllNotes();
-            handler.post(() -> {
-                switch (requestCode) {
-                    case REQUEST_CODE_SHOW_NOTES:
-                    case REQUEST_CODE_ADD_NOTE:
-                        // Clear existing notes and add all notes
-                        noteList.clear();
-                        noteList.addAll(notes);
-                        notesAdapter.notifyDataSetChanged();
-                        break;
-                    case REQUEST_CODE_UPDATE_NOTE:
-                        if (isNoteDeleted) {
-                            // Note is deleted, notify adapter about the removal
-                            notesAdapter.notifyItemRemoved(noteClickedPosition);
-                        } else {
-                            // Note is updated, update the corresponding note in the list
-                            if (noteClickedPosition >= 0 && noteClickedPosition < notes.size()) {
-                                noteList.set(noteClickedPosition, notes.get(noteClickedPosition));
-                                notesAdapter.notifyItemChanged(noteClickedPosition);
+            // Accesăm direct documentul DOCUMENTS
+            db.collection("MILITARY")
+                    .document("RO")
+                    .collection("CNMTV")
+                    .document("DOCUMENTS")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                            List<FirestoreDocument> documents = new ArrayList<>();
+
+                            // Trecem prin toate câmpurile numerotate din document (0, 1, 2, etc.)
+                            // În imagine vedem că avem 0, 1, 2 ca indecși
+                            for (int fieldIndex = 0; fieldIndex <= 2; fieldIndex++) {
+                                // Obținem array-ul de la acest index
+                                ArrayList<String> docArray = (ArrayList<String>) task.getResult().get(String.valueOf(fieldIndex));
+
+                                if (docArray != null && docArray.size() >= 4) {
+                                    String title = docArray.get(0);          // Titlul documentului
+                                    String subtitle = docArray.get(1);       // Subtitlul/descrierea documentului
+                                    String imageUrl = docArray.get(2);       // URL-ul imaginii
+                                    String pdfUrl = docArray.get(3);         // URL-ul PDF-ului
+
+                                    // Folosim indexul câmpului ca ID unic pentru document
+                                    String docId = String.valueOf(fieldIndex);
+
+                                    FirestoreDocument firestoreDocument = new FirestoreDocument(
+                                            docId,
+                                            title,
+                                            subtitle,
+                                            imageUrl,
+                                            pdfUrl,
+                                            "", // Categoria nu pare să fie prezentă în structura din imagine
+                                            fieldIndex // Folosim indexul câmpului ca poziție
+                                    );
+                                    documents.add(firestoreDocument);
+                                } else {
+                                    Log.e(TAG, "Array-ul de la indexul " + fieldIndex + " este null sau incomplet");
+                                }
                             }
+
+                            handler.post(() -> {
+                                documentList.clear();
+                                documentList.addAll(documents);
+                                documentsAdapter.notifyDataSetChanged();
+                                showLoading(false);
+                            });
+                        } else {
+                            Log.e(TAG, "Eroare la obținerea documentului DOCUMENTS: ",
+                                    task.getException() != null ? task.getException() : new Exception("Document inexistent"));
+                            handler.post(() -> showLoading(false));
                         }
-                        break;
-                }
-                showLoading(false);
-            });
+                    });
         });
+    }
+
+    @Override
+    public void onDocumentClicked(FirestoreDocument document, int position) {
+        if (document.getPdfUrl() != null && !document.getPdfUrl().isEmpty()) {
+            Intent intent = new Intent(getActivity(), PdfViewerActivity.class);
+            intent.putExtra("pdfUrl", document.getPdfUrl());
+            intent.putExtra("pdfTitle", document.getTitle());
+            intent.putExtra("pdfSubtitle", document.getSubtitle());
+            startActivity(intent);
+        } else {
+            Log.e(TAG, "URL-ul PDF este null sau gol pentru documentul: " + document.getTitle());
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         executorService.shutdown();
-    }
-
-    public void showCreateNote(Note note, boolean isNoteDeleted) {
-        Bundle args = new Bundle();
-        if (note == null) {
-            args.putBoolean("isViewOrUpdate", false);
-        } else {
-            args.putBoolean("isViewOrUpdate", true);
-            args.putSerializable("note", note);
-        }
-        args.putBoolean("isNoteDeleted", isNoteDeleted);
-
-        CreateNote bottomSheetFragment = new CreateNote();
-        bottomSheetFragment.setArguments(args);
-        bottomSheetFragment.setNoteSavedListener(this);
-        bottomSheetFragment.show(requireActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
-    }
-
-    @Override
-    public void onNoteSaved(boolean isNoteDeleted) {
-        loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, isNoteDeleted);
     }
 }
