@@ -329,9 +329,6 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("userEmail", userEmail);
         editor.putString("userPhoto", userPhoto);
         editor.apply();
-        Log.e(TAG, userName);
-        Log.e(TAG, userEmail);
-        Log.e(TAG, userPhoto);
     }
 
     private void startLoadingAnimation() {

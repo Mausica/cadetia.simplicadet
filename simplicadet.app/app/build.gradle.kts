@@ -2,12 +2,14 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 
 }
 
 android {
     namespace = "com.cadetia.simplicadet"
     compileSdk = 35
+
 
     defaultConfig {
         applicationId = "com.cadetia.simplicadet"
@@ -19,14 +21,20 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = true
+            }
         }
     }
     compileOptions {
@@ -101,6 +109,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-functions:21.2.1")
+    implementation("com.google.firebase:firebase-crashlytics")
 
     //Facebook
     implementation ("com.facebook.android:facebook-login:latest.release")
