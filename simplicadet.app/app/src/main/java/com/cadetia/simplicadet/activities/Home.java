@@ -321,12 +321,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
-
-        navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
-                .setLaunchSingleTop(true)
-                .setPopUpTo(R.id.navigation_home, true)
-                .build());
-
+        recreate();
         } else if (itemId == R.id.drawer_upload) {
             if (userEmail.equals("marius.gabryel2017@gmail.com")){
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -352,12 +347,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     private void handleConnectionRestored() {
         runOnUiThread(() -> {
-            NavController navController = Navigation.findNavController(Home.this, R.id.nav_host_fragment_activity_home);
-            navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
-                    .setLaunchSingleTop(true)
-                    .setPopUpTo(R.id.navigation_home, true)
-                    .build());
-
+            recreate();
             // Update UI
             retrieveUserData();
             Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
