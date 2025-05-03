@@ -163,7 +163,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         final Handler handler = new Handler();
         handler.postDelayed(() -> navigationDrawer(window), 100);
-        checkInternetConnection();
     }
 
     private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
@@ -277,7 +276,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             dialog.dismiss();
             Fragment currentFragment = getCurrentFragment();
             if (currentFragment instanceof HomeFragment) {
-                recreate();
+                NavController navController = Navigation.findNavController(Home.this, R.id.nav_host_fragment_activity_home);
+                navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
+                        .setLaunchSingleTop(true)
+                        .setPopUpTo(R.id.navigation_home, true)
+                        .build());
             }
         });
 
@@ -311,14 +314,19 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(browserIntent);
 
         } else if (itemId == R.id.drawer_settings) {
-            int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
 
-            if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            }
-            recreate();
+        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+        navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setPopUpTo(R.id.navigation_home, true)
+                .build());
+
         } else if (itemId == R.id.drawer_upload) {
             if (userEmail.equals("marius.gabryel2017@gmail.com")){
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -344,7 +352,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     private void handleConnectionRestored() {
         runOnUiThread(() -> {
-            recreate();
+            NavController navController = Navigation.findNavController(Home.this, R.id.nav_host_fragment_activity_home);
+            navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setPopUpTo(R.id.navigation_home, true)
+                    .build());
+
             // Update UI
             retrieveUserData();
             Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
