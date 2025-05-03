@@ -20,7 +20,6 @@
             android:layout_height="@dimen/_108sdp"
             android:layout_gravity="center"
             android:orientation="vertical"
-            android:src="@raw/guest_b"
             tools:ignore="ContentDescription" />
 
         <ProgressBar

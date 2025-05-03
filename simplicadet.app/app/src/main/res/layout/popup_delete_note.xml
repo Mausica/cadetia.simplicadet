@@ -41,7 +41,7 @@
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_4sdp"
             android:textAlignment="center"
-            android:text="Are you sure you want to delete this note?"
+            android:text="Are you sure you want to delete this?"
             android:textColor="?attr/textDark"
             android:textSize="@dimen/_12ssp"
             android:layout_marginLeft="@dimen/_16sdp"

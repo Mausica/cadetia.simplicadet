@@ -1,9 +1,11 @@
 package com.cadetia.simplicadet.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,6 +53,8 @@ public class CreateTaskBottom extends BottomSheetDialogFragment {
     DatePickerDialog datePickerDialog;
     private boolean isEditMode = false;
     private Task taskToEdit;
+
+    private AlertDialog dialogDeleteTask;
 
     private TaskSavedListener taskSavedListener;
 
@@ -107,9 +111,8 @@ public class CreateTaskBottom extends BottomSheetDialogFragment {
 
         iconDelete.setOnClickListener(v -> {
             if (task != null) {
-                deleteTask(task.getTaskId());
+                showDeleteTaskDialog();
             } else {
-                // Handle the case where task is null
                 Toast.makeText(getContext(), "Task is null", Toast.LENGTH_SHORT).show();
             }
         });
@@ -215,6 +218,28 @@ public class CreateTaskBottom extends BottomSheetDialogFragment {
 
         taskDate.setOnClickListener(v -> showDatePicker());
         taskTime.setOnClickListener(v -> showTimePicker());
+    }
+
+    private void showDeleteTaskDialog() {
+        if (dialogDeleteTask == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+            View view = LayoutInflater.from(requireActivity()).inflate(
+                    R.layout.popup_delete_note,
+                    (ViewGroup) requireActivity().findViewById(R.id.layoutDeleteNoteContainer)
+            );
+
+            builder.setView(view);
+            dialogDeleteTask = builder.create();
+            if (dialogDeleteTask.getWindow() != null) {
+                dialogDeleteTask.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+            }
+
+            view.findViewById(R.id.ok_btn_del).setOnClickListener(v -> {
+                deleteTask(task.getTaskId());
+                dialogDeleteTask.dismiss();
+            });
+        }
+        dialogDeleteTask.show();
     }
 
     private void showDatePicker() {

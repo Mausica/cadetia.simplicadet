@@ -1,7 +1,7 @@
 package com.cadetia.simplicadet.listeners;
 
-import com.cadetia.simplicadet.entities.FirestoreDocument;
+import com.cadetia.simplicadet.entities.Document;
 
 public interface DocumentListener {
-    void onDocumentClicked(FirestoreDocument document, int position);
+    void onDocumentClicked(Document document, int position);
 }

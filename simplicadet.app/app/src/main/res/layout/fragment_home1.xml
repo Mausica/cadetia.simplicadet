@@ -59,7 +59,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
-                android:paddingBottom="@dimen/_40sdp"
+                android:paddingBottom="@dimen/_20sdp"
                 android:nestedScrollingEnabled="false"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -67,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:paddingBottom="@dimen/_40sdp"

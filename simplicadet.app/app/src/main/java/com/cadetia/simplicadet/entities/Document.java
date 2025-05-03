@@ -1,6 +1,6 @@
 package com.cadetia.simplicadet.entities;
 
-public class FirestoreDocument {
+public class Document {
     private String id;
     private String title;
     private String subtitle;
@@ -10,8 +10,8 @@ public class FirestoreDocument {
     private int position;
 
     // Constructor complet
-    public FirestoreDocument(String id, String title, String subtitle, String imageUrl,
-                             String pdfUrl, String category, int position) {
+    public Document(String id, String title, String subtitle, String imageUrl,
+                    String pdfUrl, String category, int position) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
@@ -21,7 +21,7 @@ public class FirestoreDocument {
         this.position = position;
     }
 
-    public FirestoreDocument(String id, String title, String subtitle, String imageUrl, String pdfUrl) {
+    public Document(String id, String title, String subtitle, String imageUrl, String pdfUrl) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;

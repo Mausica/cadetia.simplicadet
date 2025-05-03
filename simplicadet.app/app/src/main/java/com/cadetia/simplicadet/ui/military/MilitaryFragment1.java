@@ -207,7 +207,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
         // Use LinearLayoutManager with horizontal orientation
         if (destinationRecyclerView.getLayoutManager() == null) {
-            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
             destinationRecyclerView.setLayoutManager(layoutManager);
         }
 
@@ -360,7 +360,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     private void setUpCategoryRecyclerView(List<CategoryModel> categoryList) {
         if (isAdded()) { // Check if the fragment is attached
             categoryAdapter = new CategoryAdapter(categoryList, requireContext(), this);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
             categoryRecyclerView.setLayoutManager(layoutManager);
             categoryRecyclerView.setAdapter(categoryAdapter);
         } else {

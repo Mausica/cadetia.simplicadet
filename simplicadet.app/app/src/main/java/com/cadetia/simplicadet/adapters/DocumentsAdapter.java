@@ -8,22 +8,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.entities.FirestoreDocument;
+import com.cadetia.simplicadet.entities.Document;
 import com.cadetia.simplicadet.listeners.DocumentListener;
 
 import java.util.List;
 
-public class FirestoreDocumentsAdapter extends RecyclerView.Adapter<FirestoreDocumentsAdapter.DocumentViewHolder> {
+public class DocumentsAdapter extends RecyclerView.Adapter<DocumentsAdapter.DocumentViewHolder> {
 
-    private List<FirestoreDocument> documents;
+    private List<Document> documents;
     private DocumentListener documentListener;
 
-    public FirestoreDocumentsAdapter(List<FirestoreDocument> documents, DocumentListener documentListener) {
+    public DocumentsAdapter(List<Document> documents, DocumentListener documentListener) {
         this.documents = documents;
         this.documentListener = documentListener;
     }
@@ -65,7 +64,7 @@ public class FirestoreDocumentsAdapter extends RecyclerView.Adapter<FirestoreDoc
             documentImage = itemView.findViewById(R.id.imageNote);
         }
 
-        void setDocument(FirestoreDocument document) {
+        void setDocument(Document document) {
             textTitle.setText(document.getTitle());
             textSubtitle.setText(document.getSubtitle());
             if (document.getCategory() != null && !document.getCategory().isEmpty()) {

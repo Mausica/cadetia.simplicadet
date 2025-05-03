@@ -17,11 +17,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.PdfViewerActivity;
-import com.cadetia.simplicadet.adapters.FirestoreDocumentsAdapter;
-import com.cadetia.simplicadet.entities.FirestoreDocument;
+import com.cadetia.simplicadet.adapters.DocumentsAdapter;
+import com.cadetia.simplicadet.entities.Document;
 import com.cadetia.simplicadet.listeners.DocumentListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +33,8 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
     private boolean isLoadingDismissed = false;
     private View loadingLayout;
     private View contentView;
-    private List<FirestoreDocument> documentList;
-    private FirestoreDocumentsAdapter documentsAdapter;
+    private List<Document> documentList;
+    private DocumentsAdapter documentsAdapter;
     private FirebaseFirestore db;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -62,7 +61,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
         RecyclerView documentsRecyclerView = view.findViewById(R.id.notesRecyclerView);
         documentsRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         documentList = new ArrayList<>();
-        documentsAdapter = new FirestoreDocumentsAdapter(documentList, this);
+        documentsAdapter = new DocumentsAdapter(documentList, this);
         documentsRecyclerView.setAdapter(documentsAdapter);
 
         new Handler().postDelayed(this::loadDocumentsFromFirestore, 1000);
@@ -113,7 +112,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
-                            List<FirestoreDocument> documents = new ArrayList<>();
+                            List<Document> documents = new ArrayList<>();
                             for (int fieldIndex = 0; fieldIndex <= 2; fieldIndex++) {
                                 ArrayList<String> docArray = (ArrayList<String>) task.getResult().get(String.valueOf(fieldIndex));
 
@@ -127,7 +126,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                                         date = docArray.get(4);
                                     }
                                     String docId = String.valueOf(fieldIndex);
-                                    FirestoreDocument firestoreDocument = new FirestoreDocument(
+                                    Document document = new Document(
                                             docId,
                                             title,
                                             subtitle,
@@ -143,7 +142,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                                             ", PDF=" + pdfUrl +
                                             ", Data=" + date);
 
-                                    documents.add(firestoreDocument);
+                                    documents.add(document);
                                 } else {
                                     Log.e(TAG, "Array-ul de la indexul " + fieldIndex + " este null sau incomplet");
                                 }
@@ -167,7 +166,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
     }
 
     @Override
-    public void onDocumentClicked(FirestoreDocument document, int position) {
+    public void onDocumentClicked(Document document, int position) {
         if (document.getPdfUrl() != null && !document.getPdfUrl().isEmpty()) {
             Intent intent = new Intent(getActivity(), PdfViewerActivity.class);
             intent.putExtra("pdfUrl", document.getPdfUrl());
