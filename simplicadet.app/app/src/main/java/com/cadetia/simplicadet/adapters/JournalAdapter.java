@@ -84,7 +84,6 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
                         @Override
                         public void onLoadFailed(@Nullable Drawable errorDrawable) {
                             super.onLoadFailed(errorDrawable);
-                            // Optionally, set a default error image if loading fails
                         }
                     });
         }

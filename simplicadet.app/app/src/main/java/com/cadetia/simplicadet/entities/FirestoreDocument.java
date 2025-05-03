@@ -1,8 +1,6 @@
 package com.cadetia.simplicadet.entities;
 
-import java.io.Serializable;
-
-public class FirestoreDocument implements Serializable {
+public class FirestoreDocument {
     private String id;
     private String title;
     private String subtitle;
@@ -11,11 +9,9 @@ public class FirestoreDocument implements Serializable {
     private String category;
     private int position;
 
-    public FirestoreDocument() {
-        // Empty constructor needed for Firestore
-    }
-
-    public FirestoreDocument(String id, String title, String subtitle, String imageUrl, String pdfUrl, String category, int position) {
+    // Constructor complet
+    public FirestoreDocument(String id, String title, String subtitle, String imageUrl,
+                             String pdfUrl, String category, int position) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
@@ -25,6 +21,17 @@ public class FirestoreDocument implements Serializable {
         this.position = position;
     }
 
+    public FirestoreDocument(String id, String title, String subtitle, String imageUrl, String pdfUrl) {
+        this.id = id;
+        this.title = title;
+        this.subtitle = subtitle;
+        this.imageUrl = imageUrl;
+        this.pdfUrl = pdfUrl;
+        this.category = "";
+        this.position = 0;
+    }
+
+    // Getters și Setters
     public String getId() {
         return id;
     }

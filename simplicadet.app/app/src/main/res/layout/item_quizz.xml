@@ -20,7 +20,7 @@
             android:layout_height="@dimen/_100sdp"
             android:layout_marginBottom="@dimen/_2sdp"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:cropToPadding="false"
             android:src="@drawable/background_nothing_rounded"
             android:visibility="visible"

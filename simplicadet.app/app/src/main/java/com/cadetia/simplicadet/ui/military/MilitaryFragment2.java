@@ -114,31 +114,35 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
                             List<FirestoreDocument> documents = new ArrayList<>();
-
-                            // Trecem prin toate câmpurile numerotate din document (0, 1, 2, etc.)
-                            // În imagine vedem că avem 0, 1, 2 ca indecși
                             for (int fieldIndex = 0; fieldIndex <= 2; fieldIndex++) {
-                                // Obținem array-ul de la acest index
                                 ArrayList<String> docArray = (ArrayList<String>) task.getResult().get(String.valueOf(fieldIndex));
 
                                 if (docArray != null && docArray.size() >= 4) {
-                                    String title = docArray.get(0);          // Titlul documentului
-                                    String subtitle = docArray.get(1);       // Subtitlul/descrierea documentului
-                                    String imageUrl = docArray.get(2);       // URL-ul imaginii
-                                    String pdfUrl = docArray.get(3);         // URL-ul PDF-ului
-
-                                    // Folosim indexul câmpului ca ID unic pentru document
+                                    String title = docArray.get(0);
+                                    String subtitle = docArray.get(1);
+                                    String imageUrl = docArray.get(2);
+                                    String pdfUrl = docArray.get(3);
+                                    String date = "";
+                                    if (docArray.size() >= 5) {
+                                        date = docArray.get(4);
+                                    }
                                     String docId = String.valueOf(fieldIndex);
-
                                     FirestoreDocument firestoreDocument = new FirestoreDocument(
                                             docId,
                                             title,
                                             subtitle,
                                             imageUrl,
                                             pdfUrl,
-                                            "", // Categoria nu pare să fie prezentă în structura din imagine
-                                            fieldIndex // Folosim indexul câmpului ca poziție
+                                            date,
+                                            fieldIndex
                                     );
+
+                                    Log.d(TAG, "Document încărcat: Titlu=" + title +
+                                            ", Subtitlu=" + subtitle +
+                                            ", Imagine=" + imageUrl +
+                                            ", PDF=" + pdfUrl +
+                                            ", Data=" + date);
+
                                     documents.add(firestoreDocument);
                                 } else {
                                     Log.e(TAG, "Array-ul de la indexul " + fieldIndex + " este null sau incomplet");
@@ -149,6 +153,8 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                                 documentList.clear();
                                 documentList.addAll(documents);
                                 documentsAdapter.notifyDataSetChanged();
+                                Log.d(TAG, "Documente încărcate: " + documents.size());
+
                                 showLoading(false);
                             });
                         } else {
