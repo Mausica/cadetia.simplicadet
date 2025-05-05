@@ -26,13 +26,7 @@ import com.otaliastudios.zoom.ZoomLayout;
 public class HomeFragment3 extends Fragment {
 
     // now configurable:
-    private int platoonCount = 6;
-    private String formationFormula =
-            "***\n" +
-                    "*_*\n" +
-                    "*_*\n" +
-                    "*_*\n" +
-                    "***";
+    private String formationFormula = "*****\n";
 
     private static final String STATE_IS_ROTATED       = "isRotated";
     private static final String STATE_ORIGINAL_WIDTH   = "originalWidth";
@@ -42,6 +36,15 @@ public class HomeFragment3 extends Fragment {
             "Radulescu Marius", "Stanescu Maria",
             "Ionescu Andrei", "Constantinescu Elena", "Popa Florin"
     };
+
+    //private int platoonCount = 6;
+    private String[] platoonLabels = {
+            "Mic-dejun",
+            "Prânz",
+            "Cină"
+    };
+
+    private int platoonCount = platoonLabels.length;
 
     private static final int STATE_PRESENT = 0;
     private static final int STATE_HOME    = 1;
@@ -128,7 +131,7 @@ public class HomeFragment3 extends Fragment {
         mindMapContainer.addView(mainContainer);
 
         // COMPANY header
-        TextView companyHeader = createHeaderView("COMPANY", 600);
+        TextView companyHeader = createHeaderView("M4E  DOLJ  2025", 800);
         mainContainer.addView(companyHeader);
 
         // COMPANY stats
@@ -148,7 +151,7 @@ public class HomeFragment3 extends Fragment {
 
         // container for platoons
         LinearLayout platoonsContainer = new LinearLayout(requireContext());
-        platoonsContainer.setOrientation(LinearLayout.HORIZONTAL);
+        platoonsContainer.setOrientation(LinearLayout.VERTICAL); // change orientation
         platoonsContainer.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -164,13 +167,21 @@ public class HomeFragment3 extends Fragment {
             LinearLayout platoonContainer = new LinearLayout(requireContext());
             platoonContainer.setOrientation(LinearLayout.VERTICAL);
             platoonContainer.setPadding(20,20,20,20);
-// *** new: wrap to grid + header + stats ***
             platoonContainer.setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
 
             // platoon header & stats
-            TextView platoonHeader = createHeaderView("PLATOON " + (p + 1), 330);
+            //TextView platoonHeader = createHeaderView("PLATOON " + (p + 1), 330);
+            //platoonContainer.addView(platoonHeader);
+
+            String headerText;
+            if (p < platoonLabels.length) {
+                headerText = platoonLabels[p];
+            } else {
+                headerText = "Pluton " + (p+1);
+            }
+            TextView platoonHeader = createHeaderView(headerText, 330);
             platoonContainer.addView(platoonHeader);
 
             TextView platoonStats = new TextView(requireContext());
@@ -181,6 +192,20 @@ public class HomeFragment3 extends Fragment {
             GridLayout grid = new GridLayout(requireContext());
             grid.setRowCount(numRows);
             grid.setColumnCount(numCols);
+
+            int cellSizePx = 100;
+            LinearLayout.LayoutParams gridLp = new LinearLayout.LayoutParams(
+                    numCols * cellSizePx,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+
+            gridLp.gravity = Gravity.CENTER_HORIZONTAL;
+            grid.setLayoutParams(gridLp);
+
+            int marginPx = 55;
+            gridLp.width = numCols * cellSizePx + marginPx;
+            grid.setLayoutParams(gridLp);
+
 
             for (int r = 0; r < numRows; r++) {
                 for (int c = 0; c < numCols; c++) {
@@ -238,6 +263,7 @@ public class HomeFragment3 extends Fragment {
                 TypedValue.COMPLEX_UNIT_DIP,8,requireContext().getResources().getDisplayMetrics()));
         bg.setColor(getThemeColor(R.attr.backgroundLight));
         header.setBackground(bg);
+
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.CENTER_HORIZONTAL;
         lp.setMargins(0,0,0,10);
@@ -286,7 +312,7 @@ public class HomeFragment3 extends Fragment {
         tv.setTypeface(getResources().getFont(R.font.circular_bold));
         tv.setPadding(10,10,10,10);
         tv.setText("P: " + presentCount[i]
-                + " H: " + homeCount[i]
+                + " I: " + homeCount[i]
                 + " A: " + absentCount[i]);
     }
 
@@ -297,9 +323,10 @@ public class HomeFragment3 extends Fragment {
             totalAbsent += absentCount[i];
         }
         int totalPresent = platoonCount * soldiersPerPlatoon - (totalHome + totalAbsent);
-        tv.setText("P: " + totalPresent
-                + " H: " + totalHome
-                + " A: " + totalAbsent);
+        //tv.setText("P: " + totalPresent
+        //        + " H: " + totalHome
+        //        + " A: " + totalAbsent);
+        tv.setText("JOI, 8 MAI 2025");
     }
 
     private int getThemeColor(int attr) {
