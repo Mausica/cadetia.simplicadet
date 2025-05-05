@@ -16,6 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,27 +27,30 @@ import com.otaliastudios.zoom.ZoomLayout;
 public class HomeFragment3 extends Fragment {
 
     private static final int PLATOON_COUNT = 6;
-    private static final int SOLDIERS_PER_PLATOON = 27;
-    private static final int TOTAL_SOLDIERS = PLATOON_COUNT * SOLDIERS_PER_PLATOON;
+    private static final int ROWS = 8;
+    private static final int COLS = 10;
+    private static final int TOTAL_SOLDIERS = PLATOON_COUNT * ROWS * COLS;
+
     private static final String STATE_IS_ROTATED = "isRotated";
     private static final String STATE_ORIGINAL_WIDTH = "originalWidth";
     private static final String STATE_ORIGINAL_HEIGHT = "originalHeight";
 
     private static final String[] SOLDIERS = {
-            "Radulescu Marius", "Grama Bianca", "Popescu Ion", "Stanescu Maria",
-            "Ionescu Andrei", "Constantinescu Elena", "Popa Florin", "Diaconescu Raluca",
-            "Marinescu Cristian", "Negulescu Ana"
+            "Radulescu Marius", "Stanescu Maria",
+            "Ionescu Andrei", "Constantinescu Elena", "Popa Florin"
     };
 
     private static final int STATE_PRESENT = 0;
     private static final int STATE_HOME = 1;
     private static final int STATE_ABSENT = 2;
 
+    // one-liner formula for hollow rectangle
+    private static final String FORMATION_EXPR =
+            "r==0 || r==ROWS-1 || c==0 || c==COLS-1";
+
     private int originalWidth = -1;
     private int originalHeight = -1;
-
     private ZoomLayout zoomLayout;
-
     private boolean isRotated = false;
     private final int[] presentCount = new int[PLATOON_COUNT];
     private final int[] homeCount = new int[PLATOON_COUNT];
@@ -74,8 +78,6 @@ public class HomeFragment3 extends Fragment {
             isRotated = savedInstanceState.getBoolean(STATE_IS_ROTATED, false);
             originalWidth = savedInstanceState.getInt(STATE_ORIGINAL_WIDTH, -1);
             originalHeight = savedInstanceState.getInt(STATE_ORIGINAL_HEIGHT, -1);
-
-            // If we were rotated, restore that state
             if (isRotated && zoomLayout != null) {
                 zoomLayout.post(this::applyRotationState);
             }
@@ -85,41 +87,38 @@ public class HomeFragment3 extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        // Reset to portrait when leaving the fragment
         if (isRotated && zoomLayout != null) {
             resetToPortrait();
         }
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // ZoomLayout setup
         zoomLayout = view.findViewById(R.id.zoomLayout);
         zoomLayout.post(() -> {
             originalWidth = zoomLayout.getWidth();
             originalHeight = zoomLayout.getHeight();
         });
 
-        // Main vertical container
+        // Main container and company header/stats
         LinearLayout mainContainer = new LinearLayout(requireContext());
         mainContainer.setOrientation(LinearLayout.VERTICAL);
         mainContainer.setGravity(Gravity.CENTER_HORIZONTAL);
-
         ViewGroup mindMapContainer = view.findViewById(R.id.mindMapContainer);
         mindMapContainer.addView(mainContainer);
 
-        // COMPANY header (centered, 600px width)
         TextView companyHeader = createHeaderView("COMPANY", 600);
         mainContainer.addView(companyHeader);
 
-        // COMPANY stats (centered below header)
         TextView companyStats = new TextView(requireContext());
         companyStats.setGravity(Gravity.CENTER);
         companyStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         companyStats.setTypeface(getResources().getFont(R.font.circular_bold));
         companyStats.setPadding(10, 10, 10, 20);
         updateCompanyStats(companyStats);
-
         LinearLayout.LayoutParams statsParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -128,20 +127,15 @@ public class HomeFragment3 extends Fragment {
         companyStats.setLayoutParams(statsParams);
         mainContainer.addView(companyStats);
 
-        // Container for all platoons (now using LinearLayout)
+        // Container for platoons
         LinearLayout platoonsContainer = new LinearLayout(requireContext());
         platoonsContainer.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout.LayoutParams platoonsParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        platoonsContainer.setLayoutParams(platoonsParams);
         mainContainer.addView(platoonsContainer);
 
         int soldierIndex = 0;
 
         for (int i = 0; i < PLATOON_COUNT; i++) {
-            presentCount[i] = SOLDIERS_PER_PLATOON;
+            presentCount[i] = ROWS * COLS;
             homeCount[i] = 0;
             absentCount[i] = 0;
 
@@ -149,7 +143,6 @@ public class HomeFragment3 extends Fragment {
             platoonContainer.setOrientation(LinearLayout.VERTICAL);
             platoonContainer.setPadding(20, 20, 20, 20);
 
-            // Create Platoon Header
             TextView platoonHeader = createHeaderView("PLATOON " + (i + 1), 330);
             platoonContainer.addView(platoonHeader);
 
@@ -158,34 +151,80 @@ public class HomeFragment3 extends Fragment {
             platoonContainer.addView(platoonStats);
 
             GridLayout gridLayout = new GridLayout(requireContext());
-            gridLayout.setColumnCount(3);
-            gridLayout.setRowCount(9);
+            gridLayout.setRowCount(ROWS);
+            gridLayout.setColumnCount(COLS);
 
-            for (int j = 0; j < SOLDIERS_PER_PLATOON; j++) {
-                View soldierView = getLayoutInflater().inflate(R.layout.item_formation, gridLayout, false);
-                soldierView.getLayoutParams().width = 100;
-                soldierView.getLayoutParams().height = 100;
+            // Build grid via formula with explicit cell positioning
+            for (int r = 0; r < ROWS; r++) {
+                for (int c = 0; c < COLS; c++) {
+                    if (!evalFormula(FORMATION_EXPR, r, c)) continue;
 
-                TextView tvInitials = soldierView.findViewById(R.id.tv_soldier_initials);
-                String fullName = SOLDIERS[soldierIndex % SOLDIERS.length];
-                String[] nameParts = fullName.split(" ");
-                String initials = nameParts[0].substring(0, 1) + nameParts[1].substring(0, 1);
-                tvInitials.setText(initials);
-                soldierIndex++;
+                    View soldierView = getLayoutInflater()
+                            .inflate(R.layout.item_formation, gridLayout, false);
+                    // Create cell-specific LayoutParams
+                    GridLayout.LayoutParams params = new GridLayout.LayoutParams(
+                            GridLayout.spec(r), GridLayout.spec(c)
+                    );
+                    // Set cell size
+                    params.width = 100;
+                    params.height = 100;
+                    soldierView.setLayoutParams(params);
 
-                soldierView.setTag(R.id.soldier_state_key, STATE_PRESENT);
-                soldierView.setTag(R.id.platoon_index_key, i);
-                soldierView.setOnClickListener(v -> {
-                    cycleState(v, platoonStats);
-                    updateCompanyStats(companyStats);
-                });
-                gridLayout.addView(soldierView);
+                    TextView tvInitials = soldierView.findViewById(R.id.tv_soldier_initials);
+                    String fullName = SOLDIERS[soldierIndex % SOLDIERS.length];
+                    String[] nameParts = fullName.split(" ");
+                    String initials = nameParts[0].substring(0, 1)
+                            + nameParts[1].substring(0, 1);
+                    tvInitials.setText(initials);
+                    soldierIndex++;
+
+                    soldierView.setTag(R.id.soldier_state_key, STATE_PRESENT);
+                    soldierView.setTag(R.id.platoon_index_key, i);
+                    soldierView.setOnClickListener(v -> {
+                        cycleState(v, platoonStats);
+                        updateCompanyStats(companyStats);
+                    });
+
+                    gridLayout.addView(soldierView);
+                }
             }
 
             platoonContainer.addView(gridLayout);
             platoonsContainer.addView(platoonContainer);
         }
     }
+
+    /**
+     * Evaluate simple expressions like "r==0 || r==ROWS-1 || c==0 || c==COLS-1".
+     */
+    private boolean evalFormula(String expr, int r, int c) {
+        for (String clause : expr.split("\\|\\|")) {
+            clause = clause.trim();
+            String[] parts = clause.split("==");
+            String var = parts[0].trim();
+            String term = parts[1].trim();
+            int value;
+            if (term.contains("-")) {
+                String[] t = term.split("-");
+                int a = "ROWS".equals(t[0]) ? ROWS : COLS;
+                int b = Integer.parseInt(t[1]);
+                value = a - b;
+            } else if ("ROWS".equals(term)) {
+                value = ROWS;
+            } else if ("COLS".equals(term)) {
+                value = COLS;
+            } else {
+                value = Integer.parseInt(term);
+            }
+            int varValue = var.equals("r") ? r : c;
+            if (varValue == value) return true;
+        }
+        return false;
+    }
+
+    // … include your existing helpers: createHeaderView, cycleState, updatePlatoonStats,
+    //    updateCompanyStats, getThemeColor, restoreOriginalDimensions,
+    //    applyRotationState, rotateToLandscape, resetToPortrait, rotateZoomLayout, onDestroy …
 
     private TextView createHeaderView(String text, int width) {
         TextView header = new TextView(requireContext());

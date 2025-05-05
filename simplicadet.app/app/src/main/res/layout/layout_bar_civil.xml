@@ -81,7 +81,6 @@
             android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_7sdp"
             app:backgroundTint="@null"
-            android:visibility="gone"
             android:background="@drawable/button_social"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
@@ -90,7 +89,6 @@
             android:textAllCaps="false"
             android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
-            android:alpha="0.4"
             android:clickable="false"
             tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
