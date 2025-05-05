@@ -16,7 +16,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,14 +25,18 @@ import com.otaliastudios.zoom.ZoomLayout;
 
 public class HomeFragment3 extends Fragment {
 
-    private static final int PLATOON_COUNT = 6;
-    private static final int ROWS = 8;
-    private static final int COLS = 10;
-    private static final int TOTAL_SOLDIERS = PLATOON_COUNT * ROWS * COLS;
+    // now configurable:
+    private int platoonCount = 6;
+    private String formationFormula =
+            "***\n" +
+                    "*_*\n" +
+                    "*_*\n" +
+                    "*_*\n" +
+                    "***";
 
-    private static final String STATE_IS_ROTATED = "isRotated";
-    private static final String STATE_ORIGINAL_WIDTH = "originalWidth";
-    private static final String STATE_ORIGINAL_HEIGHT = "originalHeight";
+    private static final String STATE_IS_ROTATED       = "isRotated";
+    private static final String STATE_ORIGINAL_WIDTH   = "originalWidth";
+    private static final String STATE_ORIGINAL_HEIGHT  = "originalHeight";
 
     private static final String[] SOLDIERS = {
             "Radulescu Marius", "Stanescu Maria",
@@ -41,20 +44,19 @@ public class HomeFragment3 extends Fragment {
     };
 
     private static final int STATE_PRESENT = 0;
-    private static final int STATE_HOME = 1;
-    private static final int STATE_ABSENT = 2;
+    private static final int STATE_HOME    = 1;
+    private static final int STATE_ABSENT  = 2;
 
-    // one-liner formula for hollow rectangle
-    private static final String FORMATION_EXPR =
-            "r==0 || r==ROWS-1 || c==0 || c==COLS-1";
-
-    private int originalWidth = -1;
+    private int originalWidth  = -1;
     private int originalHeight = -1;
+
     private ZoomLayout zoomLayout;
     private boolean isRotated = false;
-    private final int[] presentCount = new int[PLATOON_COUNT];
-    private final int[] homeCount = new int[PLATOON_COUNT];
-    private final int[] absentCount = new int[PLATOON_COUNT];
+
+    // we'll size these once we know platoonCount
+    private int[] presentCount;
+    private int[] homeCount;
+    private int[] absentCount;
 
     public HomeFragment3() {}
 
@@ -76,7 +78,7 @@ public class HomeFragment3 extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             isRotated = savedInstanceState.getBoolean(STATE_IS_ROTATED, false);
-            originalWidth = savedInstanceState.getInt(STATE_ORIGINAL_WIDTH, -1);
+            originalWidth  = savedInstanceState.getInt(STATE_ORIGINAL_WIDTH, -1);
             originalHeight = savedInstanceState.getInt(STATE_ORIGINAL_HEIGHT, -1);
             if (isRotated && zoomLayout != null) {
                 zoomLayout.post(this::applyRotationState);
@@ -96,135 +98,132 @@ public class HomeFragment3 extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ZoomLayout setup
+        // capture original dimensions for rotation reset
         zoomLayout = view.findViewById(R.id.zoomLayout);
         zoomLayout.post(() -> {
-            originalWidth = zoomLayout.getWidth();
+            originalWidth  = zoomLayout.getWidth();
             originalHeight = zoomLayout.getHeight();
         });
 
-        // Main container and company header/stats
+        // parse formula into rows & cols
+        String[] rows = formationFormula.split("\\n");
+        final int numRows = rows.length;
+        final int numCols = rows[0].length();
+        final int soldiersPerPlatoon = countChar(formationFormula, '*');
+
+        // init stats arrays
+        presentCount = new int[platoonCount];
+        homeCount    = new int[platoonCount];
+        absentCount  = new int[platoonCount];
+
+        // build UI
         LinearLayout mainContainer = new LinearLayout(requireContext());
         mainContainer.setOrientation(LinearLayout.VERTICAL);
         mainContainer.setGravity(Gravity.CENTER_HORIZONTAL);
+        mainContainer.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
         ViewGroup mindMapContainer = view.findViewById(R.id.mindMapContainer);
         mindMapContainer.addView(mainContainer);
 
+        // COMPANY header
         TextView companyHeader = createHeaderView("COMPANY", 600);
         mainContainer.addView(companyHeader);
 
+        // COMPANY stats
         TextView companyStats = new TextView(requireContext());
         companyStats.setGravity(Gravity.CENTER);
         companyStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         companyStats.setTypeface(getResources().getFont(R.font.circular_bold));
         companyStats.setPadding(10, 10, 10, 20);
-        updateCompanyStats(companyStats);
         LinearLayout.LayoutParams statsParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         statsParams.gravity = Gravity.CENTER_HORIZONTAL;
         companyStats.setLayoutParams(statsParams);
+        updateCompanyStats(companyStats, soldiersPerPlatoon);
         mainContainer.addView(companyStats);
 
-        // Container for platoons
+        // container for platoons
         LinearLayout platoonsContainer = new LinearLayout(requireContext());
         platoonsContainer.setOrientation(LinearLayout.HORIZONTAL);
+        platoonsContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
         mainContainer.addView(platoonsContainer);
 
         int soldierIndex = 0;
-
-        for (int i = 0; i < PLATOON_COUNT; i++) {
-            presentCount[i] = ROWS * COLS;
-            homeCount[i] = 0;
-            absentCount[i] = 0;
+        // for each platoon
+        for (int p = 0; p < platoonCount; p++) {
+            presentCount[p] = soldiersPerPlatoon;
+            homeCount[p]    = 0;
+            absentCount[p]  = 0;
 
             LinearLayout platoonContainer = new LinearLayout(requireContext());
             platoonContainer.setOrientation(LinearLayout.VERTICAL);
-            platoonContainer.setPadding(20, 20, 20, 20);
+            platoonContainer.setPadding(20,20,20,20);
+// *** new: wrap to grid + header + stats ***
+            platoonContainer.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
 
-            TextView platoonHeader = createHeaderView("PLATOON " + (i + 1), 330);
+            // platoon header & stats
+            TextView platoonHeader = createHeaderView("PLATOON " + (p + 1), 330);
             platoonContainer.addView(platoonHeader);
 
             TextView platoonStats = new TextView(requireContext());
-            updatePlatoonStats(i, platoonStats);
+            updatePlatoonStats(p, platoonStats);
             platoonContainer.addView(platoonStats);
 
-            GridLayout gridLayout = new GridLayout(requireContext());
-            gridLayout.setRowCount(ROWS);
-            gridLayout.setColumnCount(COLS);
+            // dynamic grid
+            GridLayout grid = new GridLayout(requireContext());
+            grid.setRowCount(numRows);
+            grid.setColumnCount(numCols);
 
-            // Build grid via formula with explicit cell positioning
-            for (int r = 0; r < ROWS; r++) {
-                for (int c = 0; c < COLS; c++) {
-                    if (!evalFormula(FORMATION_EXPR, r, c)) continue;
+            for (int r = 0; r < numRows; r++) {
+                for (int c = 0; c < numCols; c++) {
+                    char ch = rows[r].charAt(c);
+                    if (ch == '*') {
+                        // inflate soldier
+                        View sv = getLayoutInflater().inflate(R.layout.item_formation, grid, false);
+                        sv.getLayoutParams().width  = 100;
+                        sv.getLayoutParams().height = 100;
 
-                    View soldierView = getLayoutInflater()
-                            .inflate(R.layout.item_formation, gridLayout, false);
-                    // Create cell-specific LayoutParams
-                    GridLayout.LayoutParams params = new GridLayout.LayoutParams(
-                            GridLayout.spec(r), GridLayout.spec(c)
-                    );
-                    // Set cell size
-                    params.width = 100;
-                    params.height = 100;
-                    soldierView.setLayoutParams(params);
+                        TextView tv = sv.findViewById(R.id.tv_soldier_initials);
+                        String fullName = SOLDIERS[soldierIndex++ % SOLDIERS.length];
+                        tv.setText(fullName.split(" ")[0].substring(0,1)
+                                + fullName.split(" ")[1].substring(0,1));
 
-                    TextView tvInitials = soldierView.findViewById(R.id.tv_soldier_initials);
-                    String fullName = SOLDIERS[soldierIndex % SOLDIERS.length];
-                    String[] nameParts = fullName.split(" ");
-                    String initials = nameParts[0].substring(0, 1)
-                            + nameParts[1].substring(0, 1);
-                    tvInitials.setText(initials);
-                    soldierIndex++;
+                        sv.setTag(R.id.soldier_state_key, STATE_PRESENT);
+                        sv.setTag(R.id.platoon_index_key, p);
+                        sv.setOnClickListener(v -> {
+                            cycleState(v, platoonStats);
+                            updateCompanyStats(companyStats, soldiersPerPlatoon);
+                        });
 
-                    soldierView.setTag(R.id.soldier_state_key, STATE_PRESENT);
-                    soldierView.setTag(R.id.platoon_index_key, i);
-                    soldierView.setOnClickListener(v -> {
-                        cycleState(v, platoonStats);
-                        updateCompanyStats(companyStats);
-                    });
+                        grid.addView(sv);
 
-                    gridLayout.addView(soldierView);
+                    } else {
+                        // empty spacer for alignment
+                        View spacer = new View(requireContext());
+                        spacer.setLayoutParams(new ViewGroup.LayoutParams(100,100));
+                        grid.addView(spacer);
+                    }
                 }
             }
 
-            platoonContainer.addView(gridLayout);
+            platoonContainer.addView(grid);
             platoonsContainer.addView(platoonContainer);
         }
     }
 
-    /**
-     * Evaluate simple expressions like "r==0 || r==ROWS-1 || c==0 || c==COLS-1".
-     */
-    private boolean evalFormula(String expr, int r, int c) {
-        for (String clause : expr.split("\\|\\|")) {
-            clause = clause.trim();
-            String[] parts = clause.split("==");
-            String var = parts[0].trim();
-            String term = parts[1].trim();
-            int value;
-            if (term.contains("-")) {
-                String[] t = term.split("-");
-                int a = "ROWS".equals(t[0]) ? ROWS : COLS;
-                int b = Integer.parseInt(t[1]);
-                value = a - b;
-            } else if ("ROWS".equals(term)) {
-                value = ROWS;
-            } else if ("COLS".equals(term)) {
-                value = COLS;
-            } else {
-                value = Integer.parseInt(term);
-            }
-            int varValue = var.equals("r") ? r : c;
-            if (varValue == value) return true;
-        }
-        return false;
+    private int countChar(String s, char find) {
+        int cnt = 0;
+        for (char c : s.toCharArray()) if (c == find) cnt++;
+        return cnt;
     }
-
-    // … include your existing helpers: createHeaderView, cycleState, updatePlatoonStats,
-    //    updateCompanyStats, getThemeColor, restoreOriginalDimensions,
-    //    applyRotationState, rotateToLandscape, resetToPortrait, rotateZoomLayout, onDestroy …
 
     private TextView createHeaderView(String text, int width) {
         TextView header = new TextView(requireContext());
@@ -233,90 +232,82 @@ public class HomeFragment3 extends Fragment {
         header.setTypeface(getResources().getFont(R.font.circular_bold));
         header.setGravity(Gravity.CENTER);
         header.setPadding(10, 10, 10, 10);
-
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setShape(GradientDrawable.RECTANGLE);
-        drawable.setCornerRadius(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
-        drawable.setColor(getThemeColor(R.attr.backgroundLight));
-        header.setBackground(drawable);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                width, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.CENTER_HORIZONTAL;
-        params.setMargins(0, 0, 0, 10);
-        header.setLayoutParams(params);
-
+        GradientDrawable bg = new GradientDrawable();
+        bg.setShape(GradientDrawable.RECTANGLE);
+        bg.setCornerRadius(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,8,requireContext().getResources().getDisplayMetrics()));
+        bg.setColor(getThemeColor(R.attr.backgroundLight));
+        header.setBackground(bg);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        lp.setMargins(0,0,0,10);
+        header.setLayoutParams(lp);
         return header;
     }
 
     private void cycleState(View v, TextView platoonStats) {
-        int platoonIndex = (int) v.getTag(R.id.platoon_index_key);
-        int currentState = (int) v.getTag(R.id.soldier_state_key);
-        int newState = (currentState + 1) % 3;
-        v.setTag(R.id.soldier_state_key, newState);
+        int pi = (int)v.getTag(R.id.platoon_index_key);
+        int cs = (int)v.getTag(R.id.soldier_state_key);
+        int ns = (cs + 1) % 3;
+        v.setTag(R.id.soldier_state_key, ns);
 
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setShape(GradientDrawable.RECTANGLE);
-        drawable.setCornerRadius(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
+        GradientDrawable d = new GradientDrawable();
+        d.setShape(GradientDrawable.RECTANGLE);
+        d.setCornerRadius(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,8,requireContext().getResources().getDisplayMetrics()));
 
-        int backgroundColor;
-
-        switch (newState) {
+        int color;
+        switch (ns) {
             case STATE_PRESENT:
-                backgroundColor = getThemeColor(R.attr.backgroundLight);
-                presentCount[platoonIndex]++;
-                absentCount[platoonIndex]--;
+                color = getThemeColor(R.attr.backgroundLight);
+                presentCount[pi]++;
+                absentCount[pi]--;
                 break;
-
             case STATE_HOME:
-                backgroundColor = getThemeColor(R.attr.backgroundDark);
-                presentCount[platoonIndex]--;
-                homeCount[platoonIndex]++;
+                color = getThemeColor(R.attr.backgroundDark);
+                presentCount[pi]--;
+                homeCount[pi]++;
                 break;
-
             case STATE_ABSENT:
-                backgroundColor = Color.parseColor("#D9FA5A50");
-                homeCount[platoonIndex]--;
-                absentCount[platoonIndex]++;
+                color = Color.parseColor("#D9FA5A50");
+                homeCount[pi]--;
+                absentCount[pi]++;
                 break;
-
-            default:
-                return;
+            default: return;
         }
-
-        drawable.setColor(backgroundColor);
-        v.setBackground(drawable);
-        updatePlatoonStats(platoonIndex, platoonStats);
+        d.setColor(color);
+        v.setBackground(d);
+        updatePlatoonStats(pi, platoonStats);
     }
 
-    private void updatePlatoonStats(int platoonIndex, TextView platoonStats) {
-        platoonStats.setGravity(Gravity.CENTER);
-        platoonStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        platoonStats.setTypeface(getResources().getFont(R.font.circular_bold));
-        platoonStats.setPadding(10, 10, 10, 10);
-        platoonStats.setText("P: " + presentCount[platoonIndex] + " H: " + homeCount[platoonIndex] + " A: " + absentCount[platoonIndex]);
+    private void updatePlatoonStats(int i, TextView tv) {
+        tv.setGravity(Gravity.CENTER);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP,12);
+        tv.setTypeface(getResources().getFont(R.font.circular_bold));
+        tv.setPadding(10,10,10,10);
+        tv.setText("P: " + presentCount[i]
+                + " H: " + homeCount[i]
+                + " A: " + absentCount[i]);
     }
 
-    private void updateCompanyStats(TextView companyStats) {
-        int totalPresent = TOTAL_SOLDIERS; // Initialize with TOTAL_SOLDIERS
-        int totalHome = 0;
-        int totalAbsent = 0;
-        for (int i = 0; i < PLATOON_COUNT; i++) {
-            totalHome += homeCount[i];
+    private void updateCompanyStats(TextView tv, int soldiersPerPlatoon) {
+        int totalHome = 0, totalAbsent = 0;
+        for (int i = 0; i < platoonCount; i++) {
+            totalHome   += homeCount[i];
             totalAbsent += absentCount[i];
         }
-        // Subtract absent and home soldiers from total present
-        totalPresent -= (totalHome + totalAbsent);
-        companyStats.setText("P: " + totalPresent + " H: " + totalHome + " A: " + totalAbsent);
+        int totalPresent = platoonCount * soldiersPerPlatoon - (totalHome + totalAbsent);
+        tv.setText("P: " + totalPresent
+                + " H: " + totalHome
+                + " A: " + totalAbsent);
     }
 
     private int getThemeColor(int attr) {
-        TypedValue typedValue = new TypedValue();
-        requireContext().getTheme().resolveAttribute(attr, typedValue, true);
-        return typedValue.data;
+        TypedValue tv = new TypedValue();
+        requireContext().getTheme().resolveAttribute(attr, tv, true);
+        return tv.data;
     }
+
 
     private void restoreOriginalDimensions() {
         if (zoomLayout != null && originalWidth > 0 && originalHeight > 0) {

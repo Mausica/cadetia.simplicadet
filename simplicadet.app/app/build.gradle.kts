@@ -98,7 +98,6 @@ dependencies {
     implementation ("androidx.transition:transition:1.6.0")
     implementation ("nl.dionsegijn:konfetti-xml:2.0.4")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
-    implementation ("org.mozilla:rhino:1.7.13")
 
     // Room Database Dependencies
     implementation ("androidx.room:room-runtime:2.7.1")
