@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutQuizz"
     android:orientation="vertical"
     android:layout_width="@dimen/_120sdp"
@@ -27,6 +28,16 @@
             android:visibility="visible"
             app:riv_corner_radius="15dp" />
 
+        <!-- Add this overlay view that will be shown when selected -->
+        <View
+            android:id="@+id/quizzSelectedOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_100sdp"
+            android:backgroundTint="@color/green"
+            android:background="@drawable/home_ic_check"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
     </RelativeLayout>
 
     <TextView
@@ -39,7 +50,7 @@
         android:layout_marginStart="@dimen/_7sdp"
         android:layout_marginEnd="@dimen/_7sdp"
         android:maxLines="2"
-        android:layout_marginBottom="@dimen/_3sdp"
+        android:layout_marginBottom="@dimen/_12sdp"
         android:fontFamily="@font/circular_medium"
         android:includeFontPadding="false"
         android:textColor="?attr/textAppearanceBody1"
@@ -48,6 +59,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_marginStart="@dimen/_7sdp"
         android:layout_marginEnd="@dimen/_7sdp"
         android:layout_marginTop="@dimen/_7sdp"

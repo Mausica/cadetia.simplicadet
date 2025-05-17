@@ -3,201 +3,164 @@ package com.cadetia.simplicadet.ui.home;
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.cadetia.simplicadet.activities.Home;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.CreateNote;
-import com.cadetia.simplicadet.adapters.NotesAdapter;
-import com.cadetia.simplicadet.database.NotesDatabase;
-import com.cadetia.simplicadet.entities.Note;
-import com.cadetia.simplicadet.listeners.NotesListener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
-public class HomeFragment2 extends Fragment implements NotesListener, CreateNote.NoteSavedListener, CreateNote.NoteDeletedListener {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-    public static final int REQUEST_CODE_ADD_NOTE = 1;
-    public static final int REQUEST_CODE_UPDATE_NOTE = 2;
-    public static final int REQUEST_CODE_SHOW_NOTES = 3;
-    private boolean isLoadingDismissed = false;
-    private View loadingLayout;
-    private View contentView;
-    private List<Note> noteList;
-    private NotesAdapter notesAdapter;
-    public int noteClickedPosition = -1;
-    private FloatingActionButton fabMain;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private final ActivityResultLauncher<Intent> createNoteLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-                }
-            }
-    );
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-    public HomeFragment2() {
-        // Required empty public constructor
-    }
+public class HomeFragment2 extends Fragment {
 
-    @Override
-    public void onNoteDeleted() {
-        // Reload note list when a note is deleted
-        loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, true);
-    }
-
-    public static HomeFragment2 newInstance() {
-        return new HomeFragment2();
-    }
+    private ActivityResultLauncher<Intent> cameraLauncher;
+    private Uri photoUri;
+    // Use the new generativelanguage endpoint
+    private static final String GEMINI_URL =
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBdL9iHFUtltdK29ijVwcCt3A0a7aYF-aI";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home2, container, false);
 
-        //fabMain = view.findViewById(R.id.fabMain);
-        // fabMain.setOnClickListener(v -> showCreateNote(null, false));
+        // Initialize camera launcher
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        handleImage(photoUri);
+                    }
+                }
+        );
 
-        loadingLayout = view.findViewById(R.id.layout_loading);
-        contentView = view.findViewById(R.id.contentLayout2);
-
-        showLoading(true);
-
-        RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
-        notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        noteList = new ArrayList<>();
-        notesAdapter = new NotesAdapter(noteList, this);
-        notesRecyclerView.setAdapter(notesAdapter);
-
-        new Handler().postDelayed(() -> {
-            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fabMain);
+        fab.setOnClickListener(v -> dispatchCamera());
 
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        showLoading(true);
-        new Handler().postDelayed(() -> {
-            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show
+    public void dispatchCamera() {
+        File file = new File(requireContext().getExternalFilesDir(null),
+                "capture_" + System.currentTimeMillis() + ".jpg");
+        photoUri = FileProvider.getUriForFile(requireContext(),
+                requireContext().getPackageName() + ".provider", file);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        cameraLauncher.launch(intent);
     }
 
-    private void showLoading(boolean show) {
-        if (loadingLayout != null && contentView != null) {
-            if (show) {
-                isLoadingDismissed = false;
-                loadingLayout.setVisibility(View.VISIBLE);
-                contentView.setVisibility(View.GONE);
-            } else if (!isLoadingDismissed) {
-                isLoadingDismissed = true;
-
-                Context context = getContext();
-                if (context != null) {
-                    loadingLayout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
-                    new Handler().postDelayed(() -> {
-                        if (loadingLayout != null && isAdded()) {
-                            loadingLayout.setVisibility(View.GONE);
-                            contentView.setVisibility(View.VISIBLE);
-                            contentView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
-                        }
-                    }, 250);
-                } else {
-                    Log.w(TAG, "Context is null, skipping animations");
-                }
-            }
+    private void handleImage(Uri uri) {
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                    requireContext().getContentResolver(), uri);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+            String b64 = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP);
+            sendToGemini(b64);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to load image", e);
         }
     }
 
+    private void sendToGemini(String base64Image) {
+        JsonObject imagePart = new JsonObject();
+        imagePart.addProperty("mime_type", "image/jpeg");
+        imagePart.addProperty("data", base64Image);
 
+        JsonObject inlineData = new JsonObject();
+        inlineData.add("inline_data", imagePart);
 
-    @Override
-    public void onNoteClicked(Note note, int position) {
-        noteClickedPosition = position;
-        showCreateNote(note, false);
-    }
+        JsonObject textPart = new JsonObject();
+        textPart.addProperty("text", "Extract all text from the prescription image.");
 
-    @Override
-    public void onNoteSaved() {
+        JsonArray parts = new JsonArray();
+        parts.add(textPart);
+        parts.add(inlineData);
 
-    }
+        JsonObject content = new JsonObject();
+        content.add("parts", parts);
 
-    public void loadNotesInBackground(final int requestCode, final boolean isNoteDeleted) {
-        executorService.execute(() -> {
-            List<Note> notes = NotesDatabase.getDatabase(requireContext()).noteDao().getAllNotes();
-            handler.post(() -> {
-                switch (requestCode) {
-                    case REQUEST_CODE_SHOW_NOTES:
-                    case REQUEST_CODE_ADD_NOTE:
-                        // Clear existing notes and add all notes
-                        noteList.clear();
-                        noteList.addAll(notes);
-                        notesAdapter.notifyDataSetChanged();
-                        break;
-                    case REQUEST_CODE_UPDATE_NOTE:
-                        if (isNoteDeleted) {
-                            // Note is deleted, notify adapter about the removal
-                            notesAdapter.notifyItemRemoved(noteClickedPosition);
-                        } else {
-                            // Note is updated, update the corresponding note in the list
-                            if (noteClickedPosition >= 0 && noteClickedPosition < notes.size()) {
-                                noteList.set(noteClickedPosition, notes.get(noteClickedPosition));
-                                notesAdapter.notifyItemChanged(noteClickedPosition);
-                            }
-                        }
-                        break;
+        JsonArray contents = new JsonArray();
+        contents.add(content);
+
+        JsonObject body = new JsonObject();
+        body.add("contents", contents);
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(GEMINI_URL)
+                .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Gemini generateContent failed", e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Log.e(TAG, "Gemini error code: " + response.code());
+                    return;
                 }
-                showLoading(false);
-            });
+                String json = response.body().string();
+                parseAndLog(json);
+            }
         });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
-    }
 
-    public void showCreateNote(Note note, boolean isNoteDeleted) {
-        Bundle args = new Bundle();
-        if (note == null) {
-            args.putBoolean("isViewOrUpdate", false);
+    private void parseAndLog(String json) {
+        JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+        if (root.has("candidates")) {
+            JsonArray candidates = root.getAsJsonArray("candidates");
+            for (int i = 0; i < candidates.size(); i++) {
+                JsonObject candidate = candidates.get(i).getAsJsonObject();
+                if (candidate.has("content")) {
+                    JsonObject content = candidate.getAsJsonObject("content");
+                    if (content.has("parts")) {
+                        JsonArray parts = content.getAsJsonArray("parts");
+                        if (parts.size() > 0) {
+                            JsonObject part = parts.get(0).getAsJsonObject();
+                            if (part.has("text")) {
+                                String text = part.get("text").getAsString();
+                                Log.d(TAG, "Candidate[" + i + "]: " + text);
+                            }
+                        }
+                    }
+                }
+            }
         } else {
-            args.putBoolean("isViewOrUpdate", true);
-            args.putSerializable("note", note);
+            Log.w(TAG, "No candidates in Gemini response");
         }
-        args.putBoolean("isNoteDeleted", isNoteDeleted);
-
-        CreateNote bottomSheetFragment = new CreateNote();
-        bottomSheetFragment.setArguments(args);
-        bottomSheetFragment.setNoteSavedListener(this);
-        bottomSheetFragment.show(requireActivity().getSupportFragmentManager(), bottomSheetFragment.getTag());
     }
 
-    @Override
-    public void onNoteSaved(boolean isNoteDeleted) {
-        loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, isNoteDeleted);
-    }
 }

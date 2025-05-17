@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.Home;
 import com.cadetia.simplicadet.activities.QuestionsActivity;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
@@ -59,6 +58,9 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private JournalAdapter journalAdapter;
     private List<JournalEntry> journalList = new ArrayList<>();
     private LruCache<String, Bitmap> memCache;
+
+    // Track selected quiz IDs
+    private List<String> selectedQuizIds = new ArrayList<>();
 
     private View loadingLayout;
 
@@ -146,8 +148,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             }
         }
     }
-
-
 
     private void loadTaskFirstLayout() {
         if (isAdded()) {
@@ -254,7 +254,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             @Override
             public void onSucces() {
                 // Use the home-specific list
-                List<CategoryModel> categoryList = DbQuery.g_homeCatList;
+                List<CategoryModel> categoryList = DbQuery.g_militaryCatList;
                 if (categoryList != null && !categoryList.isEmpty()) {
                     setUpCategoryRecyclerView(categoryList);
                 } else {
@@ -298,15 +298,25 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
 
     @Override
     public void onQuizClick(String categoryId, String testId) {
-        // Get the context from categoryRecyclerView
-        Context context = categoryRecyclerView.getContext();
-        Intent intent = new Intent(context, QuestionsActivity.class);
+        // Toggle selection for this quiz
+        if (selectedQuizIds.contains(testId)) {
+            selectedQuizIds.remove(testId);
+        } else {
+            selectedQuizIds.add(testId);
+        }
+
+        // Now decide if you want to launch the quiz or just update the UI
+        // For now, we'll just update the quiz's visual state
+        // If you want to proceed to the quiz:
+        //Context context = categoryRecyclerView.getContext();
+        //ntent intent = new Intent(context, QuestionsActivity.class);
 
         // Add the categoryId and testId to the intent
-        intent.putExtra("categoryId", categoryId);
-        intent.putExtra("testId", testId);
+        //intent.putExtra("categoryId", categoryId);
+        //intent.putExtra("testId", testId);
+        //intent.putExtra("isSelected", selectedQuizIds.contains(testId));
 
-        startActivityForResult(intent, 1);
+        //startActivityForResult(intent, 1);
     }
 
     private void showRedeemDialog(int totalScore, int correctAnswers, int totalQuestions, float totalTime) {

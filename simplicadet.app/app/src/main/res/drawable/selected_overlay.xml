@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base rectangle for the diagonal line -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+    <!-- Diagonal line overlay -->
+    <item>
+        <rotate
+            android:fromDegrees="90"
+            android:toDegrees="0"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape android:shape="line">
+                <stroke
+                    android:width="10dp"
+                    android:color="#88000000" />
+            </shape>
+        </rotate>
+    </item>
+</layer-list>

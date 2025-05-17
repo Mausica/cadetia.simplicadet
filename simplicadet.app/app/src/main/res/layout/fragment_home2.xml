@@ -51,24 +51,4 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabOrder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:visibility="gone"
-        android:layout_marginEnd="@dimen/_16sdp"
-        app:layout_anchor="@id/nav_view"
-        android:layout_marginBottom="@dimen/_54sdp"
-        app:backgroundTint="@color/primary"
-        app:fabCustomSize="@dimen/_42sdp"
-        app:maxImageSize="@dimen/_20sdp"
-        app:rippleColor="@color/blur"
-        app:shapeAppearanceOverlay="@style/SquareShapeOverlay"
-        app:srcCompat="@drawable/home_ic_plus"
-        android:elevation="8dp"
-        android:tint="@android:color/black"
-        android:contentDescription="@string/home_add_note" />
-
 </FrameLayout>

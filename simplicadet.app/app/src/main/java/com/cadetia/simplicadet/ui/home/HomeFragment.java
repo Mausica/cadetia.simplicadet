@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment{
     }
 
 
+
     private void setupButtons(View view) {
         // Buttons for your options
         Button allButton = view.findViewById(R.id.home_ac1);
@@ -163,7 +164,7 @@ public class HomeFragment extends Fragment{
         Fragment fragment = getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
         if (fragment instanceof HomeFragment2) {
             HomeFragment2 frag2 = (HomeFragment2) fragment;
-            frag2.showCreateNote(null, false);
+            frag2.dispatchCamera();
         }
         else if (fragment instanceof HomeFragment3) {
             HomeFragment3 frag3 = (HomeFragment3) fragment;

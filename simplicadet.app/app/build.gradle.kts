@@ -77,9 +77,12 @@ dependencies {
     implementation("com.intuit.ssp:ssp-android:1.1.0")
 
     //AI
-    implementation("com.google.guava:guava:32.1.3-android")
+    implementation("com.google.guava:guava:33.4.8-android")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation("org.reactivestreams:reactive-streams:1.0.4")
+    implementation("com.google.firebase:firebase-vertexai:16.4.0")
 
     //PDF
     implementation ("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")

@@ -20,6 +20,7 @@ import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.model.Quizz;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHolder> {
@@ -27,6 +28,8 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
     private final List<Quizz> quizzList;
     private final CategoryAdapter.OnQuizClickListener onQuizClickListener;
     private final String categoryId;
+    // Add a list to track selected items
+    private final List<String> selectedQuizIds = new ArrayList<>();
 
     public QuizzAdapter(List<Quizz> quizzList, String categoryId, CategoryAdapter.OnQuizClickListener onQuizClickListener) {
         this.quizzList = quizzList;
@@ -45,12 +48,45 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
     public void onBindViewHolder(@NonNull QuizzViewHolder holder, int position) {
         Quizz quizz = quizzList.get(position);
         holder.quizzTitleTextView.setText(quizz.getTitle());
+
+        // Check if this quiz is selected
+        boolean isSelected = selectedQuizIds.contains(quizz.getTestId());
+        holder.updateSelectedState(isSelected);
+
         holder.itemView.setOnClickListener(v -> {
+            // Toggle selection state
+            toggleSelection(quizz.getTestId());
+            // Update UI for this holder
+            holder.updateSelectedState(selectedQuizIds.contains(quizz.getTestId()));
+
+            // Call original click listener
             if (onQuizClickListener != null) {
                 onQuizClickListener.onQuizClick(categoryId, quizz.getTestId());
             }
         });
         holder.bind(quizz);
+    }
+
+    // Toggle selection state of a quiz
+    private void toggleSelection(String quizId) {
+        if (selectedQuizIds.contains(quizId)) {
+            selectedQuizIds.remove(quizId);
+        } else {
+            selectedQuizIds.add(quizId);
+        }
+        // Notify adapter that data has changed
+        notifyDataSetChanged();
+    }
+
+    // Method to check if a quiz is selected
+    public boolean isSelected(String quizId) {
+        return selectedQuizIds.contains(quizId);
+    }
+
+    // Method to clear all selections
+    public void clearSelections() {
+        selectedQuizIds.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -64,6 +100,7 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
         private ImageView imageQuizz;
         private ImageView createdProfile;
         private LinearLayout layoutQuizz;
+        private View quizzSelectedOverlay;
 
         public QuizzViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +109,23 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
             layoutQuizz = itemView.findViewById(R.id.layoutQuizz);
             createdName = itemView.findViewById(R.id.created_name);
             createdProfile = itemView.findViewById(R.id.created_profile);
+            quizzSelectedOverlay = itemView.findViewById(R.id.quizzSelectedOverlay);
+        }
+
+        // Method to update the selected state of this item
+        public void updateSelectedState(boolean isSelected) {
+            // Show/hide the diagonal overlay
+            if (quizzSelectedOverlay != null) {
+                quizzSelectedOverlay.setVisibility(isSelected ? View.VISIBLE : View.GONE);
+            }
+
+            // Apply alpha to the whole layout if selected
+            if (layoutQuizz != null) {
+                layoutQuizz.setAlpha(isSelected ? 1.0f : 0.7f);
+            }
+
+            // Set the selected state on the view for state-based drawable changes
+            itemView.setSelected(isSelected);
         }
 
         public void bind(Quizz quizz) {
@@ -84,7 +138,7 @@ public class QuizzAdapter extends RecyclerView.Adapter<QuizzAdapter.QuizzViewHol
             }
 
             quizzTitleTextView.setText(quizz.getTitle());
-            layoutQuizz.setAlpha(quizz.hasQuestions() ? 1.0f : 0.2f);
+            //layoutQuizz.setAlpha(quizz.hasQuestions() ? 1.0f : 0.2f);
 
             if (quizz.getCreatedBy() != null) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();

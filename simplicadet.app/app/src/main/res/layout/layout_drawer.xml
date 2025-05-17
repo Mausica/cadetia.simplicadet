@@ -69,7 +69,7 @@
                 android:textSize="@dimen/_9ssp"
                 android:fontFamily="@font/circular_medium"
                 android:textColor="@color/light"
-                android:text="CNMTV Student"
+                android:text="Radulescu's Family"
                 android:gravity="center_vertical"/>
         </LinearLayout>
     </LinearLayout>
