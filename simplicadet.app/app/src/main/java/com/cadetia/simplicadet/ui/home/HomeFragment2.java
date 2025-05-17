@@ -13,18 +13,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.cadetia.simplicadet.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,6 +47,10 @@ public class HomeFragment2 extends Fragment {
 
     private ActivityResultLauncher<Intent> cameraLauncher;
     private Uri photoUri;
+    private ImageView medImageView;
+
+    private TextView extractedTextView;
+
     // Use the new generativelanguage endpoint
     private static final String GEMINI_URL =
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBdL9iHFUtltdK29ijVwcCt3A0a7aYF-aI";
@@ -49,6 +58,9 @@ public class HomeFragment2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home2, container, false);
+
+        extractedTextView = view.findViewById(R.id.extractedTextView);
+        medImageView = view.findViewById(R.id.medImageView);
 
         // Initialize camera launcher
         cameraLauncher = registerForActivityResult(
@@ -98,7 +110,7 @@ public class HomeFragment2 extends Fragment {
         inlineData.add("inline_data", imagePart);
 
         JsonObject textPart = new JsonObject();
-        textPart.addProperty("text", "Extract all text from the prescription image.");
+        textPart.addProperty("text", "Din această imagine cu o rețetă medicală, extrage doar următoarele: diagnosticul pacientului, numele fiecărui medicament prescris și oferă un link ilustrativ pentru o imagine a cutiei fiecărui medicament (poate fi un link reprezentativ de pe Google Images). Răspunsul să fie clar structurat, doar în text.");
 
         JsonArray parts = new JsonArray();
         parts.add(textPart);
@@ -153,6 +165,22 @@ public class HomeFragment2 extends Fragment {
                             if (part.has("text")) {
                                 String text = part.get("text").getAsString();
                                 Log.d(TAG, "Candidate[" + i + "]: " + text);
+                                requireActivity().runOnUiThread(() -> {
+                                    extractedTextView.setText(text);
+
+                                    // Cautăm un link în text (link către poză medicament)
+                                    Pattern pattern = Pattern.compile("https?://\\S+\\.(png|jpg|jpeg)");
+                                    Matcher matcher = pattern.matcher(text);
+                                    if (matcher.find()) {
+                                        String imageUrl = matcher.group();
+                                        Glide.with(requireContext())
+                                                .load(imageUrl)
+                                                .into(medImageView);
+                                    } else {
+                                        medImageView.setImageDrawable(null);
+                                    }
+                                });
+
                             }
                         }
                     }
@@ -162,5 +190,6 @@ public class HomeFragment2 extends Fragment {
             Log.w(TAG, "No candidates in Gemini response");
         }
     }
+
 
 }
