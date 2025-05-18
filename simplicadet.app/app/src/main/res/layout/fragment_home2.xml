@@ -9,7 +9,7 @@
 
     <FrameLayout
         android:id="@+id/layout_loading"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -31,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
+        android:visibility="gone"
         android:scrollbars="none">
 
         <LinearLayout
@@ -39,7 +40,7 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/notesRecyclerView"
+                android:id="@+id/medRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/_6sdp"
@@ -48,20 +49,6 @@
                 android:paddingStart="0dp"
                 android:paddingEnd="@dimen/_3sdp"
                 android:paddingBottom="@dimen/_16sdp"/>
-            <TextView
-                android:id="@+id/extractedTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_8sdp"
-                android:text="Extracted text will appear here..."
-                android:textSize="16sp"
-                android:textColor="@color/gray" />
-            <ImageView
-                android:id="@+id/medImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
