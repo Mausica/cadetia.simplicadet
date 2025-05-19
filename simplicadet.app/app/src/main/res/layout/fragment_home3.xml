@@ -1,40 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment3"
-    android:id="@+id/homeFragment3">
+    android:id="@+id/card_container">
 
-    <com.otaliastudios.zoom.ZoomLayout
-        android:id="@+id/zoomLayout"
-        android:layout_width="wrap_content"
+
+    <FrameLayout
+        android:id="@+id/card_back"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginBottom="@dimen/_90sdp"
+        android:layout_height="match_parent">
+        <include layout="@layout/card_back" />
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/card_front"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:transformation="centerInside"
-        app:transformationGravity="auto"
-        app:alignment="center"
-        app:overScrollHorizontal="true"
-        app:overScrollVertical="true"
-        app:overPinchable="true"
-        app:horizontalPanEnabled="true"
-        app:verticalPanEnabled="true"
-        app:zoomEnabled="true"
-        app:flingEnabled="true"
-        app:scrollEnabled="true"
-        app:oneFingerScrollEnabled="true"
-        app:twoFingersScrollEnabled="true"
-        app:threeFingersScrollEnabled="true"
-        app:minZoom="0.75"
-        app:maxZoom="3.0"
-        app:animationDuration="300"
-        app:hasClickableChildren="true">
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginBottom="@dimen/_90sdp"
+        android:gravity="center">
+        <include layout="@layout/card_front" />
 
-        <FrameLayout
-            android:id="@+id/mindMapContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    </FrameLayout>
 
-    </com.otaliastudios.zoom.ZoomLayout>
 
 </FrameLayout>

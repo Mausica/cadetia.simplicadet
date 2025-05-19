@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:src="@drawable/button_blue"
+        app:tint="@color/primary"
+        android:tint="@color/primary"
+        tools:ignore="UseAppTint" />
+
+    <TextView
+        android:id="@+id/text_view_front"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_28ssp"
+        android:padding="@dimen/_40sdp"
+        android:text="Multiple lines at once, please dont screw this app"
+        android:fontFamily="@font/circular_bold"
+        android:gravity="center"/>
+
+</FrameLayout>

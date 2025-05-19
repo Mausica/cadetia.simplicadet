@@ -167,7 +167,7 @@ public class HomeFragment extends Fragment{
         }
         else if (fragment instanceof HomeFragment3) {
             HomeFragment3 frag3 = (HomeFragment3) fragment;
-            frag3.rotateZoomLayout();
+            //frag3.rotateZoomLayout();
         }
         else if (fragment instanceof HomeFragment4) {
             HomeFragment4 frag4 = (HomeFragment4) fragment;
