@@ -254,7 +254,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             @Override
             public void onSucces() {
                 // Use the home-specific list
-                List<CategoryModel> categoryList = DbQuery.g_homeCatList;
+                List<CategoryModel> categoryList = DbQuery.g_militaryCatList;
                 if (categoryList != null && !categoryList.isEmpty()) {
                     setUpCategoryRecyclerView(categoryList);
                 } else {

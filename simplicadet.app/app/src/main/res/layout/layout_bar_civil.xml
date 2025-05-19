@@ -77,19 +77,20 @@
 
         <Button
             android:id="@+id/home_ac3"
+            android:visibility="gone"
             android:layout_width="@dimen/_45sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginStart="@dimen/_7sdp"
-            app:backgroundTint="@null"
             android:background="@drawable/button_social"
+            android:clickable="false"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"
-            app:rippleColor="@color/transparent"
             android:text="@string/home_flow"
             android:textAllCaps="false"
             android:textColor="?attr/textAppearanceBody1"
             android:textSize="@dimen/_10ssp"
-            android:clickable="false"
+            app:backgroundTint="@null"
+            app:rippleColor="@color/transparent"
             tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
         <Button

@@ -252,10 +252,10 @@ public class DbQuery {
 
                             // Process different tag formats
                             if (tagsObj instanceof String) {
-                                isCNMTV = "CNMTV".equals(tagsObj);
+                                isCNMTV = "Hazard".equals(tagsObj);
                             } else if (tagsObj instanceof List) {
                                 List<String> tags = (List<String>) tagsObj;
-                                isCNMTV = tags.contains("CNMTV");
+                                isCNMTV = tags.contains("Hazard");
                             }
 
                             if (category == null || category.isEmpty()) {
