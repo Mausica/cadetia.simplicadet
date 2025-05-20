@@ -314,14 +314,18 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(browserIntent);
 
         } else if (itemId == R.id.drawer_settings) {
-        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-
-        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        recreate();
+//
+//        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+//
+//        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//        } else {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//        }
+//        recreate();
+            Intent intent = new Intent(Home.this, Settings.class);
+            startActivity(intent);
+            finish();
         } else if (itemId == R.id.drawer_upload) {
             if (userEmail.equals("marius.gabryel2017@gmail.com")){
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);

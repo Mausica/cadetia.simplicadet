@@ -111,7 +111,7 @@
             android:layout_below="@id/login_password"
             android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/_8sdp"
-            android:background="@drawable/button_social"
+            android:background="@drawable/button_social_light"
             app:backgroundTint="@null"
             android:fontFamily="@font/circular_bold"
             android:orientation="vertical"

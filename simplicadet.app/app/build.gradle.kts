@@ -65,11 +65,12 @@ dependencies {
     implementation(libs.generativeai)
 
     // Design
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.9")
-    implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.0")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.constraintlayout.v214)
     implementation("com.otaliastudios:zoomlayout:1.9.0")
+    implementation("com.github.Dimezis:BlurView:version-2.0.6")
     implementation ("androidx.core:core-splashscreen:1.0.1")
 
     // SDP and SSP libraries
@@ -86,7 +87,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.11.0")
 
     // Ads
-    implementation("com.google.android.gms:play-services-ads:24.2.0")
+    implementation("com.google.android.gms:play-services-ads:24.3.0")
 
     // ImageView
     implementation("com.makeramen:roundedimageview:2.3.0")
@@ -104,7 +105,7 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:2.7.1")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
     implementation("com.google.firebase:firebase-firestore:25.1.4")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")

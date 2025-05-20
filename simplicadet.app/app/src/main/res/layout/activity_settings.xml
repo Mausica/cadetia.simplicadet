@@ -20,30 +20,53 @@
         android:layout_height="match_parent">
 
         <!-- Top bar with back button and title -->
-        <LinearLayout
-            android:id="@+id/settings_top_bar"
+        <FrameLayout
+            android:id="@+id/settings_top_bar_container"
+            android:elevation="1dp"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="@dimen/_50sdp">
 
-            <ImageButton
-                android:id="@+id/back_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/back_button"
-                android:minWidth="48dp"
-                android:minHeight="48dp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/uni_ic_left" />
-        </LinearLayout>
+            <!-- Replaced MaterialCardView with FrameLayout -->
+            <FrameLayout
+                android:id="@+id/top_bar_blur_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0">
 
-        <!-- Content area -->
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blur_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+            <!-- Actual top bar content remains the same -->
+            <LinearLayout
+                android:id="@+id/settings_top_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/back_button"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_gravity="bottom"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/back_button"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:src="@drawable/uni_ic_close" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Content area remains the same -->
         <ScrollView
+            android:id="@+id/settings_scroll_view"
+            android:scrollbars="none"
+            android:paddingTop="?attr/actionBarSize"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/settings_top_bar"
             android:fillViewport="true">
 
             <LinearLayout
@@ -95,12 +118,15 @@
 
                         <ImageButton
                             android:id="@+id/edit_profile_image"
-                            android:layout_width="@dimen/_28sdp"
-                            android:layout_height="@dimen/_28sdp"
+                            android:layout_width="@dimen/_25sdp"
+                            android:layout_height="@dimen/_25sdp"
                             android:layout_gravity="bottom|end"
+                            android:scaleType="centerInside"
+                            android:padding="@dimen/_6sdp"
                             android:background="@drawable/background_delete_note"
                             android:contentDescription="@string/edit_profile_image"
                             android:src="@drawable/home_ic_picker"
+                            app:tint="?attr/textNormal"
                             tools:ignore="TouchTargetSizeCheck" />
                     </FrameLayout>
 
@@ -251,6 +277,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
+                                app:tint="?attr/textNormal"
                                 android:contentDescription="@string/appearance"
                                 android:src="@drawable/home_ic_theme" />
 
@@ -307,6 +334,7 @@
 
                                 <ImageView
                                     android:id="@+id/help_icon"
+                                    app:tint="?attr/textNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/home_ic_help"
@@ -328,6 +356,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/uni_ic_right"
+                                    app:tint="?attr/textLight"
+                                    tools:tint="?attr/textLight"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true" />
                             </RelativeLayout>
@@ -348,6 +378,7 @@
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/home_ic_upload"
                                     android:layout_centerVertical="true"
+                                    app:tint="?attr/textNormal"
                                     android:contentDescription="@string/terms_and_conditions" />
 
                                 <TextView
@@ -365,6 +396,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/uni_ic_right"
+                                    app:tint="?attr/textLight"
+                                    tools:tint="?attr/textLight"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true" />
                             </RelativeLayout>
@@ -380,6 +413,7 @@
 
                                 <ImageView
                                     android:id="@+id/privacy_icon"
+                                    app:tint="?attr/textNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/home_ic_upload"
@@ -401,6 +435,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:src="@drawable/uni_ic_right"
+                                    app:tint="?attr/textLight"
+                                    tools:tint="?attr/textLight"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"/>
                             </RelativeLayout>
@@ -464,7 +500,7 @@
                             android:layout_gravity="center"
                             android:layout_height="@dimen/_40sdp"
                             android:layout_marginTop="@dimen/_25sdp"
-                            android:background="@drawable/button_social"
+                            android:background="@drawable/button_social_light"
                             app:backgroundTint="@null"
                             android:fontFamily="@font/circular_bold"
                             android:text="@string/log_out"
