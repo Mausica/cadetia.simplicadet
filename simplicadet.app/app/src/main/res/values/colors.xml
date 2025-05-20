@@ -21,10 +21,8 @@
     <color name="text_d_light">#fdfdfd</color>
     <color name="text_d_dark">#FFFFFFFF</color>
 
-
     <color name="light">#aaaaaa</color>
     <color name="gray">#7d7d7d</color>
-
 
     <color name="transparent">#000000</color>
     <color name="blur">#BF000000</color>

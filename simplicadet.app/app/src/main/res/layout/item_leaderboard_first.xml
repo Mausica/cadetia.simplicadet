@@ -145,7 +145,7 @@
                             app:layout_constraintEnd_toEndOf="@id/imageView1"
                             app:layout_constraintStart_toStartOf="@id/imageView1"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/leaderboard_crown" />
+                            app:srcCompat="@drawable/home_ic_crown" />
 
                         <TextView
                             android:layout_width="@dimen/_20sdp"

@@ -28,7 +28,7 @@
                 android:contentDescription="@string/back_button"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
-                android:src="@drawable/uni_ic_back"
+                android:src="@drawable/uni_ic_left"
                 tools:ignore="RedundantDescriptionCheck" />
 
             <LinearLayout

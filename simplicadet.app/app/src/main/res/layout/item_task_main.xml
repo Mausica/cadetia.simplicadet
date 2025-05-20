@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
-            android:button="@drawable/rounded_checkbox_background"
+            android:button="@drawable/background_checkbox"
             android:id="@+id/main_checked_task" />
 
         <TextView

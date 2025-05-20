@@ -11,7 +11,7 @@
     android:elevation="3dp"
     android:maxHeight="@dimen/_10sdp"
     android:paddingBottom="@dimen/_12sdp"
-    android:background="@drawable/background_light_r15">
+    android:background="@drawable/background_light">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imageNote"

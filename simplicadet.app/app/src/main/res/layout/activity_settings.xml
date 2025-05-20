@@ -36,7 +36,7 @@
                 android:minWidth="48dp"
                 android:minHeight="48dp"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/uni_ic_back" />
+                android:src="@drawable/uni_ic_left" />
         </LinearLayout>
 
         <!-- Content area -->
@@ -201,7 +201,6 @@
                             android:layout_height="wrap_content"
                             android:text="@string/email"
                             android:textColor="?attr/textNormal"
-                            android:textColorHint=""
                             android:textSize="@dimen/_14ssp"
                             android:fontFamily="@font/circular_medium"
                             android:layout_marginTop="@dimen/_5sdp" />
@@ -328,7 +327,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/uni_ic_right"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true" />
                             </RelativeLayout>
@@ -365,7 +364,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/uni_ic_right"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true" />
                             </RelativeLayout>
@@ -401,7 +400,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_chevron_right"
+                                    android:src="@drawable/uni_ic_right"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"/>
                             </RelativeLayout>
@@ -451,7 +450,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_chevron_right"
+                                android:src="@drawable/uni_ic_right"
                                 app:tint="#FF6B6B"
                                 tools:tint="#FF6B6B"
                                 android:layout_alignParentEnd="true"

@@ -94,10 +94,4 @@
         android:label="Community"
         tools:layout="@layout/fragment_community"/>
 
-    <fragment
-        android:id="@+id/navigation_account"
-        android:name="com.cadetia.simplicadet.ui.account.AccountFragment"
-        android:label="@string/title_premium"
-        tools:layout="@layout/fragment_account"/>
-
 </navigation>
