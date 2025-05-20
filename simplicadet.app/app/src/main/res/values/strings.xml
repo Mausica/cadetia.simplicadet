@@ -2,8 +2,8 @@
 <resources>
     <!-- Application Info -->
     <string name="app_name">Simplicadet</string>
-    <string name="version_info">Version 6.3</string>
-    <string name="copyright_info">© 2025 Mimo</string>
+    <string name="version_info">Version 1.2b</string>
+    <string name="copyright_info">© 2025 Simplicadet</string>
 
     <!-- Navigation -->
     <string name="back_button">Back Button</string>
