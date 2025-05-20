@@ -1,32 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Application Info -->
     <string name="app_name">Simplicadet</string>
+    <string name="version_info">Version 6.3</string>
+    <string name="copyright_info">© 2025 Mimo</string>
 
+    <!-- Navigation -->
     <string name="back_button">Back Button</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <!-- Main Screen -->
     <string name="main_title">Mission first, order always!</string>
     <string name="main_google">Continue with Google</string>
     <string name="main_facebook">Continue with Facebook</string>
 
+    <!-- Authentication -->
     <string name="login_title">Log in</string>
     <string name="login_subtitle">Please sign in.</string>
     <string name="login_email">Email or username</string>
-
     <string name="signup_title">Sign up</string>
     <string name="signup_subtitle">Please sign up.</string>
-
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="name">Username</string>
 
+    <!-- Bottom Navigation -->
     <string name="title_activity_home">Home</string>
     <string name="title_home">Home</string>
     <string name="title_search">Search</string>
     <string name="title_military">Military</string>
     <string name="title_premium">Premium</string>
 
+    <!-- Account Information -->
     <string name="acc_name">Marius Gabriel</string>
     <string name="acc_points">82</string>
     <string name="acc_donate">Donate</string>
@@ -34,6 +40,7 @@
     <string name="acc_review">Review</string>
     <string name="acc_settings">Settings</string>
 
+    <!-- Home Screen -->
     <string name="home_search">Search</string>
     <string name="home_order">Order</string>
     <string name="home_notes">Notes</string>
@@ -42,6 +49,7 @@
     <string name="home_tasks">Tasks</string>
     <string name="home_all">All</string>
 
+    <!-- Notes Feature -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_search_notes">Search notes</string>
     <string name="home_add_note">Add Note</string>
@@ -50,18 +58,47 @@
     <string name="home_type_note_here">Type note here...</string>
     <string name="create_note_add">Add</string>
 
+    <!-- Placeholder Text -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
 
+    <!-- Ads and API IDs -->
     <string name="id_AppOpenAdd">ca-app-pub-8447567589954533/1110300440</string>
-
     <string name="id_InterstitialAdd">ca-app-pub-9534691024766923/7270158920</string>
-
     <string name="default_web_client_id">672731390392-c7fkrbjbm5c4nmvnt7v3bk00hadilk8v.apps.googleusercontent.com</string>
-
     <string name="facebook_app_id">2109357539444062</string>
     <string name="fb_login_protocol_scheme">fb2109357539444062</string>
     <string name="facebook_client_token">e0c5329da6c1f8460ece709873ff9cf8</string>
-
     <string name="gemini_api">AIzaSyAARirP0Qk9W3cCXf0h6UddVzMlIizD9s4</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Settings</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="edit_profile_image">Edit Profile Image</string>
+    <string name="your_name">Your name</string>
+    <string name="your_name_hint">Enter your name</string>
+    <string name="about_you">About you</string>
+    <string name="about_you_hint">Say something about you for the world to see</string>
+    <string name="locked_email">Email is locked</string>
+
+    <!-- App Settings Section -->
+    <string name="app_settings">App Settings</string>
+    <string name="appearance">Dark Theme</string>
+    <string name="use_device_settings">Use device settings</string>
+    <string name="sound_effects">Sound effects</string>
+    <string name="app_icon">App icon</string>
+    <string name="default_text">Default</string>
+
+    <!-- Contact Section -->
+    <string name="contact_us">Contact us</string>
+    <string name="follow_us">Follow us on X</string>
+    <string name="like_facebook">Like us on Facebook</string>
+    <string name="help">Help</string>
+    <string name="terms_and_conditions">Terms and conditions</string>
+    <string name="privacy_policy">Privacy policy</string>
+
+    <!-- Danger Zone -->
+    <string name="danger_zone">Danger zone</string>
+    <string name="delete_account">Delete account</string>
+    <string name="log_out">Log out</string>
 
 </resources>
