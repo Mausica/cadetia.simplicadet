@@ -17,9 +17,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.WindowCompat;
 
+import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -72,9 +74,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ThemePreferences themePreferences = new ThemePreferences(this);
+        AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
+        
         setContentView(R.layout.activity_main);
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> false);
+
         FirebaseApp.initializeApp(this);
 
         loadingViewMain = findViewById(R.id.loadingViewMain);

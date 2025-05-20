@@ -37,6 +37,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.database.TextUpload;
 import com.cadetia.simplicadet.ui.home.HomeFragment;
 import com.cadetia.simplicadet.ui.home.HomeFragment1;
@@ -314,18 +315,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(browserIntent);
 
         } else if (itemId == R.id.drawer_settings) {
-//
-//        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-//
-//        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//        } else {
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//        }
-//        recreate();
             Intent intent = new Intent(Home.this, Settings.class);
             startActivity(intent);
-            finish();
+            overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
         } else if (itemId == R.id.drawer_upload) {
             if (userEmail.equals("marius.gabryel2017@gmail.com")){
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
