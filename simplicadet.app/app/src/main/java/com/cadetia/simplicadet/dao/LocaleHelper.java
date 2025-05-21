@@ -1,8 +1,12 @@
 package com.cadetia.simplicadet.dao;
 
+import static com.cadetia.simplicadet.database.DbQuery.TAG;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.util.Log;
+
 import java.util.Locale;
 
 public class LocaleHelper {
@@ -30,13 +34,22 @@ public class LocaleHelper {
     }
 
     private static Context updateResources(Context context, String languageCode) {
+        Log.d(TAG, "Processing language code: " + languageCode);
         String[] parts = languageCode.split("_");
-        Locale locale = parts.length > 1
-                ? new Locale(parts[0], parts[1])
-                : new Locale(languageCode);
+        Locale locale;
+        if (parts.length > 1) {
+            locale = new Locale(parts[0], parts[1]);
+        } else {
+            locale = new Locale(languageCode);
+        }
+
+        Log.d(TAG, "Created locale: " + locale.toLanguageTag());
         Locale.setDefault(locale);
+
         Configuration config = new Configuration(context.getResources().getConfiguration());
         config.setLocale(locale);
+        config.setLayoutDirection(locale);
+
         return context.createConfigurationContext(config);
     }
 }

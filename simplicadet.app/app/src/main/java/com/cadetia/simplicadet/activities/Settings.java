@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -80,6 +81,21 @@ public class Settings extends AppCompatActivity {
     };
 
     private String currentLanguage = "en";
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
+    @Override
+    public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+        if (overrideConfiguration != null) {
+            int uiMode = overrideConfiguration.uiMode;
+            overrideConfiguration.setTo(getBaseContext().getResources().getConfiguration());
+            overrideConfiguration.uiMode = uiMode;
+        }
+        super.applyOverrideConfiguration(overrideConfiguration);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -384,19 +400,15 @@ public class Settings extends AppCompatActivity {
 
     private void changeLanguage(String languageCode) {
         if (!languageCode.equals(currentLanguage)) {
-            currentLanguage = languageCode;
-
-            // Use LanguagePreferences to change language
             LanguagePreferences languagePreferences = new LanguagePreferences(this);
             languagePreferences.setLanguage(languageCode);
 
-            updateLanguageUI();
-
-            // Restart the activity to apply language change
-            Intent intent = getIntent();
-            finish();
+            // Restart entire app to apply language
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
+            finishAffinity();
         }
     }
 

@@ -117,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG, "Active locale: " + LocaleHelper.getLanguage(this));
+        Log.d(TAG, "Test string value: " + getString(R.string.current_language_display));
+
         setContentView(R.layout.activity_main);
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> false);
