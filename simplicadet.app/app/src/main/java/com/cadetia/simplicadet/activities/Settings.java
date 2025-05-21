@@ -13,6 +13,7 @@ import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -143,7 +144,7 @@ public class Settings extends AppCompatActivity {
         // Create the language popup programmatically
         languagePopup = new CardView(this);
         languagePopup.setRadius(getResources().getDimensionPixelSize(R.dimen._8sdp));
-        languagePopup.setElevation(getResources().getDimensionPixelSize(R.dimen._4sdp));
+        languagePopup.setElevation(getResources().getDimensionPixelSize(R.dimen._24sdp));
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getTheme();
         theme.resolveAttribute(R.attr.backgroundLight, typedValue, true);
@@ -190,7 +191,7 @@ public class Settings extends AppCompatActivity {
         languagePopup.addView(languageOptions);
 
         // Add the popup to the root layout
-        ViewGroup rootLayout = findViewById(R.id.settings);
+        ViewGroup rootLayout = findViewById(android.R.id.content);
         rootLayout.addView(languagePopup);
 
         // Set click listener for language layout
@@ -266,7 +267,7 @@ public class Settings extends AppCompatActivity {
     private void toggleLanguagePopup() {
         isLanguagePopupShown = !isLanguagePopupShown;
 
-        // Arrow rotation animation
+        // Arrow rotation animation (keep existing code)
         ObjectAnimator rotateArrow = ObjectAnimator.ofFloat(
                 languageArrow,
                 "rotation",
@@ -280,75 +281,76 @@ public class Settings extends AppCompatActivity {
         animSet.play(rotateArrow);
         animSet.start();
 
-        // Get root view to apply background dimming
         ViewGroup rootView = findViewById(android.R.id.content);
 
         if (isLanguagePopupShown) {
-            // Create dim background if it doesn't exist
             if (dimBackground == null) {
-                dimBackground = new View(this);
+                dimBackground = new BlurView(this);
                 dimBackground.setLayoutParams(new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
-                dimBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.focus));
+
+                // Configure BlurView to only affect background
+                View decorView = getWindow().getDecorView();
+                ViewGroup rootContainer = decorView.findViewById(android.R.id.content);
+
+                ((BlurView) dimBackground).setupWith(rootContainer)
+                        .setFrameClearDrawable(decorView.getBackground())
+                        .setBlurRadius(12f)
+                        .setBlurAutoUpdate(true);
+
+                ((BlurView) dimBackground).setOverlayColor(
+                        ContextCompat.getColor(this, R.color.focus)
+                );
                 dimBackground.setAlpha(0f);
                 dimBackground.setOnClickListener(v -> toggleLanguagePopup());
-                rootView.addView(dimBackground);
+
+                // Add blur view at position 1 (below popup but above main content)
+                rootView.addView(dimBackground, 1);
             }
 
-            // Show the popup first so we can measure it
+            // Make sure popup is at the top
+            languagePopup.bringToFront();
+
+            // Keep existing positioning and animation code
             languagePopup.setVisibility(View.VISIBLE);
             languagePopup.setAlpha(0f);
             languagePopup.setElevation(getResources().getDimensionPixelSize(R.dimen._16sdp));
 
-            // Bring popup to front so it appears above the dim background
-            languagePopup.bringToFront();
-
-            // Wait for layout to complete so we can get proper measurements
             languagePopup.post(() -> {
-                // Calculate the button's position relative to the ScrollView
                 int[] buttonLocation = new int[2];
                 languageLayout.getLocationInWindow(buttonLocation);
-
-                // Calculate the popup's desired position
                 int popupY = buttonLocation[1] + languageLayout.getHeight() +
                         getResources().getDimensionPixelSize(R.dimen._16sdp);
 
-                // Get screen height
                 DisplayMetrics metrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
                 int screenHeight = metrics.heightPixels;
-
-                // Calculate if the popup would go off screen
                 int popupBottom = popupY + languagePopup.getHeight();
                 int overflow = popupBottom - screenHeight;
 
-                // If it would overflow, adjust the position
                 if (overflow > 0) {
                     popupY -= overflow;
                 }
 
-                // Set the popup position
                 languagePopup.setY(popupY - getStatusBarHeight());
 
-                // Fade in the popup and dim background
                 AnimatorSet fadeInSet = new AnimatorSet();
                 ObjectAnimator popupFadeIn = ObjectAnimator.ofFloat(languagePopup, "alpha", 1f);
-                ObjectAnimator dimFadeIn = ObjectAnimator.ofFloat(dimBackground, "alpha", 0.6f);
+                ObjectAnimator blurFadeIn = ObjectAnimator.ofFloat(dimBackground, "alpha", 0.6f);
 
-                fadeInSet.playTogether(popupFadeIn, dimFadeIn);
+                fadeInSet.playTogether(popupFadeIn, blurFadeIn);
                 fadeInSet.setDuration(300);
                 fadeInSet.setInterpolator(new AccelerateDecelerateInterpolator());
                 fadeInSet.start();
             });
         } else {
             if (dimBackground != null) {
-                // Fade out the popup and dim background
                 AnimatorSet fadeOutSet = new AnimatorSet();
                 ObjectAnimator popupFadeOut = ObjectAnimator.ofFloat(languagePopup, "alpha", 0f);
-                ObjectAnimator dimFadeOut = ObjectAnimator.ofFloat(dimBackground, "alpha", 0f);
+                ObjectAnimator blurFadeOut = ObjectAnimator.ofFloat(dimBackground, "alpha", 0f);
 
-                fadeOutSet.playTogether(popupFadeOut, dimFadeOut);
+                fadeOutSet.playTogether(popupFadeOut, blurFadeOut);
                 fadeOutSet.setDuration(300);
                 fadeOutSet.setInterpolator(new AccelerateDecelerateInterpolator());
                 fadeOutSet.addListener(new AnimatorListenerAdapter() {
@@ -357,12 +359,11 @@ public class Settings extends AppCompatActivity {
                         languagePopup.setVisibility(View.GONE);
                         languagePopup.setElevation(0f);
                         rootView.removeView(dimBackground);
-                        dimBackground = null; // Clear the reference
+                        dimBackground = null;
                     }
                 });
                 fadeOutSet.start();
             } else {
-                // Just hide the popup if no dim background exists
                 languagePopup.setVisibility(View.GONE);
                 languagePopup.setElevation(0f);
             }
@@ -418,14 +419,14 @@ public class Settings extends AppCompatActivity {
 
             currentLanguage = languageCode;
 
-            // Update the language UI
+            // Update UI immediately before recreation
             updateLanguageUI();
 
             // Apply the language change
             setLocale(languageCode);
 
-            // Restart the activity to apply changes
-            recreate();
+            // Delay recreation to allow UI updates
+            new Handler().postDelayed(() -> recreate(), 100);
         }
     }
 
