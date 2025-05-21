@@ -10,9 +10,11 @@ import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -240,7 +242,6 @@ public class Settings extends AppCompatActivity {
     private void toggleLanguagePopup(boolean animateButton) {
         isLanguagePopupShown = !isLanguagePopupShown;
 
-        // Animate the button only if triggered by the button click
         if (animateButton) {
             Animation clickAnimation = AnimationUtils.loadAnimation(this, R.anim.click_animation);
             languageLayout.startAnimation(clickAnimation);
@@ -261,7 +262,7 @@ public class Settings extends AppCompatActivity {
         animSet.start();
 
         if (isLanguagePopupShown) {
-            // Calculate the button's position on the screen
+            // Calculate button's position on the screen
             int[] buttonLocation = new int[2];
             languageLayout.getLocationOnScreen(buttonLocation);
 
@@ -273,7 +274,7 @@ public class Settings extends AppCompatActivity {
             // Calculate Y position relative to the root layout
             int yPosition = buttonLocation[1] - rootLocation[1] + languageLayout.getHeight();
 
-            // Apply margins (adjust if needed)
+            // Apply margins
             int margin = getResources().getDimensionPixelSize(R.dimen._16sdp);
             yPosition += margin;
 
@@ -281,11 +282,45 @@ public class Settings extends AppCompatActivity {
             languagePopup.setY(yPosition);
             languagePopup.setVisibility(View.VISIBLE);
             languagePopup.setAlpha(0f);
-            languagePopup.animate()
-                    .alpha(1f)
-                    .setDuration(300)
-                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                    .start();
+
+            // Check if the popup fits on the screen after layout
+            languagePopup.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            languagePopup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                            // Get the popup's height
+                            int popupHeight = languagePopup.getHeight();
+
+                            // Get the popup's bottom position on the screen
+                            int[] popupLocation = new int[2];
+                            languagePopup.getLocationOnScreen(popupLocation);
+                            int popupBottom = popupLocation[1] + popupHeight;
+
+                            // Get screen height
+                            DisplayMetrics metrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                            int screenHeight = metrics.heightPixels;
+
+                            // Check if popup overflows the screen
+                            if (popupBottom > screenHeight) {
+                                // Calculate how much to scroll
+                                int overflow = popupBottom - screenHeight;
+                                int targetScrollY = scrollView.getScrollY() + overflow + margin;
+
+                                // Smoothly scroll the ScrollView
+                                scrollView.smoothScrollTo(0, targetScrollY);
+                            }
+
+                            // Start fade-in animation
+                            languagePopup.animate()
+                                    .alpha(1f)
+                                    .setDuration(300)
+                                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                                    .start();
+                        }
+                    });
         } else {
             languagePopup.animate()
                     .alpha(0f)
