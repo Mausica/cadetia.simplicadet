@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/nothing"
     android:id="@+id/layoutDeleteNoteContainer"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -27,7 +26,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_8sdp"
-            android:text="No Internet!"
+            android:text="@string/no_internet_title"
             android:fontFamily="@font/circular_regular"
             android:textAlignment="center"
             android:textColor="?attr/textNormal"
@@ -44,7 +43,7 @@
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_4sdp"
             android:textAlignment="center"
-            android:text="Some of the functions will not work properly, do you want to continue ?"
+            android:text="@string/no_internet_text"
             android:textColor="?attr/textDark"
             android:textSize="@dimen/_12ssp"
             android:layout_marginLeft="@dimen/_16sdp"

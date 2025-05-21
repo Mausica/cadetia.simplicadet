@@ -39,6 +39,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.database.TextUpload;
+import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.cadetia.simplicadet.ui.home.HomeFragment;
 import com.cadetia.simplicadet.ui.home.HomeFragment1;
 import com.cadetia.simplicadet.ui.home.HomeFragment2;
@@ -265,28 +266,23 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     private void showNoInternetDialog() {
-        final androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.TransparentDialogTheme);
-        final View dialogView = getLayoutInflater().inflate(R.layout.popup_no_internet, null);
-        builder.setView(dialogView);
-        final androidx.appcompat.app.AlertDialog dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        Button okButton = dialogView.findViewById(R.id.ok_btn_internet);
-
-        okButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            Fragment currentFragment = getCurrentFragment();
-            if (currentFragment instanceof HomeFragment) {
-                NavController navController = Navigation.findNavController(Home.this, R.id.nav_host_fragment_activity_home);
-                navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
-                        .setLaunchSingleTop(true)
-                        .setPopUpTo(R.id.navigation_home, true)
-                        .build());
-            }
-        });
-
-        dialog.setCancelable(false);
-        dialog.show();
+        DialogConfirm.show(
+                this,
+                getString(R.string.no_internet_title),
+                getString(R.string.no_internet_text),
+                () -> {
+                    Fragment currentFragment = getCurrentFragment();
+                    if (currentFragment instanceof HomeFragment) {
+                        NavController navController = Navigation.findNavController(Home.this, R.id.nav_host_fragment_activity_home);
+                        navController.navigate(R.id.navigation_home, null, new NavOptions.Builder()
+                                .setLaunchSingleTop(true)
+                                .setPopUpTo(R.id.navigation_home, true)
+                                .build());
+                    }
+                },
+                false
+        );
     }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {

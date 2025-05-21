@@ -24,6 +24,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.cadetia.simplicadet.database.NotesDatabase;
+import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.cadetia.simplicadet.R;
@@ -221,25 +223,15 @@ public class CreateTaskBottom extends BottomSheetDialogFragment {
     }
 
     private void showDeleteTaskDialog() {
-        if (dialogDeleteTask == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-            View view = LayoutInflater.from(requireActivity()).inflate(
-                    R.layout.popup_delete_note,
-                    (ViewGroup) requireActivity().findViewById(R.id.layoutDeleteNoteContainer)
-            );
-
-            builder.setView(view);
-            dialogDeleteTask = builder.create();
-            if (dialogDeleteTask.getWindow() != null) {
-                dialogDeleteTask.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-            }
-
-            view.findViewById(R.id.ok_btn_del).setOnClickListener(v -> {
-                deleteTask(task.getTaskId());
-                dialogDeleteTask.dismiss();
-            });
-        }
-        dialogDeleteTask.show();
+        DialogConfirm.show(
+                requireContext(),
+                "Delete Task",
+                "Are you sure you want to delete this task?",
+                () -> {
+                    deleteTask(task.getTaskId());
+                },
+                true
+        );
     }
 
     private void showDatePicker() {

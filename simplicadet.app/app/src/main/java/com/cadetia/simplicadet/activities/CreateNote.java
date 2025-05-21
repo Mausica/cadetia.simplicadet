@@ -3,7 +3,6 @@ package com.cadetia.simplicadet.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -41,6 +39,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
+import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -83,7 +82,6 @@ public class CreateNote extends BottomSheetDialogFragment {
     private Note alreadyAvaibleNote;
     private CoordinatorLayout layout;
     private RelativeLayout del_note;
-    private AlertDialog dialogDeleteNote;
     private Button  buttonAdd;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
     private static final int REQUEST_CODE_SELECT_IMAGE = 2;
@@ -382,49 +380,36 @@ public class CreateNote extends BottomSheetDialogFragment {
     }
 
     private void showDeleteNoteDialog() {
-        if (dialogDeleteNote == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-            View view = LayoutInflater.from(requireActivity()).inflate(
-                    R.layout.popup_delete_note,
-                    (ViewGroup) requireActivity().findViewById(R.id.layoutDeleteNoteContainer)
-            );
+        DialogConfirm.show(
+                requireContext(),
+                "Delete Note",
+                "Are you sure you want to delete this note?",
+                () -> {
+                    @SuppressLint("StaticFieldLeak")
+                    class DeleteNoteTask extends AsyncTask<Void, Void, Void> {
 
-            builder.setView(view);
-            dialogDeleteNote = builder.create();
-            if (dialogDeleteNote.getWindow() != null) {
-                dialogDeleteNote.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-            }
-
-            view.findViewById(R.id.ok_btn_del).setOnClickListener(v -> {
-                @SuppressLint("StaticFieldLeak")
-                class DeleteNoteTask extends AsyncTask<Void, Void, Void> {
-
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        NotesDatabase.getDatabase(requireActivity().getApplicationContext())
-                                .noteDao()
-                                .deleteNote(alreadyAvaibleNote);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void unused) {
-                        super.onPostExecute(unused);
-                        dialogDeleteNote.dismiss();
-                        if (noteSavedListener != null) {
-                            noteSavedListener.onNoteSaved(true);
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            NotesDatabase.getDatabase(requireActivity().getApplicationContext())
+                                    .noteDao()
+                                    .deleteNote(alreadyAvaibleNote);
+                            return null;
                         }
-                        dismiss();
+
+                        @Override
+                        protected void onPostExecute(Void unused) {
+                            super.onPostExecute(unused);
+                            if (noteSavedListener != null) {
+                                noteSavedListener.onNoteSaved(true);
+                            }
+                            dismiss();
+                        }
                     }
-                }
 
-                new DeleteNoteTask().execute();
-            });
-
-            //view.findViewById(R.id.cancelDel).setOnClickListener(v -> dialogDeleteNote.dismiss());
-        }
-
-        dialogDeleteNote.show();
+                    new DeleteNoteTask().execute();
+                },
+                true
+        );
     }
 
     private void setIndicatorColor(){

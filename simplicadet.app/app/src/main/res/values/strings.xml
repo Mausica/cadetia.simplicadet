@@ -104,4 +104,9 @@
     <string name="clear_cache">Clear memory</string>
     <string name="log_out">Log out</string>
 
+    <string name="access_denied">Access denied</string>
+    <string name="login_organization_email">Please log in with your organization email to continue.</string>
+    <string name="no_internet_title">No Internet!</string>
+    <string name="no_internet_text">Some of the functions will not work properly, do you want to continue ?</string>
+
 </resources>

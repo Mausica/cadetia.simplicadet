@@ -26,6 +26,7 @@ import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.Home;
 import com.cadetia.simplicadet.activities.MainActivity;
 import com.cadetia.simplicadet.databinding.FragmentMilitaryBinding;
+import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -105,29 +106,17 @@ public class MilitaryFragment extends Fragment {
     }
 
     private void showAccessDeniedDialog() {
-        // Create dialog view with transparent background
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.popup_acces_denied, null);
-
-        // Set up the dialog
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.TransparentDialogTheme);
-        builder.setView(dialogView);
-
-        // Create and set dialog properties
-        final androidx.appcompat.app.AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false); // Changed from false to true
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-        // Set up the logout button click listener
-        Button logoutButton = dialogView.findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            // Navigate to login screen instead of finishing activity
-            Intent intent = new Intent(requireActivity(), MainActivity.class);
-            startActivity(intent);
-            dialog.dismiss();
-        });
-
-        dialog.show();
+        DialogConfirm.show(
+                requireContext(),
+                getString(R.string.access_denied),
+                getString(R.string.login_organization_email),
+                () -> {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(requireActivity(), MainActivity.class);
+                    startActivity(intent);
+                },
+                false
+        );
     }
 
     private void initializeFragment() {
