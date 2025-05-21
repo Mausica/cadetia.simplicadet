@@ -300,10 +300,11 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true"
                                 android:checked="true"
-                                android:thumbTint="@color/primary"
-                                android:trackTint="@color/primary_transparent"
+                                android:thumb="@drawable/background_thumb"
+                                android:track="@drawable/background_switch"
+                                android:switchMinWidth="40dp"
+                                android:switchPadding="8dp"
                                 tools:ignore="UseSwitchCompatOrMaterialXml,TouchTargetSizeCheck" />
-
                         </RelativeLayout>
 
                         <!-- Contact us Section -->
