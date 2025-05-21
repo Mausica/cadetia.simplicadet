@@ -269,7 +269,8 @@
                             android:id="@+id/settings_appearance"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50sdp"
-                            android:background="@drawable/settings_group_background"
+                            android:layout_marginBottom="1dp"
+                            android:background="@drawable/settings_item_top"
                             android:paddingStart="@dimen/_16sdp"
                             android:paddingEnd="@dimen/_16sdp">
 
@@ -307,7 +308,46 @@
                                 tools:ignore="UseSwitchCompatOrMaterialXml,TouchTargetSizeCheck" />
                         </RelativeLayout>
 
-                        <!-- Contact us Section -->
+                        <!-- Language -->
+                        <RelativeLayout
+                            android:id="@+id/settings_language"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_50sdp"
+                            android:background="@drawable/settings_item_bottom"
+                            android:paddingStart="@dimen/_10sdp"
+                            android:paddingEnd="@dimen/_16sdp">
+
+                            <ImageView
+                                android:id="@+id/language_icon"
+                                app:tint="?attr/textNormal"
+                                android:layout_width="@dimen/_24sdp"
+                                android:layout_height="@dimen/_24sdp"
+                                android:src="@raw/language_en"
+                                android:layout_centerVertical="true"
+                                android:contentDescription="@string/language" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/language"
+                                android:textColor="?attr/textAppearanceBody1"
+                                android:textSize="@dimen/_14ssp"
+                                android:fontFamily="@font/circular_medium"
+                                android:layout_toEndOf="@id/language_icon"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="@dimen/_12sdp" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/uni_ic_right"
+                                app:tint="?attr/textLight"
+                                tools:tint="?attr/textLight"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"/>
+                        </RelativeLayout>
+
+                <!-- Contact us Section -->
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -460,7 +500,8 @@
                             android:id="@+id/settings_delete"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50sdp"
-                            android:background="@drawable/settings_group_background"
+                            android:background="@drawable/settings_item_top"
+                            android:layout_marginBottom="1dp"
                             android:paddingStart="@dimen/_16sdp"
                             android:paddingEnd="@dimen/_16sdp">
 
@@ -493,6 +534,85 @@
                                 tools:tint="#FF6B6B"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true" />
+                        </RelativeLayout>
+
+                        <!-- Reset password -->
+                        <RelativeLayout
+                            android:id="@+id/settings_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_50sdp"
+                            android:layout_marginBottom="1dp"
+                            android:background="@drawable/settings_item_middle"
+                            android:paddingStart="@dimen/_16sdp"
+                            android:paddingEnd="@dimen/_16sdp">
+
+                            <ImageView
+                                android:id="@+id/password_icon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/auth_ic_password_f"
+                                android:layout_centerVertical="true"
+                                app:tint="?attr/textNormal"
+                                android:contentDescription="@string/reset_password" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/reset_password"
+                                android:textColor="?attr/textAppearanceBody1"
+                                android:textSize="@dimen/_14ssp"
+                                android:fontFamily="@font/circular_medium"
+                                android:layout_toEndOf="@id/password_icon"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="@dimen/_12sdp" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/uni_ic_right"
+                                app:tint="?attr/textLight"
+                                tools:tint="?attr/textLight"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true" />
+                        </RelativeLayout>
+
+                        <!-- Clear memory -->
+                        <RelativeLayout
+                            android:id="@+id/settings_clear"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_50sdp"
+                            android:background="@drawable/settings_item_bottom"
+                            android:paddingStart="@dimen/_16sdp"
+                            android:paddingEnd="@dimen/_16sdp">
+
+                            <ImageView
+                                android:id="@+id/icon_clear"
+                                app:tint="?attr/textNormal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/home_ic_clear"
+                                android:layout_centerVertical="true"
+                                android:contentDescription="@string/clear_cache" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/clear_cache"
+                                android:textColor="?attr/textAppearanceBody1"
+                                android:textSize="@dimen/_14ssp"
+                                android:fontFamily="@font/circular_medium"
+                                android:layout_toEndOf="@id/icon_clear"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="@dimen/_12sdp" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/uni_ic_right"
+                                app:tint="?attr/textLight"
+                                tools:tint="?attr/textLight"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"/>
                         </RelativeLayout>
 
                         <!-- Log Out Button -->
