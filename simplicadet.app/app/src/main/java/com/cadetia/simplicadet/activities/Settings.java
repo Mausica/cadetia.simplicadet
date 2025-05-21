@@ -1,8 +1,11 @@
 package com.cadetia.simplicadet.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -12,12 +15,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,6 +40,8 @@ import androidx.core.content.res.ResourcesCompat;
 
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.dao.ThemePreferences;
+import com.cadetia.simplicadet.entities.DialogConfirm;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Locale;
 
@@ -45,6 +53,7 @@ public class Settings extends AppCompatActivity {
 
     private BlurView blurView;
     private View topBarBlurBackground;
+    private View dimBackground;
     private ScrollView scrollView;
     private ThemePreferences themePreferences;
     private Switch themeSwitch;
@@ -55,6 +64,8 @@ public class Settings extends AppCompatActivity {
     private ImageView languageArrow;
     private TextView languageText;
     private CardView languagePopup;
+    private Button logout_button;
+    FirebaseAuth firebaseAuth;
     private boolean isLanguagePopupShown = false;
 
     // Supported languages
@@ -98,11 +109,26 @@ public class Settings extends AppCompatActivity {
         languageIcon = findViewById(R.id.language_icon);
         languageArrow = findViewById(R.id.language_arrow);
         languageText = findViewById(R.id.language_text);
+        logout_button = findViewById(R.id.logout_button);
+        logout_button.setOnClickListener(v -> {
+            animateButtonOnClick(logout_button);
+            firebaseAuth = FirebaseAuth.getInstance();
+            firebaseAuth.signOut();
+            DialogConfirm.show(
+                    this,
+                    "Logout",
+                    "Are you sure you want to log out?",
+                    () -> {
+                        FirebaseAuth.getInstance().signOut();
+                        startActivity(new Intent(this, MainActivity.class));
+                        finish();
+                    },
+                    true
+            );
 
-        // Set the initial language icon and text
+        });
+
         updateLanguageUI();
-
-        // Setup language popup
         setupLanguagePopup();
 
         findViewById(R.id.back_button).setOnClickListener(v -> {
@@ -169,16 +195,18 @@ public class Settings extends AppCompatActivity {
 
         // Set click listener for language layout
         languageLayout.setOnClickListener(v -> {
-            toggleLanguagePopup(true);
+            toggleLanguagePopup();
         });
     }
 
     private RelativeLayout createLanguageOption(int index) {
         RelativeLayout option = new RelativeLayout(this);
+
         option.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 getResources().getDimensionPixelSize(R.dimen._50sdp)
         ));
+
         option.setPadding(
                 getResources().getDimensionPixelSize(R.dimen._16sdp),
                 0,
@@ -225,27 +253,18 @@ public class Settings extends AppCompatActivity {
         // Add click listener
         final int langIndex = index;
         option.setOnClickListener(v -> {
-            // Animate the option
-            Animation clickAnimation = AnimationUtils.loadAnimation(this, R.anim.click_animation);
-            option.startAnimation(clickAnimation);
-
             // Change language
             changeLanguage(languageCodes[langIndex]);
 
             // Hide popup without animating the button
-            toggleLanguagePopup(false);
+            toggleLanguagePopup();
         });
 
         return option;
     }
 
-    private void toggleLanguagePopup(boolean animateButton) {
+    private void toggleLanguagePopup() {
         isLanguagePopupShown = !isLanguagePopupShown;
-
-        if (animateButton) {
-            Animation clickAnimation = AnimationUtils.loadAnimation(this, R.anim.click_animation);
-            languageLayout.startAnimation(clickAnimation);
-        }
 
         // Arrow rotation animation
         ObjectAnimator rotateArrow = ObjectAnimator.ofFloat(
@@ -261,74 +280,134 @@ public class Settings extends AppCompatActivity {
         animSet.play(rotateArrow);
         animSet.start();
 
+        // Get root view to apply background dimming
+        ViewGroup rootView = findViewById(android.R.id.content);
+
         if (isLanguagePopupShown) {
-            // Calculate button's position on the screen
+            // Create dim background if it doesn't exist
+            if (dimBackground == null) {
+                dimBackground = new View(this);
+                dimBackground.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+                dimBackground.setBackgroundColor(ContextCompat.getColor(this, R.color.focus));
+                dimBackground.setAlpha(0f);
+                dimBackground.setOnClickListener(v -> toggleLanguagePopup());
+                rootView.addView(dimBackground);
+            }
+
+            // Show the popup first so we can measure it
+            languagePopup.setVisibility(View.VISIBLE);
+            languagePopup.setAlpha(0f);
+            languagePopup.setElevation(getResources().getDimensionPixelSize(R.dimen._16sdp));
+
+            // Bring popup to front so it appears above the dim background
+            languagePopup.bringToFront();
+
+            // Wait for layout to complete so we can get proper measurements
+            languagePopup.post(() -> {
+                // Calculate the button's position relative to the ScrollView
+                int[] buttonLocation = new int[2];
+                languageLayout.getLocationInWindow(buttonLocation);
+
+                // Calculate the popup's desired position
+                int popupY = buttonLocation[1] + languageLayout.getHeight() +
+                        getResources().getDimensionPixelSize(R.dimen._16sdp);
+
+                // Get screen height
+                DisplayMetrics metrics = new DisplayMetrics();
+                getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                int screenHeight = metrics.heightPixels;
+
+                // Calculate if the popup would go off screen
+                int popupBottom = popupY + languagePopup.getHeight();
+                int overflow = popupBottom - screenHeight;
+
+                // If it would overflow, adjust the position
+                if (overflow > 0) {
+                    popupY -= overflow;
+                }
+
+                // Set the popup position
+                languagePopup.setY(popupY - getStatusBarHeight());
+
+                // Fade in the popup and dim background
+                AnimatorSet fadeInSet = new AnimatorSet();
+                ObjectAnimator popupFadeIn = ObjectAnimator.ofFloat(languagePopup, "alpha", 1f);
+                ObjectAnimator dimFadeIn = ObjectAnimator.ofFloat(dimBackground, "alpha", 0.6f);
+
+                fadeInSet.playTogether(popupFadeIn, dimFadeIn);
+                fadeInSet.setDuration(300);
+                fadeInSet.setInterpolator(new AccelerateDecelerateInterpolator());
+                fadeInSet.start();
+            });
+        } else {
+            if (dimBackground != null) {
+                // Fade out the popup and dim background
+                AnimatorSet fadeOutSet = new AnimatorSet();
+                ObjectAnimator popupFadeOut = ObjectAnimator.ofFloat(languagePopup, "alpha", 0f);
+                ObjectAnimator dimFadeOut = ObjectAnimator.ofFloat(dimBackground, "alpha", 0f);
+
+                fadeOutSet.playTogether(popupFadeOut, dimFadeOut);
+                fadeOutSet.setDuration(300);
+                fadeOutSet.setInterpolator(new AccelerateDecelerateInterpolator());
+                fadeOutSet.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        languagePopup.setVisibility(View.GONE);
+                        languagePopup.setElevation(0f);
+                        rootView.removeView(dimBackground);
+                        dimBackground = null; // Clear the reference
+                    }
+                });
+                fadeOutSet.start();
+            } else {
+                // Just hide the popup if no dim background exists
+                languagePopup.setVisibility(View.GONE);
+                languagePopup.setElevation(0f);
+            }
+        }
+    }
+
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (isLanguagePopupShown && ev.getAction() == MotionEvent.ACTION_DOWN) {
+            // Check if touch is outside the popup and language button
+            int[] popupLocation = new int[2];
+            languagePopup.getLocationOnScreen(popupLocation);
             int[] buttonLocation = new int[2];
             languageLayout.getLocationOnScreen(buttonLocation);
 
-            // Get the root layout's position to adjust coordinates
-            ViewGroup rootLayout = findViewById(R.id.settings);
-            int[] rootLocation = new int[2];
-            rootLayout.getLocationOnScreen(rootLocation);
+            int x = (int) ev.getRawX();
+            int y = (int) ev.getRawY();
 
-            // Calculate Y position relative to the root layout
-            int yPosition = buttonLocation[1] - rootLocation[1] + languageLayout.getHeight();
-
-            // Apply margins
-            int margin = getResources().getDimensionPixelSize(R.dimen._16sdp);
-            yPosition += margin;
-
-            // Set the CardView's position
-            languagePopup.setY(yPosition);
-            languagePopup.setVisibility(View.VISIBLE);
-            languagePopup.setAlpha(0f);
-
-            // Check if the popup fits on the screen after layout
-            languagePopup.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            languagePopup.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                            // Get the popup's height
-                            int popupHeight = languagePopup.getHeight();
-
-                            // Get the popup's bottom position on the screen
-                            int[] popupLocation = new int[2];
-                            languagePopup.getLocationOnScreen(popupLocation);
-                            int popupBottom = popupLocation[1] + popupHeight;
-
-                            // Get screen height
-                            DisplayMetrics metrics = new DisplayMetrics();
-                            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                            int screenHeight = metrics.heightPixels;
-
-                            // Check if popup overflows the screen
-                            if (popupBottom > screenHeight) {
-                                // Calculate how much to scroll
-                                int overflow = popupBottom - screenHeight;
-                                int targetScrollY = scrollView.getScrollY() + overflow + margin;
-
-                                // Smoothly scroll the ScrollView
-                                scrollView.smoothScrollTo(0, targetScrollY);
-                            }
-
-                            // Start fade-in animation
-                            languagePopup.animate()
-                                    .alpha(1f)
-                                    .setDuration(300)
-                                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                                    .start();
-                        }
-                    });
-        } else {
-            languagePopup.animate()
-                    .alpha(0f)
-                    .setDuration(300)
-                    .setInterpolator(new AccelerateDecelerateInterpolator())
-                    .withEndAction(() -> languagePopup.setVisibility(View.GONE))
-                    .start();
+            // Check if touch is outside both the popup and the button
+            if (!isPointInsideView(x, y, languagePopup) &&
+                    !isPointInsideView(x, y, languageLayout)) {
+                toggleLanguagePopup();
+                return true;
+            }
         }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private boolean isPointInsideView(int x, int y, View view) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int viewX = location[0];
+        int viewY = location[1];
+
+        return (x > viewX && x < (viewX + view.getWidth()) &&
+                y > viewY && y < (viewY + view.getHeight()));
     }
 
     private void changeLanguage(String languageCode) {
@@ -401,7 +480,7 @@ public class Settings extends AppCompatActivity {
     public void onBackPressed() {
         // Handle back press when language popup is shown
         if (isLanguagePopupShown) {
-            toggleLanguagePopup(false);
+            toggleLanguagePopup();
             return;
         }
         super.onBackPressed();
@@ -425,5 +504,15 @@ public class Settings extends AppCompatActivity {
             float alpha = Math.min(1f, scrollY / threshold);
             topBarBlurBackground.setAlpha(alpha);
         });
+    }
+
+    private void animateButtonOnClick(Button button) {
+        button.animate()
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(100) // Set a shorter animation duration (in milliseconds)
+                .setInterpolator(new LinearInterpolator()) // Use a LinearInterpolator for a snappy animation
+                .withEndAction(() -> button.animate().scaleX(1.0f).scaleY(1.0f).setDuration(50).start())
+                .start();
     }
 }

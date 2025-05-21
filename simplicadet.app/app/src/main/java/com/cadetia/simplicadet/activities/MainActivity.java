@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         ThemePreferences themePreferences = new ThemePreferences(this);
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
-        
+
         setContentView(R.layout.activity_main);
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> false);
