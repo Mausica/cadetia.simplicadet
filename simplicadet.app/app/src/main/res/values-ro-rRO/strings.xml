@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Application Info -->
+    <string name="app_name">Simplicadet</string>
+    <string name="version_info">Versiunea 1.2b</string>
+    <string name="copyright_info">© 2025 Simplicadet</string>
+
+    <!-- Navigation -->
+    <string name="back_button">Buton Înapoi</string>
+    <string name="navigation_drawer_open">Deschide meniul de navigare</string>
+    <string name="navigation_drawer_close">Închide meniul de navigare</string>
+
+    <!-- Main Screen -->
+    <string name="main_title">Misiunea prima, ordinea mereu!</string>
+    <string name="main_google">Continuă cu Google</string>
+    <string name="main_facebook">Continuă cu Facebook</string>
+
+    <!-- Authentication -->
+    <string name="login_title">Autentificare</string>
+    <string name="login_subtitle">Vă rugăm să vă autentificați.</string>
+    <string name="login_email">Email sau nume de utilizator</string>
+    <string name="signup_title">Înregistrare</string>
+    <string name="signup_subtitle">Vă rugăm să vă înregistrați.</string>
+    <string name="email">Email</string>
+    <string name="password">Parolă</string>
+    <string name="name">Nume de utilizator</string>
+    <string name="current_language_display">Romana</string>
+
+    <!-- Bottom Navigation -->
+    <string name="title_activity_home">Acasă</string>
+    <string name="title_home">Acasă</string>
+    <string name="title_search">Căutare</string>
+    <string name="title_military">Militar</string>
+    <string name="title_premium">Premium</string>
+
+    <!-- Account Information -->
+    <string name="acc_name">Marius Gabriel</string>
+    <string name="acc_points">82</string>
+    <string name="acc_donate">Donează</string>
+    <string name="acc_share">Distribuie</string>
+    <string name="acc_review">Recenzie</string>
+    <string name="acc_settings">Setări</string>
+
+    <!-- Home Screen -->
+    <string name="home_search">Căutare</string>
+    <string name="home_order">Ordine</string>
+    <string name="home_notes">Note</string>
+    <string name="home_formation">Formație</string>
+    <string name="home_flow">Carduri</string>
+    <string name="home_tasks">Sarcini</string>
+    <string name="home_all">Toate</string>
+
+    <!-- Notes Feature -->
+    <string name="hello_blank_fragment">Salut fragment gol</string>
+    <string name="home_search_notes">Caută note</string>
+    <string name="home_add_note">Adaugă Notă</string>
+    <string name="home_note_title">Titlu Notă</string>
+    <string name="home_note_subtitle">Subtitlu Notă</string>
+    <string name="home_type_note_here">Scrie nota aici...</string>
+    <string name="create_note_add">Adaugă</string>
+
+    <!-- Placeholder Text -->
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+
+    <!-- Ads and API IDs - Nu trebuie traduse -->
+    <string name="id_AppOpenAdd">ca-app-pub-8447567589954533/1110300440</string>
+    <string name="id_InterstitialAdd">ca-app-pub-9534691024766923/7270158920</string>
+    <string name="default_web_client_id">672731390392-c7fkrbjbm5c4nmvnt7v3bk00hadilk8v.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">2109357539444062</string>
+    <string name="fb_login_protocol_scheme">fb2109357539444062</string>
+    <string name="facebook_client_token">e0c5329da6c1f8460ece709873ff9cf8</string>
+    <string name="gemini_api">AIzaSyAARirP0Qk9W3cCXf0h6UddVzMlIizD9s4</string>
+
+    <!-- Settings Screen -->
+    <string name="settings">Setări</string>
+    <string name="profile_picture">Fotografie de profil</string>
+    <string name="edit_profile_image">Editează imaginea de profil</string>
+    <string name="your_name">Numele tău</string>
+    <string name="your_name_hint">Introdu numele tău</string>
+    <string name="about_you">Despre tine</string>
+    <string name="about_you_hint">Spune ceva despre tine pentru lume</string>
+    <string name="locked_email">Email-ul este blocat</string>
+
+    <!-- App Settings Section -->
+    <string name="app_settings">Setări aplicație</string>
+    <string name="appearance">Temă întunecată</string>
+    <string name="use_device_settings">Folosește setările dispozitivului</string>
+    <string name="sound_effects">Efecte sonore</string>
+    <string name="app_icon">Iconiță aplicație</string>
+    <string name="language">Limbă</string>
+    <string name="default_text">Implicit</string>
+
+    <!-- Contact Section -->
+    <string name="contact_us">Contactează-ne</string>
+    <string name="follow_us">Urmărește-ne pe X</string>
+    <string name="like_facebook">Apreciază-ne pe Facebook</string>
+    <string name="help">Ajutor</string>
+    <string name="terms_and_conditions">Termeni și condiții</string>
+    <string name="privacy_policy">Politica de confidențialitate</string>
+
+    <!-- Danger Zone -->
+    <string name="danger_zone">Zonă periculoasă</string>
+    <string name="delete_account">Șterge contul</string>
+    <string name="reset_password">Resetează parola</string>
+    <string name="clear_cache">Curăță memoria</string>
+    <string name="log_out">Deconectare</string>
+
+    <string name="access_denied">Acces interzis</string>
+    <string name="login_organization_email">Vă rugăm să vă autentificați cu email-ul organizației pentru a continua.</string>
+    <string name="delete_note">Șterge nota</string>
+    <string name="note_confirmation">Sigur doriți să ștergeți această notă?</string>
+    <string name="delete_task">Șterge sarcina</string>
+    <string name="task_confirmation">Sigur doriți să ștergeți această sarcină?</string>
+    <string name="no_internet_title">Fără internet!</string>
+    <string name="no_internet_text">Unele funcții nu vor funcționa corect, doriți să continuați?</string>
+
+</resources>

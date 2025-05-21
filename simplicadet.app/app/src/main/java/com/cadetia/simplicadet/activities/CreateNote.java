@@ -382,8 +382,8 @@ public class CreateNote extends BottomSheetDialogFragment {
     private void showDeleteNoteDialog() {
         DialogConfirm.show(
                 requireContext(),
-                "Delete Note",
-                "Are you sure you want to delete this note?",
+                getString(R.string.delete_note),
+                getString(R.string.note_confirmation),
                 () -> {
                     @SuppressLint("StaticFieldLeak")
                     class DeleteNoteTask extends AsyncTask<Void, Void, Void> {

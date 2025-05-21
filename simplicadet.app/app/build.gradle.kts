@@ -18,7 +18,7 @@ android {
         targetSdk = 34
         versionCode = 2
         versionName = "1.1"
-
+        resConfigs("en-rGB", "es-rES", "fr-rFR", "ro-rRO")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

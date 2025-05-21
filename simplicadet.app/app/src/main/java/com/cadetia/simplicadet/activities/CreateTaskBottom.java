@@ -225,8 +225,8 @@ public class CreateTaskBottom extends BottomSheetDialogFragment {
     private void showDeleteTaskDialog() {
         DialogConfirm.show(
                 requireContext(),
-                "Delete Task",
-                "Are you sure you want to delete this task?",
+                getString(R.string.delete_task),
+                getString(R.string.task_confirmation),
                 () -> {
                     deleteTask(task.getTaskId());
                 },

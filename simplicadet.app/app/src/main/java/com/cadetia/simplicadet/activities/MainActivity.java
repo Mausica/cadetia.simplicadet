@@ -1,7 +1,9 @@
 package com.cadetia.simplicadet.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +23,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.WindowCompat;
 
+import com.cadetia.simplicadet.dao.LanguagePreferences;
+import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -56,6 +60,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -70,13 +75,47 @@ public class MainActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private LoadingView loadingViewMain;
     private static final int RC_SIGN_IN = 9001;
+    private static final String DEFAULT_LANGUAGE = "en_GB";
+
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
+    @Override
+    public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+        if (overrideConfiguration != null) {
+            int uiMode = overrideConfiguration.uiMode;
+            overrideConfiguration.setTo(getBaseContext().getResources().getConfiguration());
+            overrideConfiguration.uiMode = uiMode;
+        }
+        super.applyOverrideConfiguration(overrideConfiguration);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        LanguagePreferences languagePreferences = new LanguagePreferences(this);
+        if (languagePreferences.isFirstLaunch()) {
+            String deviceLanguage = Locale.getDefault().getLanguage();
+            String deviceCountry = Locale.getDefault().getCountry();
+            String deviceLocale = deviceLanguage + "_" + deviceCountry;
+
+            if (isLanguageSupported(deviceLocale)) {
+                languagePreferences.setLanguage(deviceLocale);
+            } else {
+                languagePreferences.setLanguage(DEFAULT_LANGUAGE);
+            }
+            languagePreferences.setFirstLaunchComplete();
+        }
+
+        String currentLanguage = languagePreferences.getCurrentLanguage();
+        LocaleHelper.setLocale(this, currentLanguage);
 
         ThemePreferences themePreferences = new ThemePreferences(this);
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
+
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
@@ -137,7 +176,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Move Firebase Authentication check to onResume
+    private boolean isLanguageSupported(String language) {
+        String[] supportedLanguages = {"en_GB", "es_ES", "fr_FR", "ro_RO"};
+        for (String lang : supportedLanguages) {
+            if (lang.equals(language)) return true;
+        }
+        return false;
+    }
     @Override
     protected void onResume() {
         super.onResume();

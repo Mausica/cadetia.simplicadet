@@ -40,6 +40,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.cadetia.simplicadet.R;
+import com.cadetia.simplicadet.dao.LanguagePreferences;
+import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,7 +61,6 @@ public class Settings extends AppCompatActivity {
     private ThemePreferences themePreferences;
     private Switch themeSwitch;
 
-    // Language selection related views
     private RelativeLayout languageLayout;
     private ImageView languageIcon;
     private ImageView languageArrow;
@@ -69,22 +70,15 @@ public class Settings extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     private boolean isLanguagePopupShown = false;
 
-    // Supported languages
-    private final String[] languageCodes = {"en", "es", "fr", "ro"};
+    private final String[] languageCodes = {"en_GB", "es_ES", "fr_FR", "ro_RO"};
+    private final String[] languageNames = {"English", "Español", "Français", "Română"};
     private final int[] languageIcons = {
             R.raw.language_en,
             R.raw.language_es,
             R.raw.language_fr,
             R.raw.language_ro
     };
-    private final String[] languageNames = {
-            "English",
-            "Español",
-            "Français",
-            "Română"
-    };
 
-    // Current language
     private String currentLanguage = "en";
 
     @Override
@@ -93,9 +87,7 @@ public class Settings extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
 
-        // Load current language
-        SharedPreferences prefs = getSharedPreferences("LanguagePrefs", MODE_PRIVATE);
-        currentLanguage = prefs.getString("language_code", "en");
+        currentLanguage = LocaleHelper.getLanguage(this);
 
         blurView = findViewById(R.id.blur_view);
         topBarBlurBackground = findViewById(R.id.top_bar_blur_background);
@@ -105,7 +97,6 @@ public class Settings extends AppCompatActivity {
         themeSwitch = findViewById(R.id.theme_switch);
         setupThemeSwitch();
 
-        // Initialize language selection components
         languageLayout = findViewById(R.id.settings_language);
         languageIcon = findViewById(R.id.language_icon);
         languageArrow = findViewById(R.id.language_arrow);
@@ -126,7 +117,6 @@ public class Settings extends AppCompatActivity {
                     },
                     true
             );
-
         });
 
         updateLanguageUI();
@@ -141,7 +131,6 @@ public class Settings extends AppCompatActivity {
     }
 
     private void setupLanguagePopup() {
-        // Create the language popup programmatically
         languagePopup = new CardView(this);
         languagePopup.setRadius(getResources().getDimensionPixelSize(R.dimen._8sdp));
         languagePopup.setElevation(getResources().getDimensionPixelSize(R.dimen._24sdp));
@@ -152,7 +141,6 @@ public class Settings extends AppCompatActivity {
         languagePopup.setCardBackgroundColor(color);
         languagePopup.setVisibility(View.GONE);
 
-        // Set layout parameters
         RelativeLayout.LayoutParams popupParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -174,7 +162,6 @@ public class Settings extends AppCompatActivity {
         );
         languagePopup.setLayoutParams(popupParams);
 
-        // Create a vertical layout for language options
         LinearLayout languageOptions = new LinearLayout(this);
         languageOptions.setOrientation(LinearLayout.VERTICAL);
         languageOptions.setLayoutParams(new ViewGroup.LayoutParams(
@@ -182,7 +169,6 @@ public class Settings extends AppCompatActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
 
-        // Add language options
         for (int i = 0; i < languageCodes.length; i++) {
             RelativeLayout option = createLanguageOption(i);
             languageOptions.addView(option);
@@ -190,11 +176,9 @@ public class Settings extends AppCompatActivity {
 
         languagePopup.addView(languageOptions);
 
-        // Add the popup to the root layout
         ViewGroup rootLayout = findViewById(android.R.id.content);
         rootLayout.addView(languagePopup);
 
-        // Set click listener for language layout
         languageLayout.setOnClickListener(v -> {
             toggleLanguagePopup();
         });
@@ -215,7 +199,6 @@ public class Settings extends AppCompatActivity {
                 0
         );
 
-        // Create language flag icon
         ImageView flagIcon = new ImageView(this);
         flagIcon.setId(View.generateViewId());
         RelativeLayout.LayoutParams flagParams = new RelativeLayout.LayoutParams(
@@ -226,7 +209,6 @@ public class Settings extends AppCompatActivity {
         flagIcon.setLayoutParams(flagParams);
         flagIcon.setImageResource(languageIcons[index]);
 
-        // Create language name text
         TextView nameText = new TextView(this);
         RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -251,13 +233,9 @@ public class Settings extends AppCompatActivity {
         option.addView(flagIcon);
         option.addView(nameText);
 
-        // Add click listener
         final int langIndex = index;
         option.setOnClickListener(v -> {
-            // Change language
             changeLanguage(languageCodes[langIndex]);
-
-            // Hide popup without animating the button
             toggleLanguagePopup();
         });
 
@@ -267,7 +245,6 @@ public class Settings extends AppCompatActivity {
     private void toggleLanguagePopup() {
         isLanguagePopupShown = !isLanguagePopupShown;
 
-        // Arrow rotation animation (keep existing code)
         ObjectAnimator rotateArrow = ObjectAnimator.ofFloat(
                 languageArrow,
                 "rotation",
@@ -290,7 +267,6 @@ public class Settings extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT));
 
-                // Configure BlurView to only affect background
                 View decorView = getWindow().getDecorView();
                 ViewGroup rootContainer = decorView.findViewById(android.R.id.content);
 
@@ -305,14 +281,11 @@ public class Settings extends AppCompatActivity {
                 dimBackground.setAlpha(0f);
                 dimBackground.setOnClickListener(v -> toggleLanguagePopup());
 
-                // Add blur view at position 1 (below popup but above main content)
                 rootView.addView(dimBackground, 1);
             }
 
-            // Make sure popup is at the top
             languagePopup.bringToFront();
 
-            // Keep existing positioning and animation code
             languagePopup.setVisibility(View.VISIBLE);
             languagePopup.setAlpha(0f);
             languagePopup.setElevation(getResources().getDimensionPixelSize(R.dimen._16sdp));
@@ -382,7 +355,6 @@ public class Settings extends AppCompatActivity {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (isLanguagePopupShown && ev.getAction() == MotionEvent.ACTION_DOWN) {
-            // Check if touch is outside the popup and language button
             int[] popupLocation = new int[2];
             languagePopup.getLocationOnScreen(popupLocation);
             int[] buttonLocation = new int[2];
@@ -391,7 +363,6 @@ public class Settings extends AppCompatActivity {
             int x = (int) ev.getRawX();
             int y = (int) ev.getRawY();
 
-            // Check if touch is outside both the popup and the button
             if (!isPointInsideView(x, y, languagePopup) &&
                     !isPointInsideView(x, y, languageLayout)) {
                 toggleLanguagePopup();
@@ -413,36 +384,23 @@ public class Settings extends AppCompatActivity {
 
     private void changeLanguage(String languageCode) {
         if (!languageCode.equals(currentLanguage)) {
-            // Save the new language preference
-            SharedPreferences prefs = getSharedPreferences("LanguagePrefs", MODE_PRIVATE);
-            prefs.edit().putString("language_code", languageCode).apply();
-
             currentLanguage = languageCode;
 
-            // Update UI immediately before recreation
+            // Use LanguagePreferences to change language
+            LanguagePreferences languagePreferences = new LanguagePreferences(this);
+            languagePreferences.setLanguage(languageCode);
+
             updateLanguageUI();
 
-            // Apply the language change
-            setLocale(languageCode);
-
-            // Delay recreation to allow UI updates
-            new Handler().postDelayed(() -> recreate(), 100);
+            // Restart the activity to apply language change
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
         }
     }
 
-    private void setLocale(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        Locale.setDefault(locale);
-
-        Resources resources = getResources();
-        Configuration config = resources.getConfiguration();
-        config.setLocale(locale);
-
-        resources.updateConfiguration(config, resources.getDisplayMetrics());
-    }
-
     private void updateLanguageUI() {
-        // Find the index of the current language
         int index = 0;
         for (int i = 0; i < languageCodes.length; i++) {
             if (languageCodes[i].equals(currentLanguage)) {
@@ -451,13 +409,11 @@ public class Settings extends AppCompatActivity {
             }
         }
 
-        // Update icon and text
         languageIcon.setImageResource(languageIcons[index]);
         languageText.setText(languageNames[index]);
     }
 
     private void setupThemeSwitch() {
-        // Set initial state
         themeSwitch.setChecked(themePreferences.isDarkMode());
 
         themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -469,7 +425,7 @@ public class Settings extends AppCompatActivity {
 
     private void applyTheme() {
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
-        recreate(); // Recreate activity to apply theme immediately
+        recreate();
     }
 
     private void navigateBackWithAnimation() {
@@ -479,7 +435,6 @@ public class Settings extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Handle back press when language popup is shown
         if (isLanguagePopupShown) {
             toggleLanguagePopup();
             return;
@@ -511,8 +466,8 @@ public class Settings extends AppCompatActivity {
         button.animate()
                 .scaleX(0.9f)
                 .scaleY(0.9f)
-                .setDuration(100) // Set a shorter animation duration (in milliseconds)
-                .setInterpolator(new LinearInterpolator()) // Use a LinearInterpolator for a snappy animation
+                .setDuration(100)
+                .setInterpolator(new LinearInterpolator())
                 .withEndAction(() -> button.animate().scaleX(1.0f).scaleY(1.0f).setDuration(50).start())
                 .start();
     }

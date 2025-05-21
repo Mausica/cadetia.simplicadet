@@ -88,6 +88,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setItemRippleColor(ColorStateList.valueOf(Color.TRANSPARENT));
 
+        Toast.makeText(this,
+                getString(R.string.current_language_display,
+                        getResources().getConfiguration().locale.getDisplayName()),
+                Toast.LENGTH_LONG).show();
+
         int[][] states = new int[][] {
                 new int[] { android.R.attr.state_selected },
                 new int[] {}
