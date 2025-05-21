@@ -53,11 +53,12 @@
                     android:layout_width="@dimen/_30sdp"
                     android:layout_height="@dimen/_30sdp"
                     android:layout_gravity="bottom"
+                    android:layout_marginStart="@dimen/_15sdp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/back_button"
-                    android:layout_marginStart="@dimen/_15sdp"
+                    android:src="@drawable/uni_ic_close"
                     app:tint="?attr/textNormal"
-                    android:src="@drawable/uni_ic_close" />
+                    tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
         </FrameLayout>
 
@@ -314,12 +315,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50sdp"
                             android:background="@drawable/settings_item_bottom"
-                            android:paddingStart="@dimen/_10sdp"
+                            android:paddingStart="@dimen/_12sdp"
                             android:paddingEnd="@dimen/_16sdp">
 
                             <ImageView
                                 android:id="@+id/language_icon"
-                                app:tint="?attr/textNormal"
                                 android:layout_width="@dimen/_24sdp"
                                 android:layout_height="@dimen/_24sdp"
                                 android:src="@raw/language_en"
@@ -327,6 +327,7 @@
                                 android:contentDescription="@string/language" />
 
                             <TextView
+                                android:id="@+id/language_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/language"
@@ -335,9 +336,10 @@
                                 android:fontFamily="@font/circular_medium"
                                 android:layout_toEndOf="@id/language_icon"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="@dimen/_12sdp" />
+                                android:layout_marginStart="@dimen/_10sdp" />
 
                             <ImageView
+                                android:id="@+id/language_arrow"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:src="@drawable/uni_ic_right"
