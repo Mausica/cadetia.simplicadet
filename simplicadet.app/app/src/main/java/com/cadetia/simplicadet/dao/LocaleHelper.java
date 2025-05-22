@@ -1,7 +1,5 @@
 package com.cadetia.simplicadet.dao;
 
-import static com.cadetia.simplicadet.database.DbQuery.TAG;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -14,6 +12,7 @@ public class LocaleHelper {
     private static final String PREF_NAME = "LanguagePrefs";
     private static final String KEY_LANGUAGE = "language_code";
     private static final String DEFAULT_LANGUAGE = "en_GB";
+    private static final String TAG = "LocaleHelper";
 
     public static Context setLocale(Context context) {
         return updateResources(context, getLanguage(context));
@@ -49,19 +48,15 @@ public class LocaleHelper {
         Log.d(TAG, "Created locale: " + locale.toLanguageTag());
         Locale.setDefault(locale);
 
-        // Update configuration for both context and resources
+        // Create new configuration context without modifying original
         Configuration config = new Configuration(context.getResources().getConfiguration());
         config.setLocale(locale);
         config.setLayoutDirection(locale);
 
-        // Update the resources as well
-        Resources resources = context.getResources();
-        resources.updateConfiguration(config, resources.getDisplayMetrics());
-
         return context.createConfigurationContext(config);
     }
 
-    // Add this method to force update application resources
+    // Simplified method for immediate locale updates
     public static void updateApplicationLocale(Context context, String languageCode) {
         String[] parts = languageCode.split("_");
         Locale locale;
@@ -72,10 +67,18 @@ public class LocaleHelper {
         }
 
         Locale.setDefault(locale);
+
+        // Update configuration
         Configuration config = context.getResources().getConfiguration();
         config.setLocale(locale);
         config.setLayoutDirection(locale);
 
         context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+    }
+
+    // Check if language has changed without applying it
+    public static boolean hasLanguageChanged(Context context, String currentLanguage) {
+        String savedLanguage = getLanguage(context);
+        return !savedLanguage.equals(currentLanguage);
     }
 }

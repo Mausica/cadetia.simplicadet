@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private static final String DEFAULT_LANGUAGE = "en_GB";
 
-
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.setLocale(newBase));
@@ -93,9 +92,9 @@ public class MainActivity extends AppCompatActivity {
         super.applyOverrideConfiguration(overrideConfiguration);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Handle first launch language detection
         LanguagePreferences languagePreferences = new LanguagePreferences(this);
         if (languagePreferences.isFirstLaunch()) {
             String deviceLanguage = Locale.getDefault().getLanguage();
@@ -110,17 +109,11 @@ public class MainActivity extends AppCompatActivity {
             languagePreferences.setFirstLaunchComplete();
         }
 
-        // Apply the saved language immediately
-        String currentLanguage = languagePreferences.getCurrentLanguage();
-        LocaleHelper.updateApplicationLocale(this, currentLanguage);
-
         // Initialize theme preferences
         ThemePreferences themePreferences = new ThemePreferences(this);
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
 
         super.onCreate(savedInstanceState);
-
-        currentLanguage = LocaleHelper.getLanguage(this);
 
         Log.d(TAG, "Active locale: " + LocaleHelper.getLanguage(this));
         Log.d(TAG, "Test string value: " + getString(R.string.current_language_display));
@@ -190,10 +183,11 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        checkAndApplyLocale();
+        // Remove the recreate call - let attachBaseContext handle locale
         DbQuery.g_firestore = FirebaseFirestore.getInstance();
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
@@ -206,18 +200,6 @@ public class MainActivity extends AppCompatActivity {
             openHomeActivity();
         }
     }
-
-    private String currentLanguage;
-
-    private void checkAndApplyLocale() {
-        String savedLanguage = new LanguagePreferences(this).getCurrentLanguage();
-        if (!savedLanguage.equals(currentLanguage)) {
-            currentLanguage = savedLanguage;
-            LocaleHelper.updateApplicationLocale(this, savedLanguage);
-            recreate();
-        }
-    }
-
 
     // Handle Google Sign-in failure with proper feedback
     public void buttonGoogleSignIn(View view) {
