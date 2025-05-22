@@ -37,6 +37,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.cadetia.simplicadet.dao.LanguagePreferences;
+import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.database.TextUpload;
 import com.cadetia.simplicadet.entities.DialogConfirm;
@@ -62,6 +64,7 @@ import com.cadetia.simplicadet.databinding.ActivityHomeBinding;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private View darkOverlay;
+    private String currentLanguage;
     private InterstitialAdd interstitialAdd;
     static final float END_SCALE = 0.7f;
     private MenuItem menuItem;
@@ -76,6 +79,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        currentLanguage = LocaleHelper.getLanguage(this);
+
         Window window = getWindow();
 
         // Detect current theme
@@ -87,11 +92,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setItemRippleColor(ColorStateList.valueOf(Color.TRANSPARENT));
-
-        Toast.makeText(this,
-                getString(R.string.current_language_display,
-                        getResources().getConfiguration().locale.getDisplayName()),
-                Toast.LENGTH_LONG).show();
 
         int[][] states = new int[][] {
                 new int[] { android.R.attr.state_selected },
@@ -187,6 +187,22 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             }
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkAndApplyLocale();
+    }
+
+    private void checkAndApplyLocale() {
+        String savedLanguage = new LanguagePreferences(this).getCurrentLanguage();
+        if (!savedLanguage.equals(currentLanguage)) {
+            currentLanguage = savedLanguage;
+            LocaleHelper.updateApplicationLocale(this, savedLanguage);
+            recreate();
+        }
+    }
+
 
     @Override
     protected void onDestroy() {

@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        currentLanguage = LocaleHelper.getLanguage(this);
+
         Log.d(TAG, "Active locale: " + LocaleHelper.getLanguage(this));
         Log.d(TAG, "Test string value: " + getString(R.string.current_language_display));
 
@@ -191,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        checkAndApplyLocale();
         DbQuery.g_firestore = FirebaseFirestore.getInstance();
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
@@ -203,6 +206,18 @@ public class MainActivity extends AppCompatActivity {
             openHomeActivity();
         }
     }
+
+    private String currentLanguage;
+
+    private void checkAndApplyLocale() {
+        String savedLanguage = new LanguagePreferences(this).getCurrentLanguage();
+        if (!savedLanguage.equals(currentLanguage)) {
+            currentLanguage = savedLanguage;
+            LocaleHelper.updateApplicationLocale(this, savedLanguage);
+            recreate();
+        }
+    }
+
 
     // Handle Google Sign-in failure with proper feedback
     public void buttonGoogleSignIn(View view) {

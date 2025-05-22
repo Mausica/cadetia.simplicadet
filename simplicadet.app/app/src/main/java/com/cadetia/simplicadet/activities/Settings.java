@@ -100,6 +100,7 @@ public class Settings extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentLanguage = LocaleHelper.getLanguage(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
 
@@ -388,6 +389,14 @@ public class Settings extends AppCompatActivity {
         }
         return super.dispatchTouchEvent(ev);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        currentLanguage = LocaleHelper.getLanguage(this);
+        updateLanguageUI();
+    }
+
 
     private boolean isPointInsideView(int x, int y, View view) {
         int[] location = new int[2];
