@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
         super.applyOverrideConfiguration(overrideConfiguration);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Initialize language preferences FIRST
         LanguagePreferences languagePreferences = new LanguagePreferences(this);
         if (languagePreferences.isFirstLaunch()) {
             String deviceLanguage = Locale.getDefault().getLanguage();

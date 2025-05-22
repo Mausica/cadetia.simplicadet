@@ -113,5 +113,7 @@
     <string name="task_confirmation">Sigur doriți să ștergeți această sarcină?</string>
     <string name="no_internet_title">Fără internet!</string>
     <string name="no_internet_text">Unele funcții nu vor funcționa corect, doriți să continuați?</string>
+    <string name="logout">Delogare</string>
+    <string name="logout_confirmation">Esti sigur ca vrei sa te deloghezi?</string>
 
 </resources>

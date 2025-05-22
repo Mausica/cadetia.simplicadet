@@ -103,6 +103,7 @@ public class Settings extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
 
+        // Get current language AFTER locale is set by attachBaseContext
         currentLanguage = LocaleHelper.getLanguage(this);
 
         blurView = findViewById(R.id.blur_view);
@@ -124,8 +125,8 @@ public class Settings extends AppCompatActivity {
             firebaseAuth.signOut();
             DialogConfirm.show(
                     this,
-                    "Logout",
-                    "Are you sure you want to log out?",
+                    getString(R.string.logout), // Use string resource
+                    getString(R.string.logout_confirmation), // Use string resource
                     () -> {
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(this, MainActivity.class));
@@ -400,22 +401,11 @@ public class Settings extends AppCompatActivity {
 
     private void changeLanguage(String languageCode) {
         if (!languageCode.equals(currentLanguage)) {
-            // Save the new language preference
             LanguagePreferences languagePreferences = new LanguagePreferences(this);
             languagePreferences.setLanguage(languageCode);
-
-            // Update the application locale immediately
+            currentLanguage = languageCode;
             LocaleHelper.updateApplicationLocale(this, languageCode);
-
-            // Restart the app to fully apply the language change
-            Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-            if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
-                finishAffinity();
-                System.exit(0); // Force complete app restart
-            }
+            recreate();
         }
     }
 
