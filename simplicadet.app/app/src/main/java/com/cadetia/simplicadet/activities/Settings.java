@@ -400,15 +400,22 @@ public class Settings extends AppCompatActivity {
 
     private void changeLanguage(String languageCode) {
         if (!languageCode.equals(currentLanguage)) {
+            // Save the new language preference
             LanguagePreferences languagePreferences = new LanguagePreferences(this);
             languagePreferences.setLanguage(languageCode);
 
-            // Restart entire app to apply language
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
-            finishAffinity();
+            // Update the application locale immediately
+            LocaleHelper.updateApplicationLocale(this, languageCode);
+
+            // Restart the app to fully apply the language change
+            Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
+                finishAffinity();
+                System.exit(0); // Force complete app restart
+            }
         }
     }
 

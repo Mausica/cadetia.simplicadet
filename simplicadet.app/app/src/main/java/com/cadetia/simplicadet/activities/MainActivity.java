@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize language preferences FIRST
         LanguagePreferences languagePreferences = new LanguagePreferences(this);
         if (languagePreferences.isFirstLaunch()) {
             String deviceLanguage = Locale.getDefault().getLanguage();
@@ -109,9 +110,11 @@ public class MainActivity extends AppCompatActivity {
             languagePreferences.setFirstLaunchComplete();
         }
 
+        // Apply the saved language immediately
         String currentLanguage = languagePreferences.getCurrentLanguage();
-        LocaleHelper.setLocale(this, currentLanguage);
+        LocaleHelper.updateApplicationLocale(this, currentLanguage);
 
+        // Initialize theme preferences
         ThemePreferences themePreferences = new ThemePreferences(this);
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
 
@@ -176,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
             animateButtonOnClickNull(main_google_button);
             buttonGoogleSignIn(v);
         });
-
     }
 
     private boolean isLanguageSupported(String language) {
