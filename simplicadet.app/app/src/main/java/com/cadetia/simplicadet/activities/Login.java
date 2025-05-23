@@ -26,7 +26,7 @@ import com.cadetia.simplicadet.entities.LoadingView;
 
 import java.util.Objects;
 
-public class Login extends AppCompatActivity {
+public class Login extends BaseActivity {
 
     private Button login_button;
     private LoadingView loadingView;

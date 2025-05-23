@@ -62,18 +62,32 @@ import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.ads.InterstitialAdd;
 import com.cadetia.simplicadet.databinding.ActivityHomeBinding;
 
-public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private View darkOverlay;
+public class Home extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String currentLanguage;
     private InterstitialAdd interstitialAdd;
-    static final float END_SCALE = 0.7f;
-    private MenuItem menuItem;
     private FirebaseAuth firebaseAuth;
     private TextView drawerNameTextView;
     ShapeableImageView drawerloadingButton;
     private DrawerLayout drawerLayout;
     private boolean isNetworkAvailable = true;
     private String userEmail;
+
+    // Add this method to handle context attachment for localization
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
+    // Add this method to handle configuration changes
+    @Override
+    public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+        if (overrideConfiguration != null) {
+            int uiMode = overrideConfiguration.uiMode;
+            overrideConfiguration.setTo(getBaseContext().getResources().getConfiguration());
+            overrideConfiguration.uiMode = uiMode;
+        }
+        super.applyOverrideConfiguration(overrideConfiguration);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,18 +131,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         navView.setOnNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-            // Check if trying to navigate away from home without internet
             if (!isNetworkAvailable && itemId != R.id.navigation_home) {
                 showNoInternetDialog();
                 return false;
             }
-
-            // Prevent re-navigation if already on the destination
             if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() == itemId) {
                 return false;
             }
-
-            // Rest of your existing code...
             NavOptions navOptions = new NavOptions.Builder()
                     .setLaunchSingleTop(true)
                     .build();
@@ -179,10 +188,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             isNetworkAvailable = NetworkUtils.isNetworkAvailable(Home.this);
 
             if (!previousStatus && isNetworkAvailable) {
-                // Connection was restored
                 handleConnectionRestored();
             } else if (previousStatus && !isNetworkAvailable) {
-                // Connection was lost
                 handleConnectionLost();
             }
         }
@@ -191,18 +198,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     protected void onResume() {
         super.onResume();
-        checkAndApplyLocale();
-    }
-
-    private void checkAndApplyLocale() {
-        String savedLanguage = new LanguagePreferences(this).getCurrentLanguage();
+        String savedLanguage = LocaleHelper.getLanguage(this);
         if (!savedLanguage.equals(currentLanguage)) {
             currentLanguage = savedLanguage;
-            LocaleHelper.updateApplicationLocale(this, savedLanguage);
+            // Recreate activity to apply new language
             recreate();
         }
     }
-
 
     @Override
     protected void onDestroy() {
@@ -330,7 +332,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             // navController.navigate(R.id.navigation_liked);
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.google.com/"));
             startActivity(browserIntent);
-
         } else if (itemId == R.id.drawer_settings) {
             Intent intent = new Intent(Home.this, Settings.class);
             startActivity(intent);
@@ -360,8 +361,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     private void handleConnectionRestored() {
         runOnUiThread(() -> {
-            recreate();
-            // Update UI
             retrieveUserData();
             Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
         });

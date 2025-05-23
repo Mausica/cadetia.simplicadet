@@ -39,7 +39,7 @@ import nl.dionsegijn.konfetti.core.emitter.Emitter;
 import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 
-public class QuestionsActivity extends AppCompatActivity {
+public class QuestionsActivity extends BaseActivity {
     private KonfettiView konfettiView = null;
     private TextView questionTextView;
     private TextView optionATextView, optionBTextView, optionCTextView, optionDTextView;

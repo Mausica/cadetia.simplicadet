@@ -56,7 +56,7 @@ public class LocaleHelper {
         return context.createConfigurationContext(config);
     }
 
-    // Simplified method for immediate locale updates
+    // Simplified method for immediate locale updates - FIXED VERSION
     public static void updateApplicationLocale(Context context, String languageCode) {
         String[] parts = languageCode.split("_");
         Locale locale;
@@ -68,12 +68,16 @@ public class LocaleHelper {
 
         Locale.setDefault(locale);
 
-        // Update configuration
-        Configuration config = context.getResources().getConfiguration();
+        // Save the language preference first
+        setLanguage(context, languageCode);
+
+        // Update configuration - ONLY update the resources, don't recreate context
+        Resources resources = context.getResources();
+        Configuration config = new Configuration(resources.getConfiguration());
         config.setLocale(locale);
         config.setLayoutDirection(locale);
 
-        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
     // Check if language has changed without applying it

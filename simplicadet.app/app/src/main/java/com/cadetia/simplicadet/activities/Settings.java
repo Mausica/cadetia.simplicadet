@@ -53,7 +53,7 @@ import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.BlurController;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends BaseActivity {
 
     private BlurView blurView;
     private View topBarBlurBackground;

@@ -26,7 +26,7 @@ import com.cadetia.simplicadet.R;
 import java.util.Objects;
 
 
-public class Signup extends AppCompatActivity {
+public class Signup extends BaseActivity {
 
     private Button signup_button;
 
