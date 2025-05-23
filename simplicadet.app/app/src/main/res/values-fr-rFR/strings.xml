@@ -115,4 +115,7 @@
     <string name="no_internet_text">Certaines fonctions ne fonctionneront pas correctement, souhaitez-vous continuer ?</string>
     <string name="logout">Déconnexion</string>
     <string name="logout_confirmation">Êtes-vous sûr de vouloir vous déconnecter ?</string>
+
+    <string name="clear_cache_confirmation">Êtes-vous sûr de vouloir vider le cache de l\'application ? Cela supprimera les fichiers temporaires et peut améliorer les performances.</string>
+
 </resources>

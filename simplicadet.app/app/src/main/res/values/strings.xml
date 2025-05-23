@@ -102,7 +102,6 @@
     <string name="danger_zone">Danger zone</string>
     <string name="delete_account">Delete account</string>
     <string name="reset_password">Reset password</string>
-    <string name="clear_cache">Clear memory</string>
     <string name="log_out">Log out</string>
 
     <string name="access_denied">Access denied</string>
@@ -115,4 +114,9 @@
     <string name="no_internet_text">Some of the functions will not work properly, do you want to continue ?</string>
     <string name="logout">Logout</string>
     <string name="logout_confirmation">Are you sure you want to log out?</string>
+
+    <string name="clear_cache">Clear memory</string>
+    <string name="clear_cache_confirmation">Are you sure you want to clear the app cache? This will remove temporary files and may improve performance.</string>
+
+
 </resources>

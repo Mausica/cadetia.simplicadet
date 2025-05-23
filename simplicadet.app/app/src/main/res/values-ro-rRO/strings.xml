@@ -102,7 +102,6 @@
     <string name="danger_zone">Zonă periculoasă</string>
     <string name="delete_account">Șterge contul</string>
     <string name="reset_password">Resetează parola</string>
-    <string name="clear_cache">Curăță memoria</string>
     <string name="log_out">Deconectare</string>
 
     <string name="access_denied">Acces interzis</string>
@@ -115,5 +114,8 @@
     <string name="no_internet_text">Unele funcții nu vor funcționa corect, doriți să continuați?</string>
     <string name="logout">Delogare</string>
     <string name="logout_confirmation">Esti sigur ca vrei sa te deloghezi?</string>
+
+    <string name="clear_cache">Curăță memoria</string>
+    <string name="clear_cache_confirmation">Ești sigur că vrei să ștergi cache-ul aplicației? Aceasta va elimina fișierele temporare și poate îmbunătăți performanța.</string>
 
 </resources>

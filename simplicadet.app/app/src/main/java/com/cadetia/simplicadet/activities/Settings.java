@@ -15,6 +15,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -26,6 +28,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -40,6 +43,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.dao.LanguagePreferences;
 import com.cadetia.simplicadet.dao.LocaleHelper;
@@ -61,7 +65,8 @@ public class Settings extends BaseActivity {
     private ScrollView scrollView;
     private ThemePreferences themePreferences;
     private Switch themeSwitch;
-
+    private TextView settingsName, settingsEmail;
+    private ImageView settingsImage;
     private RelativeLayout languageLayout;
     private ImageView languageIcon;
     private ImageView languageArrow;
@@ -69,6 +74,12 @@ public class Settings extends BaseActivity {
     private CardView languagePopup;
     private Button logout_button;
     FirebaseAuth firebaseAuth;
+    private EditText editDescription;
+    private TextView charName, charDescription;
+    private final int MAX_NAME_LENGTH = 60;
+    private final int MAX_DESC_LENGTH = 90;
+    private RelativeLayout clear_button;
+    private boolean isNetworkAvailable = true;
     private boolean isLanguagePopupShown = false;
 
     private final String[] languageCodes = {"en_GB", "es_ES", "fr_FR", "ro_RO"};
@@ -137,6 +148,24 @@ public class Settings extends BaseActivity {
             );
         });
 
+        clear_button = findViewById(R.id.settings_clear);
+        clear_button.setOnClickListener(v -> {
+            animateButtonOnClick(clear_button);
+            DialogConfirm.show(
+                    this,
+                    getString(R.string.clear_cache),
+                    getString(R.string.clear_cache_confirmation),
+                    () -> {
+                        clearAppCache();
+                    },
+                    true
+            );
+        });
+
+        editDescription = findViewById(R.id.settings_about);
+        charName = findViewById(R.id.char_name);
+        charDescription = findViewById(R.id.char_description);
+
         updateLanguageUI();
         setupLanguagePopup();
 
@@ -144,8 +173,15 @@ public class Settings extends BaseActivity {
             navigateBackWithAnimation();
         });
 
+        settingsName = findViewById(R.id.settings_name);
+        settingsEmail = findViewById(R.id.settings_email);
+        settingsImage = findViewById(R.id.settings_image);
+
+        // Load user data
+        retrieveUserData();
         setupBlurView();
         setupScrollListener();
+        setupCharacterCounters();
     }
 
     private void setupLanguagePopup() {
@@ -198,6 +234,7 @@ public class Settings extends BaseActivity {
         rootLayout.addView(languagePopup);
 
         languageLayout.setOnClickListener(v -> {
+            animateButtonOnClick(languageLayout);
             toggleLanguagePopup();
         });
     }
@@ -397,6 +434,37 @@ public class Settings extends BaseActivity {
         updateLanguageUI();
     }
 
+    private void retrieveUserData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
+        String userName = sharedPreferences.getString("userName", "");
+        String userPhoto = sharedPreferences.getString("userPhoto", "");
+        String userEmail = sharedPreferences.getString("userEmail", "");
+
+        settingsName.setText(userName);
+        settingsEmail.setText(userEmail);
+
+        int nameLength = userName.length();
+        charName.setText(nameLength + "/" + MAX_NAME_LENGTH);
+
+        final int errorColor = ContextCompat.getColor(this, R.color.red);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.textLight, typedValue, true);
+        final int textLightColor = typedValue.data;
+
+        charName.setTextColor(nameLength > MAX_NAME_LENGTH ? errorColor : textLightColor);
+
+        if (!isNetworkAvailable) {
+            Glide.with(this).load(R.raw.guest_civil).into(settingsImage);
+        } else {
+            // Only load user photo if we have internet AND a valid photo URL
+            if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
+                Glide.with(this).load(R.raw.guest_civil).into(settingsImage);
+            } else {
+                Glide.with(this).load(userPhoto).into(settingsImage);
+            }
+        }
+    }
+
 
     private boolean isPointInsideView(int x, int y, View view) {
         int[] location = new int[2];
@@ -480,7 +548,7 @@ public class Settings extends BaseActivity {
         });
     }
 
-    private void animateButtonOnClick(Button button) {
+    private void animateButtonOnClick(View button) {
         button.animate()
                 .scaleX(0.9f)
                 .scaleY(0.9f)
@@ -488,5 +556,68 @@ public class Settings extends BaseActivity {
                 .setInterpolator(new LinearInterpolator())
                 .withEndAction(() -> button.animate().scaleX(1.0f).scaleY(1.0f).setDuration(50).start())
                 .start();
+    }
+
+    private void setupCharacterCounters() {
+        // Remove the TextWatcher for settingsName (keep only for editDescription)
+
+        final int errorColor = ContextCompat.getColor(Settings.this, R.color.red);
+        final TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.textLight, typedValue, true);
+        final int textLightColor = typedValue.data;
+
+        // Only keep the TextWatcher for editDescription
+        editDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int length = s.length();
+                charDescription.setText(length + "/" + MAX_DESC_LENGTH);
+                charDescription.setTextColor(length > MAX_DESC_LENGTH ?
+                        errorColor :
+                        textLightColor);
+            }
+        });
+    }
+    private void clearAppCache() {
+        try {
+            deleteDir(getCacheDir());
+            if (getExternalCacheDir() != null) {
+                deleteDir(getExternalCacheDir());
+            }
+            new Thread(() -> {
+                Glide.get(this).clearDiskCache();
+                runOnUiThread(() -> {
+                });
+            }).start();
+            Glide.get(this).clearMemory();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean deleteDir(java.io.File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            if (children != null) {
+                for (String child : children) {
+                    boolean success = deleteDir(new java.io.File(dir, child));
+                    if (!success) {
+                        return false;
+                    }
+                }
+            }
+            return dir.delete();
+        } else if (dir != null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
+        }
     }
 }

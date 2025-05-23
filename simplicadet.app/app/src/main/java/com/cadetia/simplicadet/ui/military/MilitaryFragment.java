@@ -182,7 +182,7 @@ public class MilitaryFragment extends Fragment {
 
         transaction.replace(R.id.smallerFragmentContainer, fragment);
         transaction.addToBackStack(null);
-        transaction.commit();
+        transaction.commitAllowingStateLoss();
 
         // Add callback after transaction completes
         fragmentManager.executePendingTransactions();

@@ -102,7 +102,6 @@
     <string name="danger_zone">Zona de peligro</string>
     <string name="delete_account">Eliminar cuenta</string>
     <string name="reset_password">Restablecer contraseña</string>
-    <string name="clear_cache">Borrar memoria</string>
     <string name="log_out">Cerrar sesión</string>
 
     <string name="access_denied">Acceso denegado</string>
@@ -115,4 +114,8 @@
     <string name="no_internet_text">Algunas funciones no funcionarán correctamente, ¿quieres continuar?</string>
     <string name="logout">Cerrar sesión</string>
     <string name="logout_confirmation">¿Estás seguro de que deseas cerrar sesión?</string>
+
+    <string name="clear_cache">Limpiar Caché</string>
+    <string name="clear_cache_confirmation">¿Estás seguro de que quieres limpiar la caché de la aplicación? Esto eliminará archivos temporales y puede mejorar el rendimiento.</string>
+
 </resources>

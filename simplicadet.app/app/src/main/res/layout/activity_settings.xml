@@ -100,7 +100,7 @@
                             android:layout_gravity="center">
 
                             <com.google.android.material.imageview.ShapeableImageView
-                                android:id="@+id/loading_button"
+                                android:id="@+id/settings_image"
                                 android:layout_width="@dimen/_75sdp"
                                 android:layout_height="@dimen/_75sdp"
                                 android:layout_gravity="center"
@@ -160,6 +160,8 @@
                             app:backgroundTint="@null"
                             android:hint="@string/your_name_hint"
                             android:inputType="textPersonName"
+                            android:focusable="false"
+                            android:clickable="true"
                             android:textSize="@dimen/_14ssp"
                             android:textColorHint="?attr/textLight"
                             android:fontFamily="@font/circular_medium" />
@@ -169,6 +171,7 @@
                             android:layout_height="wrap_content">
 
                             <TextView
+                                android:id="@+id/char_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0/30"
@@ -212,6 +215,7 @@
                             android:layout_height="wrap_content">
 
                             <TextView
+                                android:id="@+id/char_description"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0/90"
@@ -234,7 +238,7 @@
                             android:layout_marginTop="@dimen/_5sdp" />
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/login_email"
+                            android:id="@+id/settings_email"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_45sdp"
                             android:paddingStart="@dimen/_12sdp"
@@ -243,6 +247,8 @@
                             android:layout_marginTop="@dimen/_5sdp"
                             android:drawablePadding="@dimen/_10sdp"
                             android:ems="10"
+                            android:focusable="false"
+                            android:clickable="true"
                             android:background="@drawable/uni_input_search"
                             app:backgroundTint="@null"
                             android:drawableTint="?attr/textNormal"
@@ -583,6 +589,8 @@
                             android:id="@+id/settings_clear"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50sdp"
+                            android:clickable="true"
+                            android:focusable="true"
                             android:background="@drawable/settings_item_bottom"
                             android:paddingStart="@dimen/_16sdp"
                             android:paddingEnd="@dimen/_16sdp">

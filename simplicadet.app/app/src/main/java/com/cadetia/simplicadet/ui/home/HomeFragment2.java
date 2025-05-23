@@ -145,6 +145,10 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     }
 
     public void loadNotesInBackground(final int requestCode, final boolean isNoteDeleted) {
+        if (executorService.isShutdown()) {
+            Log.w(TAG, "Executor is shutdown, skipping loadNotesInBackground");
+            return;
+        }
         executorService.execute(() -> {
             List<Note> notes = NotesDatabase.getDatabase(requireContext()).noteDao().getAllNotes();
             handler.post(() -> {
@@ -172,12 +176,6 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
                 showLoading(false);
             });
         });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executorService.shutdown();
     }
 
     public void showCreateNote(Note note, boolean isNoteDeleted) {

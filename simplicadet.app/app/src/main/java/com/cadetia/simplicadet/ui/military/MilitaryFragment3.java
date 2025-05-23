@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -98,10 +99,14 @@ public class MilitaryFragment3 extends Fragment {
 
         // capture original dimensions for rotation reset
         zoomLayout = view.findViewById(R.id.zoomLayout);
-        zoomLayout.post(() -> {
-            originalWidth  = zoomLayout.getWidth();
-            originalHeight = zoomLayout.getHeight();
-        });
+        if (zoomLayout != null) {
+            zoomLayout.post(() -> {
+                originalWidth  = zoomLayout.getWidth();
+                originalHeight = zoomLayout.getHeight();
+            });
+        } else {
+            Log.e("MilitaryFragment3", "zoomLayout is null");
+        }
 
         // parse formula into rows & cols
         String[] rows = formationFormula.split("\\n");

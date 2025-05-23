@@ -140,35 +140,40 @@ public class DbQuery {
         g_militaryJournalList.clear();
         g_homeJournalList.clear();
 
-        g_firestore.collection("JOURNAL")
-                .orderBy("JOURNAL_DATE")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        JournalEntry entry = new JournalEntry(
-                                doc.getString("JOURNAL_TITLE"),
-                                doc.getString("JOURNAL_SUBTITLE"),
-                                doc.getString("JOURNAL_DATE"),
-                                doc.getString("JOURNAL_IMAGE"),
-                                doc.getString("JOURNAL_LINK")
-                        );
+        if (g_firestore != null) {
+            g_firestore.collection("JOURNAL")
+                    .orderBy("JOURNAL_DATE")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            JournalEntry entry = new JournalEntry(
+                                    doc.getString("JOURNAL_TITLE"),
+                                    doc.getString("JOURNAL_SUBTITLE"),
+                                    doc.getString("JOURNAL_DATE"),
+                                    doc.getString("JOURNAL_IMAGE"),
+                                    doc.getString("JOURNAL_LINK")
+                            );
 
-                        // Check for JOURNAL_TAG (default to home if missing)
-                        String tag = doc.getString("JOURNAL_TAG");
-                        if ("CNMTV".equals(tag)) {
-                            g_militaryJournalList.add(entry); // Military journals
-                        } else {
-                            g_homeJournalList.add(entry); // Home journals
+                            // Check for JOURNAL_TAG (default to home if missing)
+                            String tag = doc.getString("JOURNAL_TAG");
+                            if ("CNMTV".equals(tag)) {
+                                g_militaryJournalList.add(entry); // Military journals
+                            } else {
+                                g_homeJournalList.add(entry); // Home journals
+                            }
+
+                            g_journalList.add(entry); // Optional: keep global list
                         }
-
-                        g_journalList.add(entry); // Optional: keep global list
-                    }
-                    listener.onSucces();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading journals: ", e);
-                    listener.onFailure();
-                });
+                        listener.onSucces();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Error loading journals: ", e);
+                        listener.onFailure();
+                    });
+        } else {
+            Log.e("DbQuery", "Firestore is null");
+            listener.onFailure();
+        }
     }
 
     // Add military/home journal loaders (similar to categories)
