@@ -121,6 +121,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         }, 1000);
     }
 
+
     private void showLoading(boolean show) {
         if (loadingLayout != null && contentView != null) {
             if (show) {

@@ -45,16 +45,36 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         CategoryModel category = catList.get(position);
         holder.catNameTextView.setText(category.getName());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-        holder.quizzRecyclerView.setLayoutManager(layoutManager);
+        // Reuse existing LayoutManager or create new
+        if (holder.quizzRecyclerView.getLayoutManager() == null) {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+            holder.quizzRecyclerView.setLayoutManager(layoutManager);
+        }
 
+        // Update QuizzAdapter with new data
         QuizzAdapter quizzAdapter = new QuizzAdapter(category.getQuizzList(), category.getDocID(), onQuizClickListener);
         holder.quizzRecyclerView.setAdapter(quizzAdapter);
+        quizzAdapter.notifyDataSetChanged(); // Explicitly notify changes
     }
 
     @Override
     public int getItemCount() {
         return catList.size();
+    }
+
+    public void updateCategories(List<CategoryModel> newCategories) {
+        this.catList.clear();
+        this.catList.addAll(newCategories);
+        notifyDataSetChanged();
+    }
+
+    public List<CategoryModel> getCategories() {
+        return catList;
+    }
+
+    public void clearCategories() {
+        this.catList.clear();
+        notifyDataSetChanged();
     }
 
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
