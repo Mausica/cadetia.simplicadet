@@ -44,7 +44,7 @@
     <!-- Home Screen -->
     <string name="home_search">Căutare</string>
     <string name="home_order">Ordine</string>
-    <string name="home_notes">Note</string>
+    <string name="home_notes">Notițe</string>
     <string name="home_formation">Formație</string>
     <string name="home_flow">Carduri</string>
     <string name="home_tasks">Sarcini</string>

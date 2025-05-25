@@ -32,6 +32,7 @@ import com.cadetia.simplicadet.activities.QuestionsActivity;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
 import com.cadetia.simplicadet.adapters.JournalAdapter;
+import com.cadetia.simplicadet.adapters.LearningPathAdapter;
 import com.cadetia.simplicadet.adapters.MainTaskAdapter;
 import com.cadetia.simplicadet.database.DatabaseClient;
 import com.cadetia.simplicadet.database.DbQuery;
@@ -41,16 +42,18 @@ import com.cadetia.simplicadet.model.JournalEntry;
 import com.cadetia.simplicadet.model.Task;
 import com.cadetia.simplicadet.utils.NetworkUtils;
 
+import com.cadetia.simplicadet.adapters.LearningPathAdapter;
+import com.cadetia.simplicadet.model.LearningPathModel;
+import com.cadetia.simplicadet.utils.LearningPathHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizClickListener, JournalAdapter.OnJournalClickListener {
-
+public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLearningPathClickListener, JournalAdapter.OnJournalClickListener {
     private static final String TAG = "HomeFragment1";
     private RecyclerView categoryRecyclerView;
     private RecyclerView mainTasksRecycler;
     private MainTaskAdapter mainTaskAdapter;
-    private CategoryAdapter categoryAdapter;
     private List<Task> tasks = new ArrayList<>();
     private Handler handler = new Handler();
     private boolean isLoadingDismissed = false;
@@ -59,6 +62,9 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     private JournalAdapter journalAdapter;
     private List<JournalEntry> journalList = new ArrayList<>();
     private LruCache<String, Bitmap> memCache;
+    private LearningPathAdapter learningPathAdapter;
+    private List<LearningPathModel> learningPathList = new ArrayList<>();
+    private static final int DEFAULT_PATH_NODES = 5;
 
     private View loadingLayout;
 
@@ -87,15 +93,14 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Calculate the maximum memory available for caching (in kilobytes)
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 8; // Cache size is 1/8th of the max memory
+        final int cacheSize = maxMemory / 8;
 
         // Initialize the cache
         memCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
-                return value.getByteCount() / 1024; // Return the size of the bitmap in kilobytes
+                return value.getByteCount() / 1024;
             }
         };
     }
@@ -109,7 +114,7 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
                 loadTaskFirstLayout();
                 if (NetworkUtils.isNetworkAvailable(requireContext())) {
                     loadJournals();
-                    loadCategories();
+                    loadLearningPath();
                 } else {
                     journalsLoaded = true;
                     categoriesLoaded = true;
@@ -121,6 +126,27 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         }, 1000);
     }
 
+    private void loadLearningPath() {
+        String categoryTitle = "HTML Grundlagen";
+        int nodeCount = DEFAULT_PATH_NODES;
+
+        learningPathList = LearningPathHelper.generateLearningPath(requireContext(), nodeCount, categoryTitle);
+        setUpLearningPathRecyclerView();
+
+        categoriesLoaded = true;
+        checkAllDataLoaded();
+    }
+
+    private void setUpLearningPathRecyclerView() {
+        if (isAdded()) {
+            learningPathAdapter = new LearningPathAdapter(learningPathList, requireContext(), this);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+            categoryRecyclerView.setLayoutManager(layoutManager);
+            categoryRecyclerView.setAdapter(learningPathAdapter);
+        } else {
+            Log.e(TAG, "Fragment is not attached, cannot set up learning path recycler view");
+        }
+    }
 
     private void showLoading(boolean show) {
         if (loadingLayout != null && contentView != null) {
@@ -148,8 +174,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         }
     }
 
-
-
     private void loadTaskFirstLayout() {
         if (isAdded()) {
             setUpAdapter();
@@ -158,7 +182,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             Log.w(TAG, "Fragment not attached, skipping task layout load");
         }
     }
-
 
     private void loadJournals() {
         DbQuery.loadJournals(new MyCompleteListener() {
@@ -193,7 +216,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             }
         });
     }
-
 
     private void getSavedTasks() {
         @SuppressLint("StaticFieldLeak")
@@ -250,31 +272,6 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
         }
     }
 
-    private void loadCategories() {
-        DbQuery.loadHomeCategories(requireContext(), new MyCompleteListener() {
-            @Override
-            public void onSucces() {
-                // Use the home-specific list
-                List<CategoryModel> categoryList = DbQuery.g_homeCatList;
-                if (categoryList != null && !categoryList.isEmpty()) {
-                    setUpCategoryRecyclerView(categoryList);
-                } else {
-                    Log.e(TAG, "Home category list is empty");
-                }
-                categoriesLoaded = true;
-                checkAllDataLoaded();
-            }
-
-            @Override
-            public void onFailure() {
-                Log.e(TAG, "Failed to load home categories");
-                categoriesLoaded = true;
-                checkAllDataLoaded();
-            }
-        });
-    }
-
-    // Helper method to check if all data is loaded
     private boolean tasksLoaded = false;
     private boolean journalsLoaded = false;
     private boolean categoriesLoaded = false;
@@ -285,29 +282,79 @@ public class HomeFragment1 extends Fragment implements CategoryAdapter.OnQuizCli
             showLoading(false);
         }
     }
+    @Override
+    public void onPathNodeClick(int position, LearningPathModel pathModel) {
+        if (!pathModel.isUnlocked()) {
+            Toast.makeText(requireContext(), "Complete previous lessons to unlock this one", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    private void setUpCategoryRecyclerView(List<CategoryModel> categoryList) {
-        if (isAdded()) { // Check if the fragment is attached
-            categoryAdapter = new CategoryAdapter(categoryList, requireContext(), this);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-            categoryRecyclerView.setLayoutManager(layoutManager);
-            categoryRecyclerView.setAdapter(categoryAdapter);
+        if (pathModel.isCompleted()) {
+            Toast.makeText(requireContext(), "Lesson already completed!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        simulateLessonCompletion(position, pathModel);
+
+        // Or you can start an actual activity like this:
+        // Intent intent = new Intent(requireContext(), QuestionsActivity.class);
+        // intent.putExtra("lessonId", pathModel.getId());
+        // intent.putExtra("lessonTitle", pathModel.getTitle());
+        // startActivityForResult(intent, 1);
+    }
+
+    private void simulateLessonCompletion(int position, LearningPathModel pathModel) {
+        // Mark the node as completed
+        LearningPathHelper.completeNode(requireContext(), learningPathList, position);
+
+        // Update the adapter
+        learningPathAdapter.updateNodeCompletion(position);
+
+        // Show completion message
+        String message = "Completed: " + pathModel.getTitle();
+        if (position + 1 < learningPathList.size()) {
+            message += "\nNext lesson unlocked!";
         } else {
-            Log.e(TAG, "Fragment is not attached, cannot set up category recycler view");
+            message += "\nCongratulations! All lessons completed!";
+        }
+
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+
+        // Check if path is completed
+        if (LearningPathHelper.isPathCompleted(learningPathList)) {
+            showPathCompletionDialog();
         }
     }
 
-    @Override
-    public void onQuizClick(String categoryId, String testId) {
-        // Get the context from categoryRecyclerView
-        Context context = categoryRecyclerView.getContext();
-        Intent intent = new Intent(context, QuestionsActivity.class);
+    private void showPathCompletionDialog() {
+        // You can show a custom dialog or use your existing ShowRedeem dialog
+        int totalScore = 100; // Calculate based on your scoring system
+        int correctAnswers = learningPathList.size();
+        int totalQuestions = learningPathList.size();
+        float totalTime = 60.0f; // Or calculate actual time spent
 
-        // Add the categoryId and testId to the intent
-        intent.putExtra("categoryId", categoryId);
-        intent.putExtra("testId", testId);
+        showRedeemDialog(totalScore, correctAnswers, totalQuestions, totalTime);
+    }
 
-        startActivityForResult(intent, 1);
+    public void setLearningPathNodeCount(int count) {
+        if (count > 0 && count <= 20) { // Reasonable limits
+            String categoryTitle = "HTML Grundlagen"; // Or get from current category
+            learningPathList = LearningPathHelper.generateLearningPath(requireContext(), count, categoryTitle);
+            if (learningPathAdapter != null) {
+                learningPathAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+    public void resetLearningPath() {
+        LearningPathHelper.resetLearningPath(requireContext(), learningPathList);
+        if (learningPathAdapter != null) {
+            learningPathAdapter.notifyDataSetChanged();
+        }
+        Toast.makeText(requireContext(), "Learning path reset!", Toast.LENGTH_SHORT).show();
+    }
+
+    public int getLearningPathProgress() {
+        return LearningPathHelper.getProgressPercentage(learningPathList);
     }
 
     private void showRedeemDialog(int totalScore, int correctAnswers, int totalQuestions, float totalTime) {
