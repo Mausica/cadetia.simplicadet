@@ -61,10 +61,10 @@
 
 
     <color name="green">#D91EB955</color>
-    <color name="green_transparent">#8C009B37</color>
+    <color name="green_transparent">#00832C</color>
 
     <color name="red">#D9FA5A50</color>
-    <color name="red_transparent">#D9D23C28</color>
+    <color name="red_transparent">#BD3723</color>
 
     <color name="green_light">#1ED760</color>
     <color name="green_medium">#1DB954</color>
