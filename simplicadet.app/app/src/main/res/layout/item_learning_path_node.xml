@@ -5,24 +5,25 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <!-- Connection Path Container - Starts right after the node -->
+    <!-- Connection Path Container - Behind everything (drawn first) -->
     <FrameLayout
         android:id="@+id/connectionContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="60dp">
 
-        <!-- Curved connector path will be drawn here -->
+        <!-- Curved connector path will be drawn here - NO elevation so it stays behind -->
         <ImageView
             android:id="@+id/connectionPath"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:elevation="0dp" />
 
     </FrameLayout>
 
-    <!-- Node Container - Positioned at the top -->
+    <!-- Node Container - Positioned at the top with higher elevation to appear above paths -->
     <FrameLayout
         android:id="@+id/nodeContainer"
         android:layout_width="100dp"
@@ -32,7 +33,7 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
-        android:elevation="6dp">
+        android:elevation="8dp">
 
         <!-- Node Icon -->
         <ImageView
@@ -40,7 +41,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_play" />
+            android:src="@drawable/ic_play"
+            android:elevation="2dp" />
 
     </FrameLayout>
 
