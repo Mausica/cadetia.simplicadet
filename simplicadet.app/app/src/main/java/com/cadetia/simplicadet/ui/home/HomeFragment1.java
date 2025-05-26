@@ -326,7 +326,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             message += "\nCongratulations! All lessons completed!";
         }
 
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+        //Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
 
         // Check if path is completed
         if (LearningPathHelper.isPathCompleted(learningPathList)) {

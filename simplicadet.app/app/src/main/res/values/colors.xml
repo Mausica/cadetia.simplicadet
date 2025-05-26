@@ -87,9 +87,9 @@
     <color name="aquamarine">#9bf0e1</color>
 
     <!-- Learning Path Colors -->
-    <color name="path_completed">#4CAF50</color>      <!-- Green for completed nodes -->
-    <color name="path_unlocked">#9C27B0</color>       <!-- Purple for unlocked nodes -->
-    <color name="path_locked">#E0E0E0</color>         <!-- Gray for locked nodes -->
+    <color name="path_completed">#4CAF50</color>
+    <color name="path_unlocked">#9C27B0</color>
+    <color name="path_locked">#E0E0E0</color>
 
     <!-- Text Colors -->
     <color name="text_primary">#212121</color>
