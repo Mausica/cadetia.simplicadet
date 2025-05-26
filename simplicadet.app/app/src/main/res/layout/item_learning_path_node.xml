@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="180dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
@@ -23,23 +23,23 @@
 
     </FrameLayout>
 
-    <!-- Node Container - Made larger -->
+    <!-- Node Container - Made even larger -->
     <FrameLayout
         android:id="@+id/nodeContainer"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/node_background_unlocked"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
-        android:elevation="4dp">
+        android:elevation="6dp">
 
-        <!-- Node Icon - Made larger -->
+        <!-- Node Icon - Made even larger -->
         <ImageView
             android:id="@+id/nodeIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_play" />
 
