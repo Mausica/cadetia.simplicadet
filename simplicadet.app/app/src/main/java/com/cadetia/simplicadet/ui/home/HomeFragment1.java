@@ -140,9 +140,17 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     private void setUpLearningPathRecyclerView() {
         if (isAdded()) {
             learningPathAdapter = new LearningPathAdapter(learningPathList, requireContext(), this);
+
+            // Use LinearLayoutManager for vertical scrolling
             LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
             categoryRecyclerView.setLayoutManager(layoutManager);
             categoryRecyclerView.setAdapter(learningPathAdapter);
+
+            // Optional: Add some padding to the RecyclerView for better visual appearance
+            int padding = (int) (16 * requireContext().getResources().getDisplayMetrics().density);
+            categoryRecyclerView.setPadding(padding, padding, padding, padding);
+            categoryRecyclerView.setClipToPadding(false);
+
         } else {
             Log.e(TAG, "Fragment is not attached, cannot set up learning path recycler view");
         }
