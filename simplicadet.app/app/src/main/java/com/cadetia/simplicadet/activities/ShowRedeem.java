@@ -145,7 +145,7 @@ public class ShowRedeem extends BottomSheetDialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if (interstitialAdd != null) {
-            interstitialAdd.showInterstitialAd(requireActivity()); // Show the ad when the dialog is dismissed
+            interstitialAdd.showInterstitialAd(requireActivity());
         }
     }
 

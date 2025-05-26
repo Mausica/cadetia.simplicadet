@@ -63,7 +63,8 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
         } else if (pathModel.isUnlocked()) {
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_unlocked);
             holder.nodeIcon.setImageResource(R.drawable.ic_play);
-            holder.nodeIcon.setColorFilter(Color.WHITE);
+            holder.nodeIcon.setColorFilter(getThemeColor(R.attr.textNormal));
+            holder.nodeIcon.setAlpha(0.8f);
         } else {
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_locked);
             holder.nodeIcon.setImageResource(R.drawable.ic_lock);
@@ -84,7 +85,7 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
         int connectorColor = learningPathList.get(position).isCompleted() ? ContextCompat.getColor(context, R.color.primary) : getThemeColor(R.attr.textDark);
         FrameLayout.LayoutParams nodeParams = (FrameLayout.LayoutParams) holder.nodeContainer.getLayoutParams();
         setNodePosition(nodeParams, position);
-        // Use post to ensure the container dimensions are available
+
         holder.connectionContainer.post(() -> createConnectorPath(holder, position, connectorColor));
         holder.nodeContainer.setLayoutParams(nodeParams);
         holder.connectionPath.setVisibility(View.VISIBLE);
@@ -102,19 +103,16 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
 
     private void createConnectorPath(LearningPathViewHolder holder, int position, int color) {
         int w = holder.connectionContainer.getWidth();
-        int h = holder.connectionContainer.getHeight(); // This is ~120dp
+        int h = holder.connectionContainer.getHeight();
         if (w == 0 || h == 0) return;
 
-        // Create a bitmap slightly taller to allow drawing 'into' the next item space
         Bitmap bitmap = Bitmap.createBitmap(w, h + dpToPx(10), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
         float[] currentPos = getActualNodePosition(position, w);
         float[] nextPos = getActualNodePosition(position + 1, w);
 
-        // Y = 40dp (node_bottom) inside connection_container (which starts at 60dp)
         float startY = dpToPx(40);
-        // End Y = container_height + 5dp (aiming slightly into next item top)
         float endY = h + dpToPx(5);
         float startX = currentPos[0];
         float endX = nextPos[0];
@@ -131,12 +129,10 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
         float deltaX = endX - startX;
         float deltaY = endY - startY;
 
-        // Determine the direction of the curve
         boolean curveRight = (position % 4 == 0) || (position % 4 == 3);
 
-        // Control points for S-curve
-        float baseOffset = dpToPx(40); // REDUCED offset (was 60, then 50) for tighter curves
-        float yControlOffset = deltaY * 0.45f; // Y-position of control points
+        float baseOffset = dpToPx(40);
+        float yControlOffset = deltaY * 0.45f;
 
         float controlX1, controlY1, controlX2, controlY2;
 
@@ -151,12 +147,10 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
         controlY1 = startY + yControlOffset;
         controlY2 = endY - yControlOffset;
 
-        // Ensure control points don't go too far
         float margin = dpToPx(10);
         controlX1 = Math.max(margin, Math.min(containerWidth - margin, controlX1));
         controlX2 = Math.max(margin, Math.min(containerWidth - margin, controlX2));
 
-        // Use cubicTo for a smooth S-curve
         path.cubicTo(controlX1, controlY1, controlX2, controlY2, endX, endY);
 
         return path;
@@ -164,14 +158,12 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
 
 
     private void drawPirateMapConnection(Canvas canvas, Path path, int color, int position) {
-        // --- Shadow effect removed ---
-
         Paint pathPaint = new Paint();
         pathPaint.setColor(color);
         pathPaint.setStrokeWidth(dpToPx(5));
         pathPaint.setStyle(Paint.Style.STROKE);
         pathPaint.setAntiAlias(true);
-        // Use ROUND caps and joins for smoother connections and ends
+
         pathPaint.setStrokeCap(Paint.Cap.ROUND);
         pathPaint.setStrokeJoin(Paint.Join.ROUND);
 
@@ -185,17 +177,15 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
     private float[] getActualNodePosition(int position, int containerWidth) {
         float[] pos = new float[2];
         float centerX = containerWidth / 2f;
-        float nodeRadius = dpToPx(50); // Half the width/height of nodeContainer (100dp)
+        float nodeRadius = dpToPx(50);
         switch (position % 4) {
-            case 0: pos[0] = dpToPx(40) + nodeRadius; break; // Start Left + Radius
-            case 1: pos[0] = containerWidth - dpToPx(40) - nodeRadius; break; // End Right - Radius
-            // Adjusted center positions slightly for better visual alignment
-            case 2: pos[0] = centerX + dpToPx(15); break; // Center + offset right
-            case 3: pos[0] = centerX - dpToPx(15); break; // Center - offset left
+            case 0: pos[0] = dpToPx(40) + nodeRadius; break;
+            case 1: pos[0] = containerWidth - dpToPx(40) - nodeRadius; break;
+            case 2: pos[0] = centerX + dpToPx(15); break;
+            case 3: pos[0] = centerX - dpToPx(15); break;
             default: pos[0] = centerX;
         }
-        // Y position is handled in createConnectorPath now
-        pos[1] = 0; // Not strictly needed here anymore
+        pos[1] = 0;
         return pos;
     }
 
