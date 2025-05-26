@@ -64,7 +64,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     private LruCache<String, Bitmap> memCache;
     private LearningPathAdapter learningPathAdapter;
     private List<LearningPathModel> learningPathList = new ArrayList<>();
-    private static final int DEFAULT_PATH_NODES = 5;
+    private static final int DEFAULT_PATH_NODES = 10;
 
     private View loadingLayout;
 

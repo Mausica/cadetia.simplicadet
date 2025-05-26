@@ -46,14 +46,9 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
     @Override
     public void onBindViewHolder(@NonNull LearningPathViewHolder holder, int position) {
         LearningPathModel pathModel = learningPathList.get(position);
-
-        // Configure node appearance
         configureNodeAppearance(holder, pathModel, position);
-
-        // Configure positioning and connectors
         configureNodePositionAndConnectors(holder, position);
 
-        // Set click listener on the entire node container
         holder.nodeContainer.setOnClickListener(v -> {
             if (pathModel.isUnlocked() && listener != null) {
                 listener.onPathNodeClick(position, pathModel);
@@ -63,17 +58,14 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
 
     private void configureNodeAppearance(LearningPathViewHolder holder, LearningPathModel pathModel, int position) {
         if (pathModel.isCompleted()) {
-            // Completed state
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_completed);
-            holder.nodeIcon.setImageResource(R.drawable.ic_check);
+            holder.nodeIcon.setImageResource(R.drawable.home_ic_check);
             holder.nodeIcon.setColorFilter(Color.WHITE);
         } else if (pathModel.isUnlocked()) {
-            // Unlocked state
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_unlocked);
             holder.nodeIcon.setImageResource(R.drawable.ic_play);
             holder.nodeIcon.setColorFilter(Color.WHITE);
         } else {
-            // Locked state
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_locked);
             holder.nodeIcon.setImageResource(R.drawable.ic_lock);
             holder.nodeIcon.setColorFilter(ContextCompat.getColor(context, R.color.text_secondary));
@@ -86,60 +78,42 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
     }
 
     private void configureNodePositionAndConnectors(LearningPathViewHolder holder, int position) {
-        // If this is the last item, don't show connectors
         if (position == learningPathList.size() - 1) {
             holder.connectionPath.setVisibility(View.GONE);
-            // Position the last node
             FrameLayout.LayoutParams nodeParams = (FrameLayout.LayoutParams) holder.nodeContainer.getLayoutParams();
             setNodePosition(nodeParams, position);
             holder.nodeContainer.setLayoutParams(nodeParams);
             return;
         }
 
-        // Determine connector color based on current node completion status
         int connectorColor = learningPathList.get(position).isCompleted() ?
                 ContextCompat.getColor(context, R.color.primary) :
                 ContextCompat.getColor(context, R.color.primary_transparent);
 
-        // Position nodes in zigzag pattern
         FrameLayout.LayoutParams nodeParams = (FrameLayout.LayoutParams) holder.nodeContainer.getLayoutParams();
         setNodePosition(nodeParams, position);
-
-        // Create connection path after layout
         holder.connectionContainer.post(() -> createConnectorPath(holder, position, connectorColor));
-
         holder.nodeContainer.setLayoutParams(nodeParams);
         holder.connectionPath.setVisibility(View.VISIBLE);
     }
 
     private void setNodePosition(FrameLayout.LayoutParams nodeParams, int position) {
-        // Clear existing margins
-        nodeParams.leftMargin = 0;
-        nodeParams.rightMargin = 0;
-        nodeParams.topMargin = 0;
-        nodeParams.bottomMargin = 0;
+        nodeParams.leftMargin = nodeParams.rightMargin = nodeParams.topMargin = nodeParams.bottomMargin = 0;
 
-        // Zigzag pattern with 4 positions for better map-like appearance
-        int pattern = position % 4;
-
-        switch (pattern) {
+        switch (position % 4) {
             case 0:
-                // Left position
                 nodeParams.gravity = android.view.Gravity.START | android.view.Gravity.TOP;
                 nodeParams.leftMargin = dpToPx(40);
                 break;
             case 1:
-                // Right position
                 nodeParams.gravity = android.view.Gravity.END | android.view.Gravity.TOP;
                 nodeParams.rightMargin = dpToPx(40);
                 break;
             case 2:
-                // Center-right position
                 nodeParams.gravity = android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP;
                 nodeParams.leftMargin = dpToPx(60);
                 break;
             case 3:
-                // Center-left position
                 nodeParams.gravity = android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP;
                 nodeParams.rightMargin = dpToPx(60);
                 break;
@@ -147,87 +121,55 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
     }
 
     private void createConnectorPath(LearningPathViewHolder holder, int position, int color) {
-        int containerWidth = holder.connectionContainer.getWidth();
-        int containerHeight = holder.connectionContainer.getHeight();
+        int w = holder.connectionContainer.getWidth();
+        int h = holder.connectionContainer.getHeight();
+        if (w == 0 || h == 0) return;
 
-        if (containerWidth == 0 || containerHeight == 0) {
-            return; // Container not measured yet
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(containerWidth, containerHeight, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
-        // Get the actual positions of current and next nodes
-        float[] currentPos = getActualNodePosition(position, containerWidth);
-        float[] nextPos = getActualNodePosition(position + 1, containerWidth);
+        float[] currentPos = getActualNodePosition(position, w);
+        float[] nextPos = getActualNodePosition(position + 1, w);
 
-        // Connection container layout:
-        // - Total item height: 180dp
-        // - Node at top: 0-100dp
-        // - Connection container: 40dp from top, so 40-180dp (140dp tall)
-        // - Connection path ImageView: 120dp tall, centered in container
-
-        // Start point: bottom of current node
-        // Current node bottom is at 100dp from item top
-        // Connection container starts at 40dp, so node bottom is 60dp into container
         float startX = currentPos[0];
-        float startY = dpToPx(60);
-
-        // End point: top of next node (which will be in the next RecyclerView item)
-        // The path should go towards the bottom of this connection area
-        // where it will connect to the top of the next node
+        float startY = dpToPx(35);
         float endX = nextPos[0];
-        float endY = containerHeight - dpToPx(20); // Near bottom of connection container
+        float endY = h + dpToPx(5);
 
-        // Create simple curved path
         Path path = createTreasureMapPath(startX, startY, endX, endY);
-
-        // Draw the connection
         drawTreasureMapConnection(canvas, path, color, position);
 
-        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), bitmap);
-        holder.connectionPath.setImageDrawable(drawable);
+        holder.connectionPath.setImageDrawable(new BitmapDrawable(context.getResources(), bitmap));
     }
 
     private Path createTreasureMapPath(float startX, float startY, float endX, float endY) {
         Path path = new Path();
         path.moveTo(startX, startY);
 
-        // Calculate control points for a smooth curved path
         float deltaX = endX - startX;
         float deltaY = endY - startY;
         float distance = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        float controlOffset = Math.min(distance * 0.5f, dpToPx(70));
 
-        // Create a gentle S-curve like treasure map paths
-        // Control points are offset to create a natural curve
-        float controlOffset = Math.min(distance * 0.4f, dpToPx(60));
-
-        // First control point - curved away from start direction
         float control1X = startX + deltaX * 0.3f;
         float control1Y = startY + deltaY * 0.2f;
-
-        // Add some perpendicular offset for the curve
-        float perpX = -deltaY / distance * controlOffset * 0.5f;
-        float perpY = deltaX / distance * controlOffset * 0.5f;
+        float perpX = -deltaY / distance * controlOffset * 0.6f;
+        float perpY = deltaX / distance * controlOffset * 0.6f;
         control1X += perpX;
         control1Y += perpY;
 
-        // Second control point - curved toward end direction
         float control2X = startX + deltaX * 0.7f;
         float control2Y = startY + deltaY * 0.8f;
         control2X -= perpX;
         control2Y -= perpY;
 
-        // Create smooth cubic bezier curve
         path.cubicTo(control1X, control1Y, control2X, control2Y, endX, endY);
-
         return path;
     }
 
     private void drawTreasureMapConnection(Canvas canvas, Path path, int color, int position) {
         boolean isCompleted = learningPathList.get(position).isCompleted();
 
-        // Create dotted/dashed path like in treasure maps
         Paint pathPaint = new Paint();
         pathPaint.setColor(color);
         pathPaint.setStrokeWidth(dpToPx(4));
@@ -236,73 +178,47 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
         pathPaint.setStrokeCap(Paint.Cap.ROUND);
         pathPaint.setStrokeJoin(Paint.Join.ROUND);
 
-        // Create dashed effect like treasure map dotted lines
-        if (isCompleted) {
-            // Solid line for completed paths
-            pathPaint.setPathEffect(null);
-        } else {
-            // Dotted line for incomplete paths
-            DashPathEffect dashEffect = new DashPathEffect(new float[]{dpToPx(8), dpToPx(6)}, 0);
-            pathPaint.setPathEffect(dashEffect);
+        if (!isCompleted) {
+            pathPaint.setPathEffect(new DashPathEffect(new float[]{dpToPx(10), dpToPx(8)}, 0));
         }
 
-        // Draw subtle shadow for depth
         Paint shadowPaint = new Paint(pathPaint);
-        shadowPaint.setColor(Color.argb(30, 0, 0, 0));
+        shadowPaint.setColor(Color.argb(35, 0, 0, 0));
         shadowPaint.setStrokeWidth(dpToPx(6));
 
         canvas.save();
-        canvas.translate(dpToPx(1), dpToPx(1));
+        canvas.translate(dpToPx(2), dpToPx(2));
         canvas.drawPath(path, shadowPaint);
         canvas.restore();
 
-        // Draw main path
         canvas.drawPath(path, pathPaint);
 
-        // Add glow effect for completed paths
         if (isCompleted) {
             Paint glowPaint = new Paint();
-            glowPaint.setColor(Color.argb(40, Color.red(color), Color.green(color), Color.blue(color)));
-            glowPaint.setStrokeWidth(dpToPx(8));
+            glowPaint.setColor(Color.argb(45, Color.red(color), Color.green(color), Color.blue(color)));
+            glowPaint.setStrokeWidth(dpToPx(9));
             glowPaint.setStyle(Paint.Style.STROKE);
             glowPaint.setAntiAlias(true);
             glowPaint.setStrokeCap(Paint.Cap.ROUND);
             glowPaint.setStrokeJoin(Paint.Join.ROUND);
 
             canvas.drawPath(path, glowPaint);
-            canvas.drawPath(path, pathPaint); // Redraw main path on top
+            canvas.drawPath(path, pathPaint);
         }
     }
 
     private float[] getActualNodePosition(int position, int containerWidth) {
         float[] pos = new float[2];
-        int pattern = position % 4;
-
         float centerX = containerWidth / 2f;
-        float nodeRadius = dpToPx(50); // Half of node width (100dp / 2)
+        float nodeRadius = dpToPx(50);
 
-        switch (pattern) {
-            case 0:
-                // Left position - center of the node
-                pos[0] = dpToPx(40) + nodeRadius;
-                break;
-            case 1:
-                // Right position - center of the node
-                pos[0] = containerWidth - dpToPx(40) - nodeRadius;
-                break;
-            case 2:
-                // Center-right position - center of the node
-                pos[0] = centerX + dpToPx(60);
-                break;
-            case 3:
-                // Center-left position - center of the node
-                pos[0] = centerX - dpToPx(60);
-                break;
-            default:
-                pos[0] = centerX;
+        switch (position % 4) {
+            case 0: pos[0] = dpToPx(40) + nodeRadius; break;
+            case 1: pos[0] = containerWidth - dpToPx(40) - nodeRadius; break;
+            case 2: pos[0] = centerX + dpToPx(60); break;
+            case 3: pos[0] = centerX - dpToPx(60); break;
+            default: pos[0] = centerX;
         }
-
-        pos[1] = 0; // Y position handled in path creation
         return pos;
     }
 
@@ -317,30 +233,21 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
 
     public void updateNodeCompletion(int position) {
         if (position >= 0 && position < learningPathList.size()) {
-            LearningPathModel currentNode = learningPathList.get(position);
-            currentNode.setCompleted(true);
+            learningPathList.get(position).setCompleted(true);
 
-            // Unlock next node if it exists
             if (position + 1 < learningPathList.size()) {
-                LearningPathModel nextNode = learningPathList.get(position + 1);
-                nextNode.setUnlocked(true);
+                learningPathList.get(position + 1).setUnlocked(true);
                 notifyItemChanged(position + 1);
             }
 
             notifyItemChanged(position);
-
-            // Update previous item to refresh connector color
-            if (position > 0) {
-                notifyItemChanged(position - 1);
-            }
+            if (position > 0) notifyItemChanged(position - 1);
         }
     }
 
     static class LearningPathViewHolder extends RecyclerView.ViewHolder {
-        FrameLayout nodeContainer;
-        ImageView nodeIcon;
-        FrameLayout connectionContainer;
-        ImageView connectionPath;
+        FrameLayout nodeContainer, connectionContainer;
+        ImageView nodeIcon, connectionPath;
 
         public LearningPathViewHolder(@NonNull View itemView) {
             super(itemView);
