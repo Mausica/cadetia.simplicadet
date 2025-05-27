@@ -5,11 +5,22 @@
     android:layout_height="match_parent"
     android:background="?attr/backgroundColor">
 
+    <TextView
+        android:id="@+id/flashcards_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/circular_bold"
+        android:text="Grafuri conexe"
+        android:gravity="center"
+        android:textColor="?attr/textNormal"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textSize="@dimen/_24ssp" />
+
     <FrameLayout
         android:id="@+id/card_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_40sdp"
         android:layout_marginBottom="@dimen/_90sdp">
 
         <FrameLayout

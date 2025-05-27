@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:background="@drawable/home_background_quizz"
+    android:padding="@dimen/_10sdp"
+    android:layout_marginStart="@dimen/_12sdp"
+    android:layout_marginTop="@dimen/_12sdp"
+    android:layout_marginEnd="@dimen/_12sdp"
+    android:layout_marginBottom="@dimen/_5sdp"
+    android:elevation="4dp"
+    android:gravity="center_vertical">
+
+    <!-- Title and Progress Text Container -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/pathTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text=""
+            android:textSize="@dimen/_20ssp"
+            android:textStyle="bold"
+            android:textColor="?attr/textNormal"
+            android:fontFamily="@font/circular_bold" />
+
+    </LinearLayout>
+
+    <!-- Progress Container -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="@dimen/_54sdp"
+            android:layout_height="@dimen/_54sdp"
+            android:layout_gravity="center">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/circularProgress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:progress="25"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:indicatorSize="90dp"
+                app:trackCornerRadius="@dimen/_7sdp"
+                app:trackThickness="@dimen/_7sdp"
+                app:trackColor="?attr/shimmerLight"
+                app:indicatorColor="@color/primary"
+                app:indicatorDirectionCircular="clockwise"
+                app:indicatorInset="5dp"
+                tools:progress="25"/>
+
+            <TextView
+                android:id="@+id/progressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/_11ssp"
+                android:text="25%"
+                android:fontFamily="@font/circular_bold"
+                android:textColor="?attr/textNormal"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintBottom_toBottomOf="@+id/circularProgress"
+                app:layout_constraintEnd_toEndOf="@+id/circularProgress"
+                app:layout_constraintStart_toStartOf="@+id/circularProgress"
+                app:layout_constraintTop_toTopOf="@+id/circularProgress"
+                tools:text="25%" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

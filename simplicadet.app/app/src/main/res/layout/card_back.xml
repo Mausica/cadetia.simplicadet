@@ -11,19 +11,40 @@
         android:layout_height="match_parent"
         android:padding="16dp"
         android:src="@drawable/button_blue"
-        app:tint="@color/green"
-        android:tint="@color/green"
+        app:tint="@color/spearmint"
+        android:tint="@color/spearmint"
         tools:ignore="UseAppTint" />
 
-    <TextView
-        android:id="@+id/text_view_back"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_28ssp"
+        android:layout_height="wrap_content"
         android:padding="@dimen/_40sdp"
-        android:text="Multiple lines at once, please dont screw this app"
-        android:fontFamily="@font/circular_bold"
-        android:gravity="center"/>
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/back_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@color/secondary"
+            android:layout_marginBottom="@dimen/_25sdp"
+            android:maxHeight="@dimen/_400sdp"
+            android:scaleType="centerCrop"
+            android:cropToPadding="false"
+            app:riv_corner_radius="@dimen/_50sdp" />
+
+        <TextView
+            android:id="@+id/text_view_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_28ssp"
+            android:text="Multiple lines at once, please dont screw this app"
+            android:fontFamily="@font/circular_bold"
+            android:gravity="center"/>
+    </LinearLayout>
+
 
 </FrameLayout>

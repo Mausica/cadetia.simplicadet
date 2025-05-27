@@ -27,27 +27,27 @@
             android:maxHeight="@dimen/_160sdp"
             android:scaleType="fitXY"
             android:cropToPadding="false"
-            app:riv_corner_radius="25dp" />
+            app:riv_corner_radius="15dp" />
 
         <TextView
             android:id="@+id/journal_date"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_20sdp"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:text=""
+            android:text="12313123"
             android:maxLines="1"
             android:textAlignment="center"
             android:fontFamily="@font/circular_bold"
             android:includeFontPadding="false"
             android:textColor="?attr/textLight"
             android:textSize="@dimen/_8ssp"
-            android:background="@drawable/home_background_quizz_low"
+            android:background="@drawable/background_future"
             android:paddingTop="8dp"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="8dp"
             tools:ignore="RtlCompat" />
     </FrameLayout>
 

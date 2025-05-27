@@ -62,6 +62,19 @@
                 android:paddingBottom="@dimen/_20sdp"
                 android:nestedScrollingEnabled="false"/>
 
+            <!-- Learning Path Header -->
+            <include
+                android:id="@+id/learningPathHeader"
+                layout="@layout/item_learning_path_header"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="3dp"
+                android:visibility="gone" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoryRecyclerView"
                 android:layout_width="match_parent"

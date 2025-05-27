@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -47,6 +48,8 @@ import com.cadetia.simplicadet.adapters.LearningPathAdapter;
 import com.cadetia.simplicadet.model.LearningPathModel;
 import com.cadetia.simplicadet.utils.LearningPathHelper;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,10 +68,15 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     private LruCache<String, Bitmap> memCache;
     private LearningPathAdapter learningPathAdapter;
     private List<LearningPathModel> learningPathList = new ArrayList<>();
-    private static final int DEFAULT_PATH_NODES = 5;
+    private static final int DEFAULT_PATH_NODES = 13;
+
+    // Learning Path Header Views
+    private View learningPathHeader;
+    private TextView pathTitle;
+    private TextView progressText;
+    private CircularProgressIndicator circularProgress;
 
     private View loadingLayout;
-
     private View contentView;
 
     public HomeFragment1() {
@@ -86,9 +94,23 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
 
+        // Initialize learning path header
+        initializeLearningPathHeader(view);
+
         showLoading(true);
 
         return view;
+    }
+
+    private void initializeLearningPathHeader(View parentView) {
+        // Find the header view in your fragment layout
+        learningPathHeader = parentView.findViewById(R.id.learningPathHeader);
+
+        if (learningPathHeader != null) {
+            pathTitle = learningPathHeader.findViewById(R.id.pathTitle);
+            progressText = learningPathHeader.findViewById(R.id.progressText);
+            circularProgress = learningPathHeader.findViewById(R.id.circularProgress);
+        }
     }
 
     @Override
@@ -128,14 +150,48 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     }
 
     private void loadLearningPath() {
-        String categoryTitle = "HTML Grundlagen";
+        String categoryTitle = "Grafuri";
         int nodeCount = DEFAULT_PATH_NODES;
 
         learningPathList = LearningPathHelper.generateLearningPath(requireContext(), nodeCount, categoryTitle);
         setUpLearningPathRecyclerView();
+        updateLearningPathHeader();
 
         categoriesLoaded = true;
         checkAllDataLoaded();
+    }
+
+    private void updateLearningPathHeader() {
+        if (learningPathHeader == null || learningPathList.isEmpty()) {
+            return;
+        }
+
+        // Calculate progress
+        int completedNodes = 0;
+        for (LearningPathModel node : learningPathList) {
+            if (node.isCompleted()) {
+                completedNodes++;
+            }
+        }
+
+        int totalNodes = learningPathList.size();
+        int progressPercentage = totalNodes > 0 ? (completedNodes * 100) / totalNodes : 0;
+
+        // Update header views
+        if (pathTitle != null) {
+            pathTitle.setText("Grafuri");
+        }
+
+        if (progressText != null) {
+            progressText.setText(progressPercentage + "%");
+        }
+
+        if (circularProgress != null) {
+            circularProgress.setProgress(progressPercentage);
+        }
+
+        // Show/hide header based on whether we have learning path data
+        learningPathHeader.setVisibility(totalNodes > 0 ? View.VISIBLE : View.GONE);
     }
 
     private void setUpLearningPathRecyclerView() {
@@ -149,7 +205,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
 
             // Optional: Add some padding to the RecyclerView for better visual appearance
             int padding = (int) (16 * requireContext().getResources().getDisplayMetrics().density);
-            categoryRecyclerView.setPadding(padding, padding, padding, padding);
+            categoryRecyclerView.setPadding(padding, 0, padding, padding); // Remove top padding since header is now separate
             categoryRecyclerView.setClipToPadding(false);
 
         } else {
@@ -291,6 +347,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             showLoading(false);
         }
     }
+
     @Override
     public void onPathNodeClick(int position, LearningPathModel pathModel) {
         if (!pathModel.isUnlocked()) {
@@ -322,6 +379,9 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         // Update the adapter
         learningPathAdapter.updateNodeCompletion(position);
 
+        // Update the header with new progress
+        updateLearningPathHeader();
+
         // Show completion message
         String message = "Completed: " + pathModel.getTitle();
         if (position + 1 < learningPathList.size()) {
@@ -350,18 +410,23 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
 
     public void setLearningPathNodeCount(int count) {
         if (count > 0 && count <= 20) { // Reasonable limits
-            String categoryTitle = "HTML Grundlagen"; // Or get from current category
+            String categoryTitle = "Grafuri"; // Or get from current category
             learningPathList = LearningPathHelper.generateLearningPath(requireContext(), count, categoryTitle);
             if (learningPathAdapter != null) {
                 learningPathAdapter.notifyDataSetChanged();
             }
+            // Update header when node count changes
+            updateLearningPathHeader();
         }
     }
+
     public void resetLearningPath() {
         LearningPathHelper.resetLearningPath(requireContext(), learningPathList);
         if (learningPathAdapter != null) {
             learningPathAdapter.notifyDataSetChanged();
         }
+        // Update header when path is reset
+        updateLearningPathHeader();
         Toast.makeText(requireContext(), "Learning path reset!", Toast.LENGTH_SHORT).show();
     }
 
