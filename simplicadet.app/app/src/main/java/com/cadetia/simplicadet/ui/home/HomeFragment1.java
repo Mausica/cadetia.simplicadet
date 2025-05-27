@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cadetia.simplicadet.R;
+import com.cadetia.simplicadet.activities.FlashcardsActivity;
 import com.cadetia.simplicadet.activities.Home;
 import com.cadetia.simplicadet.activities.QuestionsActivity;
 import com.cadetia.simplicadet.activities.ShowRedeem;
@@ -303,6 +304,9 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         }
 
         simulateLessonCompletion(position, pathModel);
+
+        Intent intent = new Intent(getActivity(), FlashcardsActivity.class);
+        startActivity(intent);
 
         // Or you can start an actual activity like this:
         // Intent intent = new Intent(requireContext(), QuestionsActivity.class);
