@@ -5,27 +5,27 @@ import android.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cadetia.simplicadet.listeners.MyCompleteListener;
+import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
+import com.cadetia.simplicadet.model.QuestionModel;
+import com.cadetia.simplicadet.model.Quizz;
 import com.cadetia.simplicadet.model.RankModel;
-import com.google.firebase.firestore.CollectionReference;
+import com.cadetia.simplicadet.model.UserModel;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.cadetia.simplicadet.listeners.MyCompleteListener;
-import com.cadetia.simplicadet.model.CategoryModel;
-import com.cadetia.simplicadet.model.QuestionModel;
-import com.cadetia.simplicadet.model.Quizz;
-import com.cadetia.simplicadet.model.UserModel;
-import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class DbQuery {
 
@@ -38,13 +38,35 @@ public class DbQuery {
     public static List<RankModel> g_rankList = new ArrayList<>();
     public static List<JournalEntry> g_militaryJournalList = new ArrayList<>();
     public static List<JournalEntry> g_homeJournalList = new ArrayList<>();
+    public static LearningPath g_learningPath;
+    public static List<FlashcardModel> g_flashcardList = new ArrayList<>();
 
     public static int g_selected_cat_index = 0;
     public static int g_selected_test_index = 0;
 
-    // Added separate lists for military and home fragments
     public static List<CategoryModel> g_militaryCatList = new ArrayList<>();
     public static List<CategoryModel> g_homeCatList = new ArrayList<>();
+
+    public static class LearningPath {
+        public String id;
+        public String title;
+        public List<LearningPathNode> nodes;
+        public LearningPath(String id, String title, List<LearningPathNode> nodes) { this.id = id; this.title = title; this.nodes = nodes; }
+    }
+
+    public static class LearningPathNode {
+        public String id;
+        public int type;
+        public String title;
+        public LearningPathNode(String id, int type, String title) { this.id = id; this.type = type; this.title = title; }
+    }
+
+    public static class FlashcardModel {
+        public String question, answer, frontImage, backImage;
+        public FlashcardModel(String q, String a, String fI, String bI) {
+            this.question = q; this.answer = a; this.frontImage = fI; this.backImage = bI;
+        }
+    }
 
     public interface UserScoreListener {
         void onUserScoresReceived(List<UserModel> userList);
@@ -52,363 +74,239 @@ public class DbQuery {
     }
 
     public static void getUsersSortedByScore(UserScoreListener userScoreListener) {
-        g_firestore.collection("USERS")
-                .orderBy("TOTAL_SCORE", Query.Direction.DESCENDING)
-                .get()
+        g_firestore.collection("USERS").orderBy("TOTAL_SCORE", Query.Direction.DESCENDING).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<UserModel> userList = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        UserModel user = document.toObject(UserModel.class);
-                        userList.add(user);
-                    }
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) userList.add(document.toObject(UserModel.class));
                     userScoreListener.onUserScoresReceived(userList);
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error getting users sorted by score: ", e);
-                    userScoreListener.onFailure();
-                });
+                .addOnFailureListener(e -> userScoreListener.onFailure());
     }
 
     public static void createUserData(String email, String name, String photo, MyCompleteListener completeListener) {
-        // Check if user already exists
-        g_firestore.collection("USERS")
-                .document(email) // Use email as document ID
-                .get()
+        g_firestore.collection("USERS").document(email).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // User already exists, update user's name and photo
-                        DocumentReference userDocRef = documentSnapshot.getReference();
                         Map<String, Object> updates = new ArrayMap<>();
-                        updates.put("NAME", name);
-                        updates.put("PHOTO", photo);
-
-                        userDocRef.update(updates)
+                        updates.put("NAME", name); updates.put("PHOTO", photo);
+                        documentSnapshot.getReference().update(updates)
                                 .addOnSuccessListener(unused -> completeListener.onSucces())
                                 .addOnFailureListener(e -> completeListener.onFailure());
                     } else {
-                        // User does not exist, proceed with user creation
                         Map<String, Object> userData = new ArrayMap<>();
-                        userData.put("EMAIL_ID", email);
-                        userData.put("NAME", name);
-                        userData.put("PHOTO", photo);
-                        userData.put("TOTAL_SCORE", 0);
-
-                        // Create a new user with email as document ID
-                        g_firestore.collection("USERS")
-                                .document(email)
-                                .set(userData)
-                                .addOnSuccessListener(unused -> {
-                                    // Increment the count
-                                    incrementUserCount(completeListener);
-                                })
-                                .addOnFailureListener(e -> {
-                                    // Handle failure to create user
-                                    completeListener.onFailure();
-                                });
+                        userData.put("EMAIL_ID", email); userData.put("NAME", name);
+                        userData.put("PHOTO", photo); userData.put("TOTAL_SCORE", 0);
+                        g_firestore.collection("USERS").document(email).set(userData)
+                                .addOnSuccessListener(unused -> incrementUserCount(completeListener))
+                                .addOnFailureListener(e -> completeListener.onFailure());
                     }
                 })
-                .addOnFailureListener(e -> {
-                    // Handle failure to check user existence
-                    completeListener.onFailure();
-                });
+                .addOnFailureListener(e -> completeListener.onFailure());
     }
 
     private static void incrementUserCount(MyCompleteListener completeListener) {
-        DocumentReference countDoc = g_firestore.collection("USERS").document("TOTAL_USERS");
-        countDoc.update("COUNT", FieldValue.increment(1))
+        g_firestore.collection("USERS").document("TOTAL_USERS").update("COUNT", FieldValue.increment(1))
                 .addOnSuccessListener(unused -> completeListener.onSucces())
                 .addOnFailureListener(e -> completeListener.onFailure());
     }
 
     public static void updateTotalScore(String email, int quizScore, MyCompleteListener completeListener) {
-        DocumentReference userDocRef = g_firestore.collection("USERS").document(email);
-        userDocRef.update("TOTAL_SCORE", FieldValue.increment(quizScore))
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Total score updated successfully.");
-                    completeListener.onSucces();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error updating total score: ", e);
-                    completeListener.onFailure();
-                });
+        g_firestore.collection("USERS").document(email).update("TOTAL_SCORE", FieldValue.increment(quizScore))
+                .addOnSuccessListener(aVoid -> completeListener.onSucces())
+                .addOnFailureListener(e -> completeListener.onFailure());
     }
-    // Add these lists
 
-    // Modify loadJournals() to categorize by JOURNAL_TAG
     public static void loadJournals(MyCompleteListener listener) {
-        g_journalList.clear();
-        g_militaryJournalList.clear();
-        g_homeJournalList.clear();
-
+        g_journalList.clear(); g_militaryJournalList.clear(); g_homeJournalList.clear();
         if (g_firestore != null) {
-            g_firestore.collection("JOURNAL")
-                    .orderBy("JOURNAL_DATE")
-                    .get()
+            g_firestore.collection("JOURNAL").orderBy("JOURNAL_DATE").get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            JournalEntry entry = new JournalEntry(
-                                    doc.getString("JOURNAL_TITLE"),
-                                    doc.getString("JOURNAL_SUBTITLE"),
-                                    doc.getString("JOURNAL_DATE"),
-                                    doc.getString("JOURNAL_IMAGE"),
-                                    doc.getString("JOURNAL_LINK")
-                            );
-
-                            // Check for JOURNAL_TAG (default to home if missing)
-                            String tag = doc.getString("JOURNAL_TAG");
-                            if ("CNMTV".equals(tag)) {
-                                g_militaryJournalList.add(entry); // Military journals
-                            } else {
-                                g_homeJournalList.add(entry); // Home journals
-                            }
-
-                            g_journalList.add(entry); // Optional: keep global list
+                            JournalEntry entry = new JournalEntry(doc.getString("JOURNAL_TITLE"), doc.getString("JOURNAL_SUBTITLE"), doc.getString("JOURNAL_DATE"), doc.getString("JOURNAL_IMAGE"), doc.getString("JOURNAL_LINK"));
+                            if ("CNMTV".equals(doc.getString("JOURNAL_TAG"))) g_militaryJournalList.add(entry); else g_homeJournalList.add(entry);
+                            g_journalList.add(entry);
                         }
                         listener.onSucces();
                     })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Error loading journals: ", e);
-                        listener.onFailure();
-                    });
-        } else {
-            Log.e("DbQuery", "Firestore is null");
-            listener.onFailure();
-        }
+                    .addOnFailureListener(e -> listener.onFailure());
+        } else { listener.onFailure(); }
     }
 
-    // Add military/home journal loaders (similar to categories)
-    public static void loadMilitaryJournals(Context context, MyCompleteListener listener) {
-        if (g_militaryJournalList.isEmpty()) {
-            loadJournals(listener); // Reload if empty
-        } else {
-            listener.onSucces();
-        }
-    }
-
-    public static void loadHomeJournals(Context context, MyCompleteListener listener) {
-        if (g_homeJournalList.isEmpty()) {
-            loadJournals(listener); // Reload if empty
-        } else {
-            listener.onSucces();
-        }
-    }
+    public static void loadMilitaryJournals(Context context, MyCompleteListener listener) { if (g_militaryJournalList.isEmpty()) loadJournals(listener); else listener.onSucces(); }
+    public static void loadHomeJournals(Context context, MyCompleteListener listener) { if (g_homeJournalList.isEmpty()) loadJournals(listener); else listener.onSucces(); }
 
     public static void loadRanks(MyCompleteListener completeListener) {
         g_rankList.clear();
-
-        // Correct path to access the RANKS document
-        FirebaseFirestore.getInstance()
-                .document("MILITARY/RO/CNMTV/RANKS")  // This is a document path (even segments)
-                .get()
+        FirebaseFirestore.getInstance().document("MILITARY/RO/CNMTV/RANKS").get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Loop through each field in the RANKS document
                         Map<String, Object> data = documentSnapshot.getData();
                         if (data != null) {
                             for (Map.Entry<String, Object> entry : data.entrySet()) {
                                 try {
-                                    String rankId = entry.getKey();
                                     ArrayList<String> rankData = (ArrayList<String>) entry.getValue();
-
-                                    if (rankData != null && rankData.size() >= 2) {
-                                        String name = rankData.get(0);
-                                        String imageUrl = rankData.get(1);
-                                        g_rankList.add(new RankModel(name, imageUrl));
-                                    }
-                                } catch (Exception e) {
-                                    Log.e("DbQuery", "Error parsing rank data: " + e.getMessage());
-                                }
+                                    if (rankData != null && rankData.size() >= 2) g_rankList.add(new RankModel(rankData.get(0), rankData.get(1)));
+                                } catch (Exception e) { Log.e(TAG, "Error parsing rank: " + e.getMessage()); }
                             }
                         }
                     }
                     completeListener.onSucces();
                 })
-                .addOnFailureListener(e -> {
-                    Log.e("DbQuery", "Error loading ranks: " + e.getMessage());
-                    completeListener.onFailure();
-                });
+                .addOnFailureListener(e -> completeListener.onFailure());
     }
 
     public static void loadCategories(Context context, MyCompleteListener listener) {
-        g_catList.clear();
-        g_militaryCatList.clear();
-        g_homeCatList.clear();
-
-        Log.d(TAG, "Starting loadCategories with new structure");
-
-        // First, we'll get all categories by grouping quizzes
-        g_firestore.collection("QUIZZES")
-                .get()
+        g_catList.clear(); g_militaryCatList.clear(); g_homeCatList.clear();
+        g_firestore.collection("QUIZZES").get()
                 .addOnSuccessListener(quizSnapshots -> {
-                    Map<String, List<Quizz>> cnmtvCategoriesMap = new HashMap<>();
-                    Map<String, List<Quizz>> otherCategoriesMap = new HashMap<>();
-
+                    Map<String, List<Quizz>> cnmtvMap = new HashMap<>(), otherMap = new HashMap<>();
                     for (QueryDocumentSnapshot quizDoc : quizSnapshots) {
                         try {
-                            String quizId = quizDoc.getId();
-                            String title = quizDoc.getString("title");
-                            String category = quizDoc.getString("category");
-                            String imageUrl = quizDoc.getString("imageUrl");
-                            String createdBy = quizDoc.getString("createdBy");
-
-                            // Check for tags - extract the tag field (could be a string or array)
+                            String category = quizDoc.getString("category"); if (category == null || category.isEmpty()) continue;
                             Object tagsObj = quizDoc.get("tags");
-                            boolean isCNMTV = false;
-
-                            // Process different tag formats
-                            if (tagsObj instanceof String) {
-                                isCNMTV = "CNMTV".equals(tagsObj);
-                            } else if (tagsObj instanceof List) {
-                                List<String> tags = (List<String>) tagsObj;
-                                isCNMTV = tags.contains("CNMTV");
-                            }
-
-                            if (category == null || category.isEmpty()) {
-                                Log.w(TAG, "Quiz missing category: " + quizId);
-                                continue;
-                            }
-
-                            // Create quiz object
-                            Quizz quiz = new Quizz(title, imageUrl, quizId, true, createdBy);
-
-                            // Add to the appropriate category list based on tag
-                            Map<String, List<Quizz>> targetMap = isCNMTV ? cnmtvCategoriesMap : otherCategoriesMap;
-
-                            if (!targetMap.containsKey(category)) {
-                                targetMap.put(category, new ArrayList<>());
-                            }
+                            boolean isCNMTV = (tagsObj instanceof String && "CNMTV".equals(tagsObj)) || (tagsObj instanceof List && ((List<String>) tagsObj).contains("CNMTV"));
+                            Quizz quiz = new Quizz(quizDoc.getString("title"), quizDoc.getString("imageUrl"), quizDoc.getId(), true, quizDoc.getString("createdBy"));
+                            Map<String, List<Quizz>> targetMap = isCNMTV ? cnmtvMap : otherMap;
+                            if (!targetMap.containsKey(category)) targetMap.put(category, new ArrayList<>());
                             targetMap.get(category).add(quiz);
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error processing quiz: " + e.getMessage());
-                        }
+                        } catch (Exception e) { Log.e(TAG, "Error processing quiz: " + e.getMessage()); }
                     }
-
-                    // Convert maps to category lists
-                    // CNMTV categories for military fragment
-                    for (Map.Entry<String, List<Quizz>> entry : cnmtvCategoriesMap.entrySet()) {
-                        String categoryName = entry.getKey();
-                        List<Quizz> quizzes = entry.getValue();
-
-                        CategoryModel category = new CategoryModel(
-                                categoryName,
-                                categoryName,
-                                quizzes.size(),
-                                quizzes
-                        );
-                        g_militaryCatList.add(category);
-                    }
-
-                    // Other categories for home fragment
-                    for (Map.Entry<String, List<Quizz>> entry : otherCategoriesMap.entrySet()) {
-                        String categoryName = entry.getKey();
-                        List<Quizz> quizzes = entry.getValue();
-
-                        CategoryModel category = new CategoryModel(
-                                categoryName,
-                                categoryName,
-                                quizzes.size(),
-                                quizzes
-                        );
-                        g_homeCatList.add(category);
-                    }
-
-                    // Combine all categories for backward compatibility
-                    g_catList.addAll(g_militaryCatList);
-                    g_catList.addAll(g_homeCatList);
-
-                    Log.d(TAG, "Loaded " + g_militaryCatList.size() + " CNMTV categories");
-                    Log.d(TAG, "Loaded " + g_homeCatList.size() + " other categories");
-
+                    for (Map.Entry<String, List<Quizz>> entry : cnmtvMap.entrySet()) g_militaryCatList.add(new CategoryModel(entry.getKey(), entry.getKey(), entry.getValue().size(), entry.getValue()));
+                    for (Map.Entry<String, List<Quizz>> entry : otherMap.entrySet()) g_homeCatList.add(new CategoryModel(entry.getKey(), entry.getKey(), entry.getValue().size(), entry.getValue()));
+                    g_catList.addAll(g_militaryCatList); g_catList.addAll(g_homeCatList);
                     listener.onSucces();
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading categories: " + e.getMessage());
-                    Toast.makeText(context, "Error loading categories", Toast.LENGTH_LONG).show();
-                    listener.onFailure();
-                });
+                .addOnFailureListener(e -> { Log.e(TAG, "Error: " + e.getMessage()); Toast.makeText(context, "Error", Toast.LENGTH_LONG).show(); listener.onFailure(); });
     }
 
-    public static void loadMilitaryCategories(Context context, MyCompleteListener listener) {
-        // First ensure all categories are loaded
-        if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) {
-            loadCategories(context, new MyCompleteListener() {
-                @Override
-                public void onSucces() {
-                    listener.onSucces();
-                }
-
-                @Override
-                public void onFailure() {
-                    listener.onFailure();
-                }
-            });
-        } else {
-            // Categories already loaded
-            listener.onSucces();
-        }
-    }
-
-    public static void loadHomeCategories(Context context, MyCompleteListener listener) {
-        // First ensure all categories are loaded
-        if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) {
-            loadCategories(context, new MyCompleteListener() {
-                @Override
-                public void onSucces() {
-                    listener.onSucces();
-                }
-
-                @Override
-                public void onFailure() {
-                    listener.onFailure();
-                }
-            });
-        } else {
-            // Categories already loaded
-            listener.onSucces();
-        }
-    }
+    public static void loadMilitaryCategories(Context context, MyCompleteListener listener) { if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) loadCategories(context, listener); else listener.onSucces(); }
+    public static void loadHomeCategories(Context context, MyCompleteListener listener) { if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) loadCategories(context, listener); else listener.onSucces(); }
 
     public static void loadQuestions(String categoryId, String quizId, MyCompleteListener completeListener) {
         g_quesList.clear();
-        Log.d(TAG, "Loading questions for quiz: " + quizId);
-
-        g_firestore.collection("QUIZZES").document(quizId).collection("QUESTIONS")
-                .get()
+        g_firestore.collection("QUIZZES").document(quizId).collection("QUESTIONS").get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         try {
                             List<String> options = (List<String>) doc.get("options");
-                            if (options == null || options.size() < 4) {
-                                Log.w(TAG, "Question with insufficient options: " + doc.getId());
-                                continue;
+                            Long index = doc.getLong("correctAnswerIndex"), points = doc.getLong("points");
+                            if (options != null && options.size() >= 4 && index != null && points != null) {
+                                g_quesList.add(new QuestionModel(doc.getString("question"), doc.getString("imageUrl"), options, index.intValue(), points.intValue()));
                             }
-
-                            Long correctAnswerIndex = doc.getLong("correctAnswerIndex");
-                            Long points = doc.getLong("points");
-                            if (correctAnswerIndex == null || points == null) {
-                                Log.w(TAG, "Question missing correctAnswerIndex or points: " + doc.getId());
-                                continue;
-                            }
-
-                            g_quesList.add(new QuestionModel(
-                                    doc.getString("question"),
-                                    doc.getString("imageUrl"),
-                                    options,
-                                    correctAnswerIndex.intValue(),
-                                    points.intValue()
-                            ));
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error processing question: " + e.getMessage());
-                        }
+                        } catch (Exception e) { Log.e(TAG, "Error processing question: " + e.getMessage()); }
                     }
-
-                    Log.d(TAG, "Loaded " + g_quesList.size() + " questions");
                     completeListener.onSucces();
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading questions: " + e.getMessage());
-                    completeListener.onFailure();
-                });
+                .addOnFailureListener(e -> completeListener.onFailure());
     }
 
+    public static void loadLearningPath(MyCompleteListener listener) {
+        g_firestore.collection("LEARNING").limit(1).get().addOnSuccessListener(querySnapshot -> {
+            if (querySnapshot.isEmpty()) {
+                Log.e(TAG, "No learning path found");
+                listener.onFailure();
+                return;
+            }
+
+            DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+            String pathId = doc.getId();
+            String title = doc.getString("pathTitle");
+
+            // Get the arrays from Firebase
+            List<String> nodeIds = (List<String>) doc.get("pathNodes");
+            List<String> nodeTypeStrings = (List<String>) doc.get("pathTypes");
+
+            Log.d(TAG, "Path ID: " + pathId);
+            Log.d(TAG, "Path Title: " + title);
+            Log.d(TAG, "Node IDs: " + (nodeIds != null ? nodeIds.toString() : "null"));
+            Log.d(TAG, "Node Types: " + (nodeTypeStrings != null ? nodeTypeStrings.toString() : "null"));
+
+            if (nodeIds == null || nodeTypeStrings == null || nodeIds.size() != nodeTypeStrings.size()) {
+                Log.e(TAG, "Invalid node data - arrays are null or different sizes");
+                listener.onFailure();
+                return;
+            }
+
+            // Convert type strings to integers
+            List<Long> nodeTypes = new ArrayList<>();
+            for (String typeString : nodeTypeStrings) {
+                // Trim whitespace and newlines from the type string
+                String trimmedType = typeString != null ? typeString.trim() : "";
+                Log.d(TAG, "Processing type: '" + trimmedType + "' (original: '" + typeString + "')");
+
+                if ("QUIZZES".equals(trimmedType)) {
+                    nodeTypes.add(0L);
+                } else if ("FLASHCARDS".equals(trimmedType)) {
+                    nodeTypes.add(1L);
+                } else {
+                    Log.w(TAG, "Unknown node type: '" + trimmedType + "'");
+                    nodeTypes.add(0L); // Default to quiz
+                }
+            }
+
+            // Create tasks to fetch each node document
+            List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+            for (int i = 0; i < nodeIds.size(); i++) {
+                String id = nodeIds.get(i);
+                String collection = nodeTypes.get(i) == 0 ? "QUIZZES" : "FLASHCARDS";
+                Log.d(TAG, "Fetching from " + collection + " with ID: " + id);
+                tasks.add(g_firestore.collection(collection).document(id).get());
+            }
+
+            Tasks.whenAllSuccess(tasks).addOnSuccessListener(results -> {
+                List<LearningPathNode> pathNodesList = new ArrayList<>();
+                for (int i = 0; i < results.size(); i++) {
+                    DocumentSnapshot nodeDoc = (DocumentSnapshot) results.get(i);
+                    if (nodeDoc.exists()) {
+                        long type = nodeTypes.get(i);
+                        String id = nodeIds.get(i);
+                        String nodeTitle;
+
+                        if (type == 0) {
+                            // For QUIZZES - use "title" field
+                            nodeTitle = nodeDoc.getString("title");
+                        } else {
+                            // For FLASHCARDS - use "cardTitle" field
+                            nodeTitle = nodeDoc.getString("cardTitle");
+                        }
+
+                        Log.d(TAG, "Node " + i + ": ID=" + id + ", Type=" + type + ", Title=" + nodeTitle);
+                        pathNodesList.add(new LearningPathNode(id, (int) type, nodeTitle));
+                    } else {
+                        Log.w(TAG, "Document does not exist for ID: " + nodeIds.get(i));
+                    }
+                }
+
+                g_learningPath = new LearningPath(pathId, title, pathNodesList);
+                Log.d(TAG, "Learning path loaded successfully with " + pathNodesList.size() + " nodes");
+                listener.onSucces();
+            }).addOnFailureListener(e -> {
+                Log.e(TAG, "Error fetching node documents", e);
+                listener.onFailure();
+            });
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Error loading learning path", e);
+            listener.onFailure();
+        });
+    }
+
+    public static void loadFlashcards(String flashcardId, MyCompleteListener listener) {
+        g_flashcardList.clear();
+        g_firestore.collection("FLASHCARDS").document(flashcardId).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        Map<String, Object> data = doc.getData();
+                        List<Integer> keys = new ArrayList<>();
+                        for (String key : data.keySet()) try { keys.add(Integer.parseInt(key)); } catch (NumberFormatException ignored) {}
+                        Collections.sort(keys);
+                        for (Integer key : keys) {
+                            List<String> cardData = (List<String>) data.get(String.valueOf(key));
+                            if (cardData != null && cardData.size() >= 2) {
+                                g_flashcardList.add(new FlashcardModel(cardData.get(0), cardData.get(1), cardData.size() > 2 ? cardData.get(2) : null, cardData.size() > 3 ? cardData.get(3) : null));
+                            }
+                        }
+                        listener.onSucces();
+                    } else { listener.onFailure(); }
+                }).addOnFailureListener(e -> listener.onFailure());
+    }
 }
