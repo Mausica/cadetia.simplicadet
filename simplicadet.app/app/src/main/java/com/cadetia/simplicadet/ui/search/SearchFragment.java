@@ -55,6 +55,8 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
     private View contentView;
     private boolean isLoadingDismissed = false;
     private boolean categoriesLoaded = false;
+    private Handler searchHandler = new Handler();
+    private Runnable searchRunnable;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -71,20 +73,6 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
         loadingLayout = root.findViewById(R.id.search_loading);
         contentView = root.findViewById(R.id.contentLayout2);
         searchEditText.setSingleLine(true);
-
-        searchEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-                    actionId == EditorInfo.IME_ACTION_DONE ||
-                    actionId == EditorInfo.IME_ACTION_GO) {
-                String query = searchEditText.getText().toString().trim();
-                hideKeyboard();
-                // Clear the EditText and reset the search
-                searchEditText.setText("");
-                filterCategories(query); // Optionally trigger search here if needed
-                return true;
-            }
-            return false;
-        });
 
         // Set up profile button click listener
         searchImage.setOnClickListener(v -> {
@@ -110,16 +98,47 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
     }
 
     private void setupSearchFunctionality() {
+        // Handle text changes with debouncing
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        // Handle Enter key press to trigger search
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Cancel previous search
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
+
+                // Schedule new search with delay
+                searchRunnable = () -> {
+                    String query = s.toString().trim();
+                    Log.d(TAG, "Text changed, filtering with: '" + query + "'");
+                    filterCategories(query);
+                };
+                searchHandler.postDelayed(searchRunnable, 300); // 300ms delay
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Handle Enter key press to trigger immediate search
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE ||
                     actionId == EditorInfo.IME_ACTION_GO) {
 
                 String query = searchEditText.getText().toString().trim();
+                Log.d(TAG, "Enter pressed, searching for: '" + query + "'");
                 hideKeyboard();
-                filterCategories(query); // Perform search
+
+                // Cancel any pending search
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
+
+                filterCategories(query); // Perform immediate search
                 return true;
             }
             return false;
@@ -138,7 +157,10 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
         } else {
             String lowerCaseQuery = query.toLowerCase();
             for (CategoryModel category : allCategories) {
-                boolean categoryMatches = category.getName().toLowerCase().contains(lowerCaseQuery);
+                if (category == null) continue;
+
+                boolean categoryMatches = category.getName() != null &&
+                        category.getName().toLowerCase().contains(lowerCaseQuery);
                 List<Quizz> matchingQuizzes = new ArrayList<>();
 
                 if (category.getQuizzList() != null) {
@@ -154,29 +176,78 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
                 boolean hasMatchingQuiz = !matchingQuizzes.isEmpty();
 
                 if (categoryMatches || hasMatchingQuiz) {
+                    // If category name matches, include all quizzes; otherwise, only matching ones
+                    List<Quizz> quizzesToInclude = categoryMatches ?
+                            (category.getQuizzList() != null ? new ArrayList<>(category.getQuizzList()) : new ArrayList<>()) :
+                            matchingQuizzes;
+
                     // Clone the category and set the filtered quizzes
                     CategoryModel filteredCategory = new CategoryModel(
                             category.getDocID(),
                             category.getName(),
-                            matchingQuizzes.size(),
-                            new ArrayList<>(matchingQuizzes)
+                            quizzesToInclude.size(),
+                            quizzesToInclude
                     );
                     filteredCategories.add(filteredCategory);
-                    Log.d(TAG, "Added category: " + category.getName());
+                    Log.d(TAG, "Added category: " + category.getName() + " with " + quizzesToInclude.size() + " quizzes");
                 }
             }
         }
 
-        // Force RecyclerView to update
-        if (categoryAdapter == null) {
-            setupCategoryRecyclerView(); // Ensure adapter is initialized
-        } else {
-            categoryAdapter.updateCategories(filteredCategories);
+        Log.d(TAG, "Filtered categories count: " + filteredCategories.size());
+
+        // Log details of filtered categories
+        for (CategoryModel cat : filteredCategories) {
+            Log.d(TAG, "Filtered category: " + cat.getName() + " with " +
+                    (cat.getQuizzList() != null ? cat.getQuizzList().size() : 0) + " quizzes");
         }
 
-        // Ensure UI visibility
-        if (contentView.getVisibility() != View.VISIBLE) {
-            contentView.setVisibility(View.VISIBLE);
+        // Update the adapter
+        updateCategoryAdapter();
+    }
+
+    private void updateCategoryAdapter() {
+        if (!isAdded()) {
+            Log.w(TAG, "Fragment not attached, cannot update adapter");
+            return;
+        }
+
+        // Ensure we're on the main thread
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> {
+                // Initialize adapter if not already done
+                if (categoryAdapter == null) {
+                    Log.d(TAG, "Initializing category adapter");
+                    categoryAdapter = new CategoryAdapter(filteredCategories, requireContext(), this);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+                    searchRecyclerView.setLayoutManager(layoutManager);
+                    searchRecyclerView.setAdapter(categoryAdapter);
+                } else {
+                    Log.d(TAG, "Updating existing adapter with " + filteredCategories.size() + " categories");
+                    categoryAdapter.updateCategories(filteredCategories);
+                }
+
+                // Log RecyclerView state
+                Log.d(TAG, "RecyclerView adapter item count: " +
+                        (searchRecyclerView.getAdapter() != null ? searchRecyclerView.getAdapter().getItemCount() : "null"));
+                Log.d(TAG, "RecyclerView visibility: " +
+                        (searchRecyclerView.getVisibility() == View.VISIBLE ? "VISIBLE" : "NOT VISIBLE"));
+
+                // Ensure content is visible
+                if (contentView != null && contentView.getVisibility() != View.VISIBLE) {
+                    contentView.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Made content view visible");
+                }
+
+                if (loadingLayout != null && loadingLayout.getVisibility() == View.VISIBLE) {
+                    loadingLayout.setVisibility(View.GONE);
+                    Log.d(TAG, "Hid loading layout");
+                }
+
+                // Force RecyclerView to refresh
+                searchRecyclerView.invalidate();
+                searchRecyclerView.requestLayout();
+            });
         }
     }
 
@@ -188,7 +259,6 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
             }
         }
     }
-
 
     private void loadCategories() {
         if (!NetworkUtils.isNetworkAvailable(requireContext())) {
@@ -207,9 +277,10 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
                 }
 
                 allCategories.clear();
+                filteredCategories.clear();
+
                 if (DbQuery.g_catList != null) {
                     allCategories.addAll(DbQuery.g_catList);
-                    filteredCategories.clear();
                     filteredCategories.addAll(allCategories);
 
                     Log.d(TAG, "Loaded " + allCategories.size() + " categories from database");
@@ -237,19 +308,20 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
     }
 
     private void setupCategoryRecyclerView() {
-        if (isAdded()) {
-            Log.d(TAG, "Setting up RecyclerView with " + filteredCategories.size() + " categories");
-            categoryAdapter = new CategoryAdapter(filteredCategories, requireContext(), this);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
-            searchRecyclerView.setLayoutManager(layoutManager);
-            searchRecyclerView.setAdapter(categoryAdapter);
-
-            // Make sure the RecyclerView is visible
-            if (contentView != null) {
-                contentView.setVisibility(View.VISIBLE);
-            }
-        } else {
+        if (!isAdded()) {
             Log.e(TAG, "Fragment is not attached, cannot set up category recycler view");
+            return;
+        }
+
+        Log.d(TAG, "Setting up RecyclerView with " + filteredCategories.size() + " categories");
+        categoryAdapter = new CategoryAdapter(filteredCategories, requireContext(), this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+        searchRecyclerView.setLayoutManager(layoutManager);
+        searchRecyclerView.setAdapter(categoryAdapter);
+
+        // Make sure the RecyclerView is visible
+        if (contentView != null) {
+            contentView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -279,6 +351,10 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Clean up handler callbacks
+        if (searchHandler != null && searchRunnable != null) {
+            searchHandler.removeCallbacks(searchRunnable);
+        }
         binding = null;
     }
 
