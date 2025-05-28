@@ -308,7 +308,7 @@ public class MilitaryFragment3 extends Fragment {
         tv.setTypeface(getResources().getFont(R.font.circular_bold));
         tv.setPadding(10,10,10,10);
         tv.setText("P: " + presentCount[i]
-                + " H: " + homeCount[i]
+                + " M: " + homeCount[i]
                 + " A: " + absentCount[i]);
     }
 
@@ -320,7 +320,7 @@ public class MilitaryFragment3 extends Fragment {
         }
         int totalPresent = platoonCount * soldiersPerPlatoon - (totalHome + totalAbsent);
         tv.setText("P: " + totalPresent
-                + " H: " + totalHome
+                + " M: " + totalHome
                 + " A: " + totalAbsent);
     }
 

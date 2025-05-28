@@ -326,12 +326,13 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             startActivity(intent);
             finish();
         } else if (itemId == R.id.drawer_new) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://presamil.ro/ultimul_nr/"));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Mausica/cadetia.simplicadet/releases"));
             startActivity(browserIntent);
         } else if (itemId == R.id.drawer_help) {
             // navController.navigate(R.id.navigation_liked);
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.google.com/"));
-            startActivity(browserIntent);
+            Intent intent = new Intent(this, CommunityActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
         } else if (itemId == R.id.drawer_settings) {
             Intent intent = new Intent(Home.this, Settings.class);
             startActivity(intent);

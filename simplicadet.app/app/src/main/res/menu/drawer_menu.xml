@@ -19,7 +19,7 @@
             android:icon="@drawable/auth_ic_password"/>
         <item
             android:id="@+id/drawer_help"
-            android:title="Help and feedback"
-            android:icon="@drawable/home_ic_help"/>
+            android:title="Leaderboard"
+            android:icon="@drawable/home_ic_trophy"/>
     </group>
 </menu>

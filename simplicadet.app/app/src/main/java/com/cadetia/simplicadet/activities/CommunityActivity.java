@@ -1,4 +1,5 @@
-package com.cadetia.simplicadet.ui.community;
+package com.cadetia.simplicadet.activities;
+
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -7,41 +8,39 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
-import com.cadetia.simplicadet.activities.Home;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.database.DbQuery;
-import com.cadetia.simplicadet.model.UserModel;
 import com.cadetia.simplicadet.databinding.FragmentCommunityBinding;
+import com.cadetia.simplicadet.model.UserModel;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 import java.util.Objects;
 
-public class CommunityFragment extends Fragment {
+public class CommunityActivity extends AppCompatActivity {
 
     private FragmentCommunityBinding binding;
     private View leaderboardFirstLayout;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentCommunityBinding.inflate(inflater, container, false);
-        ((Home) getActivity()).hideFab();
-        return binding.getRoot();
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = FragmentCommunityBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-    @Override
-    public void onResume() {
-        super.onResume();
+        ImageView backButton = findViewById(R.id.community_back);
+        backButton.setOnClickListener(v -> finish());
+
         loadUIComponents();
     }
 
@@ -60,7 +59,7 @@ public class CommunityFragment extends Fragment {
         new Handler(Looper.getMainLooper()).post(() -> {
             LinearLayout leaderView = binding.leaderView;
 
-            LayoutInflater inflater = LayoutInflater.from(requireContext());
+            LayoutInflater inflater = LayoutInflater.from(this);
             leaderboardFirstLayout = inflater.inflate(R.layout.item_leaderboard_first, leaderView, false);
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -79,7 +78,6 @@ public class CommunityFragment extends Fragment {
             LinearLayout leaderboardContainer = binding.leaderboardContainer;
             leaderboardContainer.removeAllViews();
 
-            // Fetch sorted user scores from Firestore
             DbQuery.getUsersSortedByScore(new DbQuery.UserScoreListener() {
                 @Override
                 public void onUserScoresReceived(List<UserModel> userList) {
@@ -132,7 +130,7 @@ public class CommunityFragment extends Fragment {
     }
 
     private void loadLeaderboardView(LinearLayout leaderboardContainer, List<UserModel> userList) {
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
 
         for (int i = 0; i < userList.size(); i++) {
             UserModel user = userList.get(i);
@@ -165,8 +163,10 @@ public class CommunityFragment extends Fragment {
 
         return v -> {
             AppCompatButton clickedButton = (AppCompatButton) v;
-            AppCompatButton otherButton = clickedButton.getId() == weeklyButtonId ? binding.leaderboardAll : binding.leaderboardWeekly;
-            Drawable greenDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.button_blue);
+            AppCompatButton otherButton = clickedButton.getId() == weeklyButtonId
+                    ? binding.leaderboardAll : binding.leaderboardWeekly;
+
+            Drawable greenDrawable = ContextCompat.getDrawable(this, R.drawable.button_blue);
 
             if (Objects.equals(clickedButton.getBackground().getConstantState(), Objects.requireNonNull(greenDrawable).getConstantState())) {
                 clickedButton.setBackgroundResource(R.drawable.background_nothing);
@@ -179,11 +179,5 @@ public class CommunityFragment extends Fragment {
                 clickedButton.setTextColor(Color.BLACK);
             }
         };
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 }

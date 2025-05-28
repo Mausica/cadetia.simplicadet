@@ -8,6 +8,22 @@
     android:background="?attr/backgroundNormal"
     tools:context=".ui.community.CommunityFragment">
 
+    <ImageView
+        android:id="@+id/community_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/back_button"
+        android:minWidth="24dp"
+        android:minHeight="24dp"
+        android:elevation="12dp"
+        android:layout_margin="@dimen/_10sdp"
+        android:src="@drawable/uni_ic_close"
+        android:tint="?attr/textNormal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RedundantDescriptionCheck,UseAppTint" />
+
+
     <ScrollView
         android:paddingStart="@dimen/_12sdp"
         android:paddingEnd="@dimen/_12sdp"

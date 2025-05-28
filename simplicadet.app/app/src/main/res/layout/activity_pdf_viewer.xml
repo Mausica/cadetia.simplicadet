@@ -20,7 +20,7 @@
         android:minHeight="24dp"
         android:elevation="12dp"
         android:layout_margin="@dimen/_10sdp"
-        android:src="@drawable/uni_ic_left"
+        android:src="@drawable/uni_ic_close"
         android:tint="@color/black"
         tools:ignore="RedundantDescriptionCheck,UseAppTint" />
 
