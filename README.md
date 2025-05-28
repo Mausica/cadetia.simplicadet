@@ -1,5 +1,5 @@
 
-# Simplicadet `1.1b` 🚀🎖️
+# Simplicadet `1.3b` 🚀🎖️
 
 <img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
 
@@ -52,11 +52,3 @@ git clone https://github.com/Mausica/simplicadet.git
 
 
 > “In the military, precision isn’t just a habit—it’s a way of life.” – A Proud Cadet 
-
-
-## 💖 Support the Project
-If you want to go a step further and support my open source work, follow me on youtube 
-
-[![My Skills](https://github.com/CLorant/readme-social-icons/raw/main/large/colored/youtube.svg)](https://www.youtube.com/@mausicadev)  
-
-To support the project directly, feel free to open issues for icon suggestions, or contribute with a pull request!
