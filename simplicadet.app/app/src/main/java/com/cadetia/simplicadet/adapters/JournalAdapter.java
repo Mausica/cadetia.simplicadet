@@ -23,11 +23,15 @@ import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.model.JournalEntry;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalViewHolder> {
     private final List<JournalEntry> journalList;
     private final OnJournalClickListener onJournalClickListener;
     private final LruCache<String, Bitmap> memCache;
+    private final ExecutorService imageLoadExecutor;
+    private final RequestOptions glideOptions;
 
     public interface OnJournalClickListener {
         void onJournalClick(String journalLink);
@@ -37,6 +41,13 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         this.journalList = journalList;
         this.onJournalClickListener = onJournalClickListener;
         this.memCache = memCache;
+        this.imageLoadExecutor = Executors.newFixedThreadPool(3);
+
+        this.glideOptions = new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(false)
+                .override(200, 150)
+                .centerCrop();
     }
 
     @NonNull
@@ -49,15 +60,14 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
     @Override
     public void onBindViewHolder(@NonNull JournalViewHolder holder, int position) {
         JournalEntry entry = journalList.get(position);
+
         holder.title.setText(entry.getTitle());
         holder.subtitle.setText(entry.getSubtitle());
         holder.date.setText(entry.getDate());
 
-        // Handle click event for the journal entry
         holder.itemView.setOnClickListener(v -> onJournalClickListener.onJournalClick(entry.getLink()));
 
-        // Load the image for the journal entry
-        loadImage(entry.getImageUrl(), holder.imageView);
+        loadImageOptimized(entry.getImageUrl(), holder.imageView, holder);
     }
 
     @Override
@@ -65,27 +75,39 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.JournalV
         return journalList.size();
     }
 
-    private void loadImage(String imageUrl, ImageView imageView) {
-        Bitmap cachedImage = memCache.get(imageUrl); // Try to get the image from cache
-        if (cachedImage != null) {
-            imageView.setImageBitmap(cachedImage);  // If image is cached, use it
-        } else {
-            Glide.with(imageView.getContext())
-                    .asBitmap()
-                    .load(imageUrl)
-                    .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))  // Cache image to disk
-                    .into(new SimpleTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                            imageView.setImageBitmap(resource);  // Set the image in the ImageView
-                            memCache.put(imageUrl, resource);  // Store the image in cache
-                        }
+    private void loadImageOptimized(String imageUrl, ImageView imageView, JournalViewHolder holder) {
 
-                        @Override
-                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                            super.onLoadFailed(errorDrawable);
+        Bitmap cachedImage = memCache.get(imageUrl);
+        if (cachedImage != null) {
+            imageView.setImageBitmap(cachedImage);
+            return;
+        }
+
+        Glide.with(imageView.getContext())
+                .asBitmap()
+                .load(imageUrl)
+                .apply(glideOptions)
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                            imageView.setImageBitmap(resource);
+                            memCache.put(imageUrl, resource);
                         }
-                    });
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+
+                        }
+                    }
+                });
+    }
+
+    public void cleanup() {
+        if (imageLoadExecutor != null && !imageLoadExecutor.isShutdown()) {
+            imageLoadExecutor.shutdown();
         }
     }
 

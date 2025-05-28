@@ -441,26 +441,21 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
                 if (childFragment instanceof HomeFragment1) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    hideFab(); // Use your updated method
+                    hideFab();
                 } else if (childFragment instanceof HomeFragment2) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    showFab(); // Use the new method to restore layout
+                    showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
                         HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
                         homeFragment.actionController();
                     });
                 } else if (childFragment instanceof HomeFragment3) {
-                    fabMain.setImageResource(R.drawable.home_ic_rotate);
-                    showFab(); // Use the new method to restore layout
-                    fabMain.setOnClickListener(v -> {
-                        Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-                        HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
-                        homeFragment.actionController();
-                    });
+                    fabMain.setImageResource(R.drawable.home_ic_plus);
+                    hideFab();
                 } else if (childFragment instanceof HomeFragment4) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    showFab(); // Use the new method to restore layout
+                    showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
                         HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;

@@ -1,88 +1,114 @@
 package com.cadetia.simplicadet.dao;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.util.Log;
-
+import android.os.Build;
 import java.util.Locale;
 
 public class LocaleHelper {
-    private static final String PREF_NAME = "LanguagePrefs";
-    private static final String KEY_LANGUAGE = "language_code";
-    private static final String DEFAULT_LANGUAGE = "en_GB";
-    private static final String TAG = "LocaleHelper";
-
-    public static Context setLocale(Context context) {
-        return updateResources(context, getLanguage(context));
-    }
+    private static final String SELECTED_LANGUAGE = "Locale.Helper.Selected.Language";
 
     public static Context setLocale(Context context, String language) {
-        setLanguage(context, language);
-        return updateResources(context, language);
+        persist(context, language);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return updateResources(context, language);
+        }
+
+        return updateResourcesLegacy(context, language);
+    }
+
+    public static Context setLocale(Context context) {
+        return setLocale(context, getLanguage(context));
     }
 
     public static String getLanguage(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        return prefs.getString(KEY_LANGUAGE, DEFAULT_LANGUAGE);
-    }
+        LanguagePreferences languagePreferences = new LanguagePreferences(context);
+        String savedLanguage = languagePreferences.getLanguage();
 
-    private static void setLanguage(Context context, String language) {
-        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        prefs.edit().putString(KEY_LANGUAGE, language).apply();
-    }
-
-    private static Context updateResources(Context context, String languageCode) {
-        Log.d(TAG, "Processing language code: " + languageCode);
-
-        // Parse language code properly
-        String[] parts = languageCode.split("_");
-        Locale locale;
-        if (parts.length > 1) {
-            locale = new Locale(parts[0], parts[1]);
-        } else {
-            locale = new Locale(languageCode);
+        if (savedLanguage == null || savedLanguage.isEmpty()) {
+            // Return system default if no language is saved
+            return getSystemLanguage();
         }
 
-        Log.d(TAG, "Created locale: " + locale.toLanguageTag());
-        Locale.setDefault(locale);
-
-        // Create new configuration context without modifying original
-        Configuration config = new Configuration(context.getResources().getConfiguration());
-        config.setLocale(locale);
-        config.setLayoutDirection(locale);
-
-        return context.createConfigurationContext(config);
+        return savedLanguage;
     }
 
-    // Simplified method for immediate locale updates - FIXED VERSION
-    public static void updateApplicationLocale(Context context, String languageCode) {
-        String[] parts = languageCode.split("_");
-        Locale locale;
-        if (parts.length > 1) {
-            locale = new Locale(parts[0], parts[1]);
-        } else {
-            locale = new Locale(languageCode);
-        }
+    private static String getSystemLanguage() {
+        String systemLang = Locale.getDefault().getLanguage();
+        String systemCountry = Locale.getDefault().getCountry();
 
+        // Return full locale code like "en_GB", "es_ES", etc.
+        return systemLang + "_" + systemCountry;
+    }
+
+    private static void persist(Context context, String language) {
+        LanguagePreferences languagePreferences = new LanguagePreferences(context);
+        languagePreferences.setLanguage(language);
+    }
+
+    private static Context updateResources(Context context, String language) {
+        Locale locale = getLocaleFromString(language);
         Locale.setDefault(locale);
 
-        // Save the language preference first
-        setLanguage(context, languageCode);
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration.setLocale(locale);
+        configuration.setLayoutDirection(locale);
 
-        // Update configuration - ONLY update the resources, don't recreate context
+        return context.createConfigurationContext(configuration);
+    }
+
+    @SuppressWarnings("deprecation")
+    private static Context updateResourcesLegacy(Context context, String language) {
+        Locale locale = getLocaleFromString(language);
+        Locale.setDefault(locale);
+
         Resources resources = context.getResources();
-        Configuration config = new Configuration(resources.getConfiguration());
-        config.setLocale(locale);
-        config.setLayoutDirection(locale);
+        Configuration configuration = resources.getConfiguration();
+        configuration.locale = locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            configuration.setLayoutDirection(locale);
+        }
+
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+
+        return context;
+    }
+
+    private static Locale getLocaleFromString(String language) {
+        if (language == null || language.isEmpty()) {
+            return Locale.getDefault();
+        }
+
+        String[] parts = language.split("_");
+        if (parts.length == 2) {
+            return new Locale(parts[0], parts[1]);
+        } else {
+            return new Locale(language);
+        }
+    }
+
+    public static void updateApplicationLocale(Context context, String language) {
+        Locale locale = getLocaleFromString(language);
+        Locale.setDefault(locale);
+
+        Resources resources = context.getApplicationContext().getResources();
+        Configuration config = resources.getConfiguration();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            config.setLocale(locale);
+        } else {
+            config.locale = locale;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            config.setLayoutDirection(locale);
+        }
 
         resources.updateConfiguration(config, resources.getDisplayMetrics());
-    }
 
-    // Check if language has changed without applying it
-    public static boolean hasLanguageChanged(Context context, String currentLanguage) {
-        String savedLanguage = getLanguage(context);
-        return !savedLanguage.equals(currentLanguage);
+        // Also persist the language
+        persist(context, language);
     }
 }

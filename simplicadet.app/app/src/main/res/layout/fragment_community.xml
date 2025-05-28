@@ -1,143 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundNormal"
-    tools:context=".ui.community.CommunityFragment">
+    android:background="@drawable/gradient_dark">
 
-    <ImageView
-        android:id="@+id/community_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/back_button"
-        android:minWidth="24dp"
-        android:minHeight="24dp"
-        android:elevation="12dp"
-        android:layout_margin="@dimen/_10sdp"
-        android:src="@drawable/uni_ic_close"
-        android:tint="?attr/textNormal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RedundantDescriptionCheck,UseAppTint" />
-
-
-    <ScrollView
-        android:paddingStart="@dimen/_12sdp"
-        android:paddingEnd="@dimen/_12sdp"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:scrollbars="none">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/settings_top_bar_container"
+            android:elevation="1dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="@dimen/_5sdp">
+            android:layout_height="@dimen/_60sdp">
 
-            <View
+            <FrameLayout
+                android:id="@+id/top_bar_blur_background"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_25sdp"/>
+                android:layout_height="match_parent"
+                android:alpha="0">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blur_view_leaderboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
 
             <LinearLayout
-                android:id="@+id/leader_buttons"
+                android:id="@+id/settings_top_bar"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_36sdp"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:padding="1dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_38sdp"
-                android:layout_marginEnd="@dimen/_38sdp"
-                android:elevation="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
-                android:background="@drawable/background_nothing">
+                android:gravity="center_vertical">
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/leaderboard_weekly"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_7sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:layout_weight="0.5"
-                    android:background="@drawable/button_blue"
-                    android:fontFamily="@font/circular_bold"
-                    android:text="Weekly"
-                    android:textAllCaps="false"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
+                <ImageButton
+                    android:id="@+id/community_back"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/back_button"
+                    android:src="@drawable/uni_ic_close"
+                    app:tint="?attr/textNormal"
                     tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+        </FrameLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:layout_marginStart="@dimen/_7sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:fontFamily="@font/circular_bold"
-                    android:textAllCaps="false"
-                    android:textAlignment="center"
-                    android:textColor="?attr/textDark"
-                    android:textSize="@dimen/_12ssp"
-                    android:text="All Time"/>
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/leaderboard_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_7sdp"
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:paddingStart="@dimen/_12sdp"
+            android:paddingEnd="@dimen/_12sdp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="@dimen/_5sdp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_25sdp"/>
+
+                <LinearLayout
+                    android:id="@+id/leader_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_36sdp"
+                    android:orientation="horizontal"
+                    android:padding="1dp"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:visibility="gone"
-                    android:layout_marginBottom="@dimen/_5sdp"
-                    android:layout_weight="0.5"
-                    android:background="@drawable/background_nothing"
-                    android:fontFamily="@font/circular_bold"
-                    android:text="All Time"
-                    android:textAllCaps="false"
-                    android:textColor="?attr/textNormal"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="TouchTargetSizeCheck" />
+                    android:layout_marginStart="@dimen/_38sdp"
+                    android:layout_marginEnd="@dimen/_38sdp"
+                    android:elevation="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:background="@drawable/background_nothing">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/leaderboard_weekly"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:layout_weight="0.5"
+                        android:background="@drawable/button_blue"
+                        android:fontFamily="@font/circular_bold"
+                        android:text="Weekly"
+                        android:textAllCaps="false"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:fontFamily="@font/circular_bold"
+                        android:textAllCaps="false"
+                        android:textAlignment="center"
+                        android:textColor="?attr/textDark"
+                        android:textSize="@dimen/_12ssp"
+                        android:text="All Time"/>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/leaderboard_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_7sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:visibility="gone"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:layout_weight="0.5"
+                        android:background="@drawable/background_nothing"
+                        android:fontFamily="@font/circular_bold"
+                        android:text="All Time"
+                        android:textAllCaps="false"
+                        android:textColor="?attr/textNormal"
+                        android:textSize="@dimen/_12ssp"
+                        tools:ignore="TouchTargetSizeCheck" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/leaderView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+                <RelativeLayout
+                    android:id="@+id/leaderItems"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/leaderboardContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                    </LinearLayout>
+
+                    <!-- Add the fragment container here -->
+                    <FrameLayout
+                        android:id="@+id/fragment_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/_48sdp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_48sdp"/>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/leaderView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" />
-
-            <RelativeLayout
-                android:id="@+id/leaderItems"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:id="@+id/leaderboardContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                </LinearLayout>
-
-                <!-- Add the fragment container here -->
-                <FrameLayout
-                    android:id="@+id/fragment_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="@dimen/_48sdp" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_48sdp"/>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </RelativeLayout>
+</RelativeLayout>

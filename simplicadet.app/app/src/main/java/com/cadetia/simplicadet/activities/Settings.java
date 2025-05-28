@@ -91,11 +91,21 @@ public class Settings extends BaseActivity {
             R.raw.language_ro
     };
 
-    private String currentLanguage = "en";
+    private String currentLanguage = "en_GB"; // Set default to match languageCodes array
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+        // Initialize preferences before setting locale
+        LanguagePreferences langPrefs = new LanguagePreferences(newBase);
+        String savedLanguage = langPrefs.getLanguage();
+
+        // If no language is saved, use system default or fallback to English
+        if (savedLanguage == null || savedLanguage.isEmpty()) {
+            savedLanguage = getSystemLanguage();
+            langPrefs.setLanguage(savedLanguage);
+        }
+
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, savedLanguage));
     }
 
     @Override
@@ -111,77 +121,136 @@ public class Settings extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentLanguage = LocaleHelper.getLanguage(this);
+
+        // Initialize theme preferences first
+        themePreferences = new ThemePreferences(this);
+
+        // Set default theme if not set
+        if (!themePreferences.isThemeSet()) {
+            // Get system default theme
+            int systemTheme = getSystemDefaultTheme();
+            themePreferences.setThemeMode(systemTheme);
+            AppCompatDelegate.setDefaultNightMode(systemTheme);
+        } else {
+            // Apply saved theme
+            AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_settings);
 
-        // Get current language AFTER locale is set by attachBaseContext
+        // Get current language AFTER locale is set
         currentLanguage = LocaleHelper.getLanguage(this);
 
+        initializeViews();
+        setupThemeSwitch();
+        setupLanguageUI();
+        setupEventListeners();
+        retrieveUserData();
+        setupBlurView();
+        setupScrollListener();
+        setupCharacterCounters();
+    }
+
+    private void initializeViews() {
         blurView = findViewById(R.id.blur_view);
         topBarBlurBackground = findViewById(R.id.top_bar_blur_background);
         scrollView = findViewById(R.id.settings_scroll_view);
-
-        themePreferences = new ThemePreferences(this);
         themeSwitch = findViewById(R.id.theme_switch);
-        setupThemeSwitch();
-
         languageLayout = findViewById(R.id.settings_language);
         languageIcon = findViewById(R.id.language_icon);
         languageArrow = findViewById(R.id.language_arrow);
         languageText = findViewById(R.id.language_text);
         logout_button = findViewById(R.id.logout_button);
-        logout_button.setOnClickListener(v -> {
-            animateButtonOnClick(logout_button);
-            firebaseAuth = FirebaseAuth.getInstance();
-            firebaseAuth.signOut();
-            DialogConfirm.show(
-                    this,
-                    getString(R.string.logout), // Use string resource
-                    getString(R.string.logout_confirmation), // Use string resource
-                    () -> {
-                        FirebaseAuth.getInstance().signOut();
-                        startActivity(new Intent(this, MainActivity.class));
-                        finish();
-                    },
-                    true
-            );
-        });
-
         clear_button = findViewById(R.id.settings_clear);
-        clear_button.setOnClickListener(v -> {
-            animateButtonOnClick(clear_button);
-            DialogConfirm.show(
-                    this,
-                    getString(R.string.clear_cache),
-                    getString(R.string.clear_cache_confirmation),
-                    () -> {
-                        clearAppCache();
-                    },
-                    true
-            );
-        });
-
         editDescription = findViewById(R.id.settings_about);
         charName = findViewById(R.id.char_name);
         charDescription = findViewById(R.id.char_description);
+        settingsName = findViewById(R.id.settings_name);
+        settingsEmail = findViewById(R.id.settings_email);
+        settingsImage = findViewById(R.id.settings_image);
+    }
 
-        updateLanguageUI();
-        setupLanguagePopup();
+    private void setupEventListeners() {
+        logout_button.setOnClickListener(v -> {
+            animateButtonOnClick(logout_button);
+            handleLogout();
+        });
+
+        clear_button.setOnClickListener(v -> {
+            animateButtonOnClick(clear_button);
+            handleClearCache();
+        });
 
         findViewById(R.id.back_button).setOnClickListener(v -> {
             navigateBackWithAnimation();
         });
+    }
 
-        settingsName = findViewById(R.id.settings_name);
-        settingsEmail = findViewById(R.id.settings_email);
-        settingsImage = findViewById(R.id.settings_image);
+    private void handleLogout() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        DialogConfirm.show(
+                this,
+                getString(R.string.logout),
+                getString(R.string.logout_confirmation),
+                () -> {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                },
+                true
+        );
+    }
 
-        // Load user data
-        retrieveUserData();
-        setupBlurView();
-        setupScrollListener();
-        setupCharacterCounters();
+    private void handleClearCache() {
+        DialogConfirm.show(
+                this,
+                getString(R.string.clear_cache),
+                getString(R.string.clear_cache_confirmation),
+                this::clearAppCache,
+                true
+        );
+    }
+
+    private String getSystemLanguage() {
+        String systemLang = Locale.getDefault().getLanguage();
+        String systemCountry = Locale.getDefault().getCountry();
+        String fullLocale = systemLang + "_" + systemCountry;
+
+        // Check if system language is supported
+        for (String supportedLang : languageCodes) {
+            if (supportedLang.equals(fullLocale)) {
+                return supportedLang;
+            }
+        }
+
+        // Check if just language code matches (without country)
+        for (String supportedLang : languageCodes) {
+            if (supportedLang.startsWith(systemLang + "_")) {
+                return supportedLang;
+            }
+        }
+
+        // Default to English if system language not supported
+        return "en_GB";
+    }
+
+    private int getSystemDefaultTheme() {
+        // Check system theme setting
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                return AppCompatDelegate.MODE_NIGHT_YES;
+            case Configuration.UI_MODE_NIGHT_NO:
+                return AppCompatDelegate.MODE_NIGHT_NO;
+            default:
+                return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        }
+    }
+
+    private void setupLanguageUI() {
+        updateLanguageUI();
+        setupLanguagePopup();
     }
 
     private void setupLanguagePopup() {
@@ -430,8 +499,8 @@ public class Settings extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        currentLanguage = LocaleHelper.getLanguage(this);
-        updateLanguageUI();
+        // Don't update language here as it causes issues
+        // currentLanguage is already set correctly in onCreate
     }
 
     private void retrieveUserData() {
@@ -465,7 +534,6 @@ public class Settings extends BaseActivity {
         }
     }
 
-
     private boolean isPointInsideView(int x, int y, View view) {
         int[] location = new int[2];
         view.getLocationOnScreen(location);
@@ -478,11 +546,21 @@ public class Settings extends BaseActivity {
 
     private void changeLanguage(String languageCode) {
         if (!languageCode.equals(currentLanguage)) {
+            // Save the new language
             LanguagePreferences languagePreferences = new LanguagePreferences(this);
             languagePreferences.setLanguage(languageCode);
+
+            // Update current language
             currentLanguage = languageCode;
+
+            // Update the locale helper
             LocaleHelper.updateApplicationLocale(this, languageCode);
-            recreate();
+
+            // Recreate activity to apply changes
+            Intent intent = getIntent();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+            startActivity(intent);
         }
     }
 
@@ -511,7 +589,12 @@ public class Settings extends BaseActivity {
 
     private void applyTheme() {
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
-        recreate();
+
+        // Use intent to preserve language settings when recreating
+        Intent intent = getIntent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        startActivity(intent);
     }
 
     private void navigateBackWithAnimation() {
@@ -559,8 +642,6 @@ public class Settings extends BaseActivity {
     }
 
     private void setupCharacterCounters() {
-        // Remove the TextWatcher for settingsName (keep only for editDescription)
-
         final int errorColor = ContextCompat.getColor(Settings.this, R.color.red);
         final TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.textLight, typedValue, true);
@@ -584,6 +665,7 @@ public class Settings extends BaseActivity {
             }
         });
     }
+
     private void clearAppCache() {
         try {
             deleteDir(getCacheDir());

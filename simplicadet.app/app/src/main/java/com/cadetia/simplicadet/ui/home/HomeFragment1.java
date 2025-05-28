@@ -27,6 +27,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.FlashcardsActivity;
 import com.cadetia.simplicadet.activities.QuestionsActivity;
@@ -90,8 +93,17 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final int cacheSize = (int) (Runtime.getRuntime().maxMemory() / 1024) / 8;
-        memCache = new LruCache<String, Bitmap>(cacheSize) { @Override protected int sizeOf(String key, Bitmap value) { return value.getByteCount() / 1024; } };
+
+        // Increase cache size for better image caching
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 4; // Use 1/4 of available memory instead of 1/8
+
+        memCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024;
+            }
+        };
     }
 
     @Override
@@ -100,14 +112,29 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         showLoading(true);
         new Handler().postDelayed(() -> {
             if (isAdded()) {
-                retrieveUserData(); // Retrieve user data early
+                retrieveUserData();
                 loadTaskFirstLayout();
-                if (NetworkUtils.isNetworkAvailable(requireContext())) { loadJournals(); loadLearningPathFromDb(); }
-                else { journalsLoaded = true; categoriesLoaded = true; checkAllDataLoaded(); }
+                if (NetworkUtils.isNetworkAvailable(requireContext())) {
+                    loadJournals();
+                    loadLearningPathFromDb();
+                    // Preload images after a short delay
+                    new Handler().postDelayed(this::preloadJournalImages, 500);
+                } else {
+                    journalsLoaded = true;
+                    categoriesLoaded = true;
+                    checkAllDataLoaded();
+                }
             }
         }, 1000);
     }
 
+    @Override
+    public void onDestroyView() {
+        if (journalAdapter != null) {
+            journalAdapter.cleanup();
+        }
+        super.onDestroyView();
+    }
     private void loadLearningPathFromDb() {
         DbQuery.loadLearningPath(new MyCompleteListener() {
             @Override public void onSucces() {
@@ -177,16 +204,60 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     private void loadJournals() {
         DbQuery.loadJournals(new MyCompleteListener() {
             @SuppressLint("NotifyDataSetChanged")
-            @Override public void onSucces() {
+            @Override
+            public void onSucces() {
                 if (!isAdded()) return;
-                if (journalAdapter == null) { journalAdapter = new JournalAdapter(journalList, HomeFragment1.this, memCache); journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); journalRecyclerView.setAdapter(journalAdapter); }
-                journalList.clear(); journalList.addAll(DbQuery.g_homeJournalList); journalAdapter.notifyDataSetChanged();
-                journalsLoaded = true; checkAllDataLoaded();
+
+                // Initialize adapter only once
+                if (journalAdapter == null) {
+                    journalAdapter = new JournalAdapter(journalList, HomeFragment1.this, memCache);
+                    journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+                    journalRecyclerView.setAdapter(journalAdapter);
+
+                    // Optimize RecyclerView performance
+                    journalRecyclerView.setHasFixedSize(true); // Size won't change
+                    journalRecyclerView.setItemViewCacheSize(10); // Cache more views
+                    journalRecyclerView.setDrawingCacheEnabled(true);
+                    journalRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+                }
+
+                // Update data efficiently
+                journalList.clear();
+                if (DbQuery.g_homeJournalList != null && !DbQuery.g_homeJournalList.isEmpty()) {
+                    journalList.addAll(DbQuery.g_homeJournalList);
+                }
+
+                journalAdapter.notifyDataSetChanged();
+                journalsLoaded = true;
+                checkAllDataLoaded();
             }
-            @Override public void onFailure() { journalsLoaded = true; checkAllDataLoaded(); }
+
+            @Override
+            public void onFailure() {
+                journalsLoaded = true;
+                checkAllDataLoaded();
+            }
         });
     }
 
+    private void preloadJournalImages() {
+        if (journalList != null && !journalList.isEmpty()) {
+            // Preload first 3 journal images in background
+            for (int i = 0; i < Math.min(3, journalList.size()); i++) {
+                final String imageUrl = journalList.get(i).getImageUrl();
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    // Preload to Glide cache
+                    Glide.with(requireContext())
+                            .asBitmap()
+                            .load(imageUrl)
+                            .apply(new RequestOptions()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .override(200, 150))
+                            .preload();
+                }
+            }
+        }
+    }
     private void getSavedTasks() {
         @SuppressLint("StaticFieldLeak")
         class GetSavedTasks extends AsyncTask<Void, Void, List<Task>> {

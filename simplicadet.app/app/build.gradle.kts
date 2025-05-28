@@ -66,6 +66,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.generativeai)
 
+
     // Design
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.0")
     implementation("androidx.navigation:navigation-ui-ktx:2.9.0")

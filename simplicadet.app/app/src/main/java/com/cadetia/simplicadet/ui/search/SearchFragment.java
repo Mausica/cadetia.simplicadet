@@ -98,7 +98,6 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
         // Hide FAB
         ((Home) getActivity()).hideFab();
 
-        // Load user data and categories
         retrieveUserData();
 
         return root;
@@ -159,8 +158,8 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
                     CategoryModel filteredCategory = new CategoryModel(
                             category.getDocID(),
                             category.getName(),
-                            matchingQuizzes.size(), // Update noOfTests to reflect filtered count
-                            new ArrayList<>(matchingQuizzes) // Ensure a new list to avoid reference issues
+                            matchingQuizzes.size(),
+                            new ArrayList<>(matchingQuizzes)
                     );
                     filteredCategories.add(filteredCategory);
                     Log.d(TAG, "Added category: " + category.getName());
@@ -284,10 +283,8 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
     }
 
     private void retrieveUserData() {
-        // Get the SharedPreferences object
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserData", MODE_PRIVATE);
 
-        // Retrieve the values using the keys
         String userPhoto = sharedPreferences.getString("userPhoto", "");
 
         if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")){

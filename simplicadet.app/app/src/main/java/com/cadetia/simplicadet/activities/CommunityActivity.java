@@ -8,8 +8,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,10 +29,17 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.List;
 import java.util.Objects;
 
+import eightbitlab.com.blurview.BlurView;
+
 public class CommunityActivity extends AppCompatActivity {
 
     private FragmentCommunityBinding binding;
     private View leaderboardFirstLayout;
+
+    private BlurView blurView;
+    private View topBarBlurBackground;
+    private ScrollView scrollView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,8 @@ public class CommunityActivity extends AppCompatActivity {
         ImageView backButton = findViewById(R.id.community_back);
         backButton.setOnClickListener(v -> finish());
 
+        setupBlurView();
+        setupScrollListener();
         loadUIComponents();
     }
 
@@ -49,6 +60,14 @@ public class CommunityActivity extends AppCompatActivity {
         loadLeaderboardFirstLayout();
     }
 
+    private void setupScrollListener() {
+        scrollView = findViewById(R.id.scroll_view); // Make sure your ScrollView has this ID
+        scrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            float threshold = 50f;
+            float alpha = Math.min(1f, scrollY / threshold);
+            topBarBlurBackground.setAlpha(alpha);
+        });
+    }
     private void setupButtons() {
         View.OnClickListener buttonClickListener = getOnClickListener();
         binding.leaderboardWeekly.setOnClickListener(buttonClickListener);
@@ -157,6 +176,19 @@ public class CommunityActivity extends AppCompatActivity {
         }
     }
 
+    private void setupBlurView() {
+        blurView = findViewById(R.id.blur_view_leaderboard);
+        topBarBlurBackground = findViewById(R.id.top_bar_blur_background);
+
+        View decorView = getWindow().getDecorView();
+        ViewGroup rootView = decorView.findViewById(android.R.id.content);
+        Drawable windowBackground = decorView.getBackground();
+
+        blurView.setupWith(rootView)
+                .setFrameClearDrawable(windowBackground)
+                .setBlurRadius(10f)
+                .setBlurAutoUpdate(true);
+    }
     @NonNull
     private View.OnClickListener getOnClickListener() {
         final int weeklyButtonId = R.id.leaderboard_weekly;
