@@ -2,7 +2,7 @@
 <resources>
     <!-- Application Info -->
     <string name="app_name">Simplicadet</string>
-    <string name="version_info">Versiunea 1.2b</string>
+    <string name="version_info">Versiunea 1.3b</string>
     <string name="copyright_info">© 2025 Simplicadet</string>
 
     <!-- Navigation -->
@@ -11,7 +11,7 @@
     <string name="navigation_drawer_close">Închide meniul de navigare</string>
 
     <!-- Main Screen -->
-    <string name="main_title">Misiunea inta, disciplina mereu!</string>
+    <string name="main_title">Prima misiunea, disciplina!</string>
     <string name="main_google">Continuă cu Google</string>
     <string name="main_facebook">Continuă cu Facebook</string>
 

@@ -50,6 +50,9 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
         configureNodePositionAndConnectors(holder, position);
         holder.nodeContainer.setOnClickListener(v -> {
             if (pathModel.isUnlocked() && listener != null) {
+                if (pathModel.getType() == 0 && pathModel.isCompleted()) {
+                    return;
+                }
                 listener.onPathNodeClick(position, pathModel);
             }
         });
@@ -58,11 +61,19 @@ public class LearningPathAdapter extends RecyclerView.Adapter<LearningPathAdapte
     private void configureNodeAppearance(LearningPathViewHolder holder, LearningPathModel pathModel, int position) {
         if (pathModel.isCompleted()) {
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_completed);
-            holder.nodeIcon.setImageResource(R.drawable.home_ic_check);
+            if (pathModel.getType() == 1) {
+                holder.nodeIcon.setImageResource(R.drawable.home_ic_new);
+            } else {
+                holder.nodeIcon.setImageResource(R.drawable.home_ic_check);
+            }
             holder.nodeIcon.setColorFilter(Color.WHITE);
         } else if (pathModel.isUnlocked()) {
             holder.nodeContainer.setBackgroundResource(R.drawable.node_background_unlocked);
-            holder.nodeIcon.setImageResource(R.drawable.ic_play);
+            if (pathModel.getType() == 1) {
+                holder.nodeIcon.setImageResource(R.drawable.home_ic_new);
+            } else {
+                holder.nodeIcon.setImageResource(R.drawable.ic_play);
+            }
             holder.nodeIcon.setColorFilter(getThemeColor(R.attr.textNormal));
             holder.nodeIcon.setAlpha(0.8f);
         } else {
