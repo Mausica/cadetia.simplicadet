@@ -116,6 +116,7 @@
         android:fillViewport="true"
         android:scrollbars="none"
         android:visibility="gone"
+        android:paddingBottom="@dimen/_110sdp"
         android:layout_marginTop="@dimen/_5sdp"
         app:layout_constraintStart_toStartOf="@id/text_search"
         app:layout_constraintTop_toBottomOf="@id/text_search">
