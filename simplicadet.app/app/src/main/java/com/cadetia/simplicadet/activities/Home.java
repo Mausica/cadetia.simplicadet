@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -510,7 +511,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         fabMain.setImageResource(R.drawable.home_ic_plus);
         fabMain.setVisibility(View.GONE);
 
-        androidx.cardview.widget.CardView navCard = findViewById(R.id.nav_card);
+        FrameLayout navCard = findViewById(R.id.nav_card);
         if (navCard == null) return;
 
         androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
@@ -527,7 +528,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         fabMain.setVisibility(View.VISIBLE);
 
         // Get reference to the nav_card
-        androidx.cardview.widget.CardView navCard = findViewById(R.id.nav_card);
+        FrameLayout navCard = findViewById(R.id.nav_card);
 
         // Restore original constraints
         androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =

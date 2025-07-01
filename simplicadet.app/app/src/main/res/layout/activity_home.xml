@@ -61,13 +61,10 @@
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp">
 
-                <!-- Modified card view with fixed width -->
-                <androidx.cardview.widget.CardView
+                <FrameLayout
                     android:id="@+id/nav_card"
-                    android:layout_width="@dimen/_140sdp"
+                    android:layout_width="@dimen/_130sdp"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="@dimen/_3sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/fab_container"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -89,7 +86,7 @@
                         app:itemIconSize="@dimen/_18sdp"
                         app:itemIconTint="?attr/colorSecondary"
                         app:menu="@menu/bottom_nav_menu" />
-                </androidx.cardview.widget.CardView>
+                </FrameLayout>
 
                 <FrameLayout
                     android:id="@+id/fab_container"

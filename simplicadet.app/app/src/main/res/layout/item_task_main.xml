@@ -13,11 +13,16 @@
     app:cardCornerRadius="@dimen/_10sdp"
     android:layout_height="@dimen/_40sdp">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/home_background_task" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="?attr/backgroundLight">
+        android:background="@android:color/transparent">
 
         <View
             android:id="@+id/main_view_glowed"
@@ -30,13 +35,14 @@
             tools:targetApi="p" />
 
         <CheckBox
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_12sdp"
+            android:id="@+id/main_checked_task"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
             android:button="@drawable/background_checkbox"
-            android:id="@+id/main_checked_task" />
+            tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,8 +55,6 @@
             android:id="@+id/main_title"
             android:layout_marginEnd="@dimen/_15sdp"
             android:textColor="?attr/textNormal"/>
-
-
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

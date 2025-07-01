@@ -13,12 +13,16 @@
     app:cardCornerRadius="@dimen/_10sdp"
     android:layout_height="wrap_content">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/home_background_task" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="?attr/backgroundLight">
+        android:background="@android:color/transparent">
 
         <View
             android:id="@+id/view_glowed"
@@ -31,15 +35,15 @@
             tools:targetApi="p" />
 
         <CheckBox
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_12sdp"
+            android:id="@+id/checked_task"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
             android:button="@drawable/background_checkbox"
-            android:id="@+id/checked_task" />
+            tools:ignore="TouchTargetSizeCheck" />
 
-        <!-- New LinearLayout to stack title and date/time -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +52,6 @@
             android:paddingTop="@dimen/_6sdp"
             android:paddingBottom="@dimen/_6sdp">
 
-            <!-- Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +62,6 @@
                 android:id="@+id/title"
                 android:textColor="?attr/textNormal"/>
 
-            <!-- Date and Time -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

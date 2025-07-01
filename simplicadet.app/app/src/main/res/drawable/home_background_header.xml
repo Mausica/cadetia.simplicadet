@@ -22,7 +22,7 @@
         <shape android:shape="rectangle">
             <stroke
                 android:width="@dimen/_1sdp"
-                android:color="?attr/shimmerLight"/>
+                android:color="?attr/colorSecondary"/>
             <solid android:color="@android:color/transparent"/>
             <corners android:radius="@dimen/_24sdp"/>
         </shape>

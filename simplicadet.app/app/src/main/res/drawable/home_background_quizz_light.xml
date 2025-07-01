@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="?attr/transparentLight"/>
-            <corners android:radius="@dimen/_15sdp"/>
-        </shape>
-    </item>
-
+    <!-- Main background layer -->
     <item
         android:left="0dp"
         android:right="0dp"
         android:top="0dp"
-        android:bottom="@dimen/_4sdp">
+        android:bottom="@dimen/_2sdp">
         <shape android:shape="rectangle">
             <solid android:color="?attr/backgroundLight"/>
-            <corners android:radius="15dp"/>
+            <corners android:radius="@dimen/_15sdp"/>
         </shape>
     </item>
+
+    <!-- Subtle inner border/highlight -->
+    <item
+        android:left="@dimen/_1sdp"
+        android:right="@dimen/_1sdp"
+        android:top="@dimen/_1sdp"
+        android:bottom="@dimen/_3sdp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/_1sdp"
+                android:color="?attr/colorSecondary"/>
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="@dimen/_14sdp"/>
+        </shape>
+    </item>
+
 </layer-list>
