@@ -21,9 +21,7 @@
         <!-- <item name="backgroundTint">@color/white</item> -->
         <item name="colorPrimaryDark">@color/white</item>
 
-        <!-- Text Colors -->
-        <item name="textAppearanceBody1">@color/white</item>
-        <item name="textAppearanceBody2">@color/white</item>
+
 
         <item name="bottomBarGradient">@drawable/gradient_bottom_dark</item>
 
@@ -35,6 +33,10 @@
         <item name="shimmerDark">#666666</item>
 
         <item name="transparentLight">#0A0A0A</item>
+
+        <!-- Text Colors -->
+        <item name="textAppearanceBody1">@color/white</item>
+        <item name="textAppearanceBody2">@color/white</item>
 
         <item name="textLight">@color/text_l_light</item>
         <item name="textDark">@color/text_l_dark</item>

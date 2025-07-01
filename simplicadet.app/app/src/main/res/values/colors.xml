@@ -6,12 +6,22 @@
     <color name="primary">#0070F0</color>
     <color name="primary_transparent">#0084f0</color>
     <color name="military">#4C674A</color>
+
     <color name="black">#141414</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="shadow_light">#F0F0F5</color>
+    <color name="border_light">#E8E8ED</color>
+    <color name="shadow_dark">#1A1A1F</color>
+    <color name="border_dark">#2D2D32</color>
+
+    <color name="text_dark">#2D2D2D</color>
+    <color name="progress_track">#F0F0F5</color>
+    <color name="progress_indicator">#0070F0</color>
 
     <color name="background_l_light">#ececec</color>
     <color name="background_l_dark">#999999</color>
-    <color name="background_l_normal">#e2dee1</color>
+    <color name="background_l_normal">#f3f3f3</color>
     <color name="background_d_light">#212121</color>
     <color name="background_d_dark">#666666</color>
     <color name="background_d_normal">#141414</color>
@@ -85,11 +95,6 @@
     <color name="citric">#cdf564</color>
     <color name="fuchsia">#f037a5</color>
     <color name="aquamarine">#9bf0e1</color>
-
-    <!-- Learning Path Colors -->
-    <color name="path_completed">#4CAF50</color>
-    <color name="path_unlocked">#9C27B0</color>
-    <color name="path_locked">#E0E0E0</color>
 
     <!-- Text Colors -->
     <color name="text_primary">#212121</color>

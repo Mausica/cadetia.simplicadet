@@ -556,11 +556,13 @@ public class Settings extends BaseActivity {
             // Update the locale helper
             LocaleHelper.updateApplicationLocale(this, languageCode);
 
-            // Recreate activity to apply changes
+            // Recreate activity to apply changes with no animation
             Intent intent = getIntent();
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             finish();
+            overridePendingTransition(0, 0); // No animation
             startActivity(intent);
+            overridePendingTransition(0, 0); // No animation
         }
     }
 
@@ -590,11 +592,13 @@ public class Settings extends BaseActivity {
     private void applyTheme() {
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
 
-        // Use intent to preserve language settings when recreating
+        // Use intent to preserve language settings when recreating with no animation
         Intent intent = getIntent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         finish();
+        overridePendingTransition(0, 0); // No animation
         startActivity(intent);
+        overridePendingTransition(0, 0); // No animation
     }
 
     private void navigateBackWithAnimation() {

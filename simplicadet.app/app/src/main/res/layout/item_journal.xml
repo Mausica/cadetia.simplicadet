@@ -7,12 +7,13 @@
     android:layout_marginStart="@dimen/_12sdp"
     android:layout_marginTop="@dimen/_12sdp"
     android:layout_marginEnd="@dimen/_12sdp"
+    android:layout_marginBottom="@dimen/_12sdp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:maxHeight="@dimen/_10sdp"
     android:paddingBottom="@dimen/_12sdp"
-    android:elevation="3dp"
-    android:background="@drawable/home_background_quizz">
+    android:elevation="4dp"
+    android:background="@drawable/home_background_header">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -27,23 +28,24 @@
             android:maxHeight="@dimen/_160sdp"
             android:scaleType="fitXY"
             android:cropToPadding="false"
-            app:riv_corner_radius="15dp" />
+            app:riv_corner_radius="@dimen/_20sdp"/>
 
         <TextView
             android:id="@+id/journal_date"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="@dimen/_21sdp"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:text="12313123"
             android:maxLines="1"
+            android:elevation="3dp"
             android:textAlignment="center"
             android:fontFamily="@font/circular_bold"
             android:includeFontPadding="false"
             android:textColor="?attr/textLight"
             android:textSize="@dimen/_8ssp"
-            android:background="@drawable/background_future"
+            android:background="@drawable/home_background_header"
             android:paddingTop="8dp"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
