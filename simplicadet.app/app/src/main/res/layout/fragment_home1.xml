@@ -24,45 +24,51 @@
 
     </FrameLayout>
 
-    <!-- Content layout (this will be shown after loading) -->
-    <androidx.core.widget.NestedScrollView
+
+    <com.amar.library.ui.StickyScrollView
         android:id="@+id/contentLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        android:visibility="gone">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:stickyHeader="@+id/learningPathHeader">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tasksMainRecyclerView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginStart="@dimen/_1sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_1sdp"
-                android:clipToPadding="false"
-                android:paddingStart="0dp"
-                android:paddingEnd="@dimen/_3sdp"
-                android:paddingBottom="@dimen/_6sdp"
-                android:nestedScrollingEnabled="false"/>
+                android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/journalRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginStart="@dimen/_2sdp"
-                android:layout_marginEnd="@dimen/_2sdp"
-                android:paddingBottom="@dimen/_20sdp"
-                android:nestedScrollingEnabled="false"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tasksMainRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_1sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_1sdp"
+                    android:clipToPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="@dimen/_3sdp"
+                    android:paddingBottom="@dimen/_6sdp"
+                    android:nestedScrollingEnabled="false"/>
 
-            <!-- Learning Path Header -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/journalRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:paddingBottom="@dimen/_20sdp"
+                    android:nestedScrollingEnabled="false"/>
+
+            </LinearLayout>
+
+
             <include
                 android:id="@+id/learningPathHeader"
                 layout="@layout/item_learning_path_header"
@@ -87,5 +93,6 @@
                 android:nestedScrollingEnabled="false"/>
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </com.amar.library.ui.StickyScrollView>
+
 </FrameLayout>
