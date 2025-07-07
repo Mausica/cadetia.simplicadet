@@ -32,6 +32,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.FlashcardsActivity;
+import com.cadetia.simplicadet.activities.Home;
+import com.cadetia.simplicadet.activities.PathSelector;
 import com.cadetia.simplicadet.activities.QuestionsActivity;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.JournalAdapter;
@@ -68,8 +70,13 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     private DbQuery.LearningPath currentLearningPath;
     private SharedPreferences learningPathPrefs;
     private static final int LEARNING_PATH_REQUEST = 101;
+    private static final int PATH_SELECTOR_REQUEST = 102;
     private boolean tasksLoaded = false, journalsLoaded = false, categoriesLoaded = false;
-    private int lastClickedPosition = -1; // <-- Add this for fallback
+    private int lastClickedPosition = -1;
+    private boolean hasSelectedLearningPath() {
+        SharedPreferences selectedPathPrefs = requireActivity().getSharedPreferences("SelectedLearningPath", MODE_PRIVATE);
+        return selectedPathPrefs.contains("selectedPathId");
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,6 +91,10 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             pathTitle = learningPathHeader.findViewById(R.id.pathTitle);
             progressText = learningPathHeader.findViewById(R.id.progressText);
             circularProgress = learningPathHeader.findViewById(R.id.circularProgress);
+            learningPathHeader.setOnClickListener(v -> {
+                Intent intent = new Intent(requireActivity(), PathSelector.class);
+                startActivity(intent);
+            });
         }
         learningPathPrefs = requireActivity().getSharedPreferences("LearningPathProgress", MODE_PRIVATE);
         showLoading(true);
@@ -105,6 +116,23 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             }
         };
     }
+    private void clearSelectedLearningPath() {
+        SharedPreferences selectedPathPrefs = requireActivity().getSharedPreferences("SelectedLearningPath", MODE_PRIVATE);
+        selectedPathPrefs.edit().clear().apply();
+    }
+
+    private void setupLearningPathHeader() {
+        if (learningPathHeader != null) {
+            pathTitle = learningPathHeader.findViewById(R.id.pathTitle);
+            progressText = learningPathHeader.findViewById(R.id.progressText);
+            circularProgress = learningPathHeader.findViewById(R.id.circularProgress);
+
+            learningPathHeader.setOnClickListener(v -> {
+                Intent intent = new Intent(requireActivity(), PathSelector.class);
+                startActivity(intent);
+            });
+        }
+    }
 
     @Override
     public void onResume() {
@@ -116,7 +144,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
                 loadTaskFirstLayout();
                 if (NetworkUtils.isNetworkAvailable(requireContext())) {
                     loadJournals();
-                    loadLearningPathFromDb();
+                    loadSelectedLearningPath(); // <-- Changed this line
                     // Preload images after a short delay
                     new Handler().postDelayed(this::preloadJournalImages, 500);
                 } else {
@@ -335,6 +363,42 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         }
     }
 
+    // Add these changes to your existing HomeFragment1.java
+
+    // 1. Add this method to load the selected learning path from preferences
+    private void loadSelectedLearningPath() {
+        SharedPreferences selectedPathPrefs = requireActivity().getSharedPreferences("SelectedLearningPath", MODE_PRIVATE);
+        String selectedPathId = selectedPathPrefs.getString("selectedPathId", null);
+
+        if (selectedPathId != null) {
+            // Load the selected path using the new selectLearningPath method
+            DbQuery.selectLearningPath(selectedPathId, new MyCompleteListener() {
+                @Override
+                public void onSucces() {
+                    if (!isAdded()) return;
+                    currentLearningPath = DbQuery.g_learningPath;
+                    if (currentLearningPath != null) {
+                        populateLearningPathList();
+                        setUpLearningPathRecyclerView();
+                        updateLearningPathHeader();
+                    }
+                    categoriesLoaded = true;
+                    checkAllDataLoaded();
+                }
+
+                @Override
+                public void onFailure() {
+                    if (isAdded()) {
+                        // Fallback to old method if new one fails
+                        loadLearningPathFromDb();
+                    }
+                }
+            });
+        } else {
+            // No path selected, load default or show path selector
+            loadLearningPathFromDb();
+        }
+    }
 
     private boolean isPathCompleted() { for (LearningPathModel node : learningPathList) if (!node.isCompleted()) return false; return !learningPathList.isEmpty(); }
     private void showPathCompletionDialog() { showRedeemDialog(100, learningPathList.size(), learningPathList.size(), 60.0f); }
@@ -352,11 +416,24 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         }
     }
 
+    private void setupLearningPathHeaderWithResult() {
+        if (learningPathHeader != null) {
+            learningPathHeader.setOnClickListener(v -> {
+                Intent intent = new Intent(requireActivity(), PathSelector.class);
+                startActivityForResult(intent, PATH_SELECTOR_REQUEST);
+            });
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         retrieveUserData(); // Ensure userEmail is fresh
 
+        if (requestCode == PATH_SELECTOR_REQUEST && resultCode == Activity.RESULT_OK) {
+            loadSelectedLearningPath();
+            return;
+        }
         if (requestCode == LEARNING_PATH_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             Log.d(TAG, "onActivityResult: Received result for LEARNING_PATH_REQUEST");
 
