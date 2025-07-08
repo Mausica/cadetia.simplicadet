@@ -5,8 +5,6 @@ import android.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
 import com.cadetia.simplicadet.model.JournalEntry;
@@ -14,23 +12,20 @@ import com.cadetia.simplicadet.model.QuestionModel;
 import com.cadetia.simplicadet.model.Quizz;
 import com.cadetia.simplicadet.model.RankModel;
 import com.cadetia.simplicadet.model.UserModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DbQuery {
 
@@ -45,10 +40,6 @@ public class DbQuery {
     public static List<JournalEntry> g_homeJournalList = new ArrayList<>();
     public static LearningPath g_learningPath;
     public static List<FlashcardModel> g_flashcardList = new ArrayList<>();
-
-    public static int g_selected_cat_index = 0;
-    public static int g_selected_test_index = 0;
-
     public static List<CategoryModel> g_militaryCatList = new ArrayList<>();
     public static List<CategoryModel> g_homeCatList = new ArrayList<>();
     public static List<LearningPath> g_allLearningPaths = new ArrayList<>();
@@ -61,113 +52,107 @@ public class DbQuery {
 
         g_firestore.collection("LEARNING")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            g_allLearningPaths.clear();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        g_allLearningPaths.clear();
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                try {
-                                    // Use default constructor
-                                    LearningPath learningPath = new LearningPath();
-                                    learningPath.id = document.getId();
-                                    learningPath.title = document.getString("pathTitle");
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            try {
+                                // Use default constructor
+                                LearningPath learningPath = new LearningPath();
+                                learningPath.id = document.getId();
+                                learningPath.title = document.getString("pathTitle");
 
-                                    // Load path nodes - handle both data structures
-                                    Object pathNodesObj = document.get("pathNodes");
-                                    if (pathNodesObj != null) {
-                                        learningPath.nodes = new ArrayList<>();
+                                // Load path nodes - handle both data structures
+                                Object pathNodesObj = document.get("pathNodes");
+                                if (pathNodesObj != null) {
+                                    learningPath.nodes = new ArrayList<>();
 
-                                        if (pathNodesObj instanceof List) {
-                                            List<?> pathNodesList = (List<?>) pathNodesObj;
+                                    if (pathNodesObj instanceof List) {
+                                        List<?> pathNodesList = (List<?>) pathNodesObj;
 
-                                            if (!pathNodesList.isEmpty()) {
-                                                Object firstItem = pathNodesList.get(0);
+                                        if (!pathNodesList.isEmpty()) {
+                                            Object firstItem = pathNodesList.get(0);
 
-                                                // Case 1: List of Maps (complex structure)
-                                                if (firstItem instanceof Map) {
-                                                    @SuppressWarnings("unchecked")
-                                                    List<Map<String, Object>> pathNodesData = (List<Map<String, Object>>) pathNodesList;
+                                            // Case 1: List of Maps (complex structure)
+                                            if (firstItem instanceof Map) {
+                                                @SuppressWarnings("unchecked")
+                                                List<Map<String, Object>> pathNodesData = (List<Map<String, Object>>) pathNodesList;
 
-                                                    for (Map<String, Object> nodeData : pathNodesData) {
-                                                        LearningPathNode node = new LearningPathNode();
-                                                        node.id = (String) nodeData.get("id");
-                                                        node.title = (String) nodeData.get("title");
+                                                for (Map<String, Object> nodeData : pathNodesData) {
+                                                    LearningPathNode node = new LearningPathNode();
+                                                    node.id = (String) nodeData.get("id");
+                                                    node.title = (String) nodeData.get("title");
 
-                                                        // Handle type conversion safely
-                                                        Object typeObj = nodeData.get("type");
-                                                        if (typeObj instanceof Long) {
-                                                            node.type = ((Long) typeObj).intValue();
-                                                        } else if (typeObj instanceof String) {
-                                                            String typeStr = (String) typeObj;
-                                                            node.type = "QUIZZES".equals(typeStr) ? 0 : 1;
-                                                        } else {
-                                                            node.type = 0; // Default to quiz
-                                                        }
-
-                                                        learningPath.nodes.add(node);
+                                                    // Handle type conversion safely
+                                                    Object typeObj = nodeData.get("type");
+                                                    if (typeObj instanceof Long) {
+                                                        node.type = ((Long) typeObj).intValue();
+                                                    } else if (typeObj instanceof String) {
+                                                        String typeStr = (String) typeObj;
+                                                        node.type = "QUIZZES".equals(typeStr) ? 0 : 1;
+                                                    } else {
+                                                        node.type = 0; // Default to quiz
                                                     }
+
+                                                    learningPath.nodes.add(node);
                                                 }
-                                                // Case 2: List of Strings (simple structure)
-                                                else if (firstItem instanceof String) {
-                                                    @SuppressWarnings("unchecked")
-                                                    List<String> nodeIds = (List<String>) pathNodesList;
+                                            }
+                                            // Case 2: List of Strings (simple structure)
+                                            else if (firstItem instanceof String) {
+                                                @SuppressWarnings("unchecked")
+                                                List<String> nodeIds = (List<String>) pathNodesList;
 
-                                                    // Get path types to determine node types
-                                                    List<String> pathTypesData = (List<String>) document.get("pathTypes");
+                                                // Get path types to determine node types
+                                                List<String> pathTypesData = (List<String>) document.get("pathTypes");
 
-                                                    // Create nodes with the IDs and types
-                                                    for (int i = 0; i < nodeIds.size(); i++) {
-                                                        LearningPathNode node = new LearningPathNode();
-                                                        node.id = nodeIds.get(i);
-                                                        node.title = "Loading..."; // Will be loaded later
+                                                // Create nodes with the IDs and types
+                                                for (int i = 0; i < nodeIds.size(); i++) {
+                                                    LearningPathNode node = new LearningPathNode();
+                                                    node.id = nodeIds.get(i);
+                                                    node.title = "Loading..."; // Will be loaded later
 
-                                                        // Determine type from pathTypes if available
-                                                        if (pathTypesData != null && i < pathTypesData.size()) {
-                                                            String typeStr = pathTypesData.get(i);
-                                                            node.type = "QUIZZES".equals(typeStr.trim()) ? 0 : 1;
-                                                        } else {
-                                                            node.type = 0; // Default to quiz
-                                                        }
-
-                                                        learningPath.nodes.add(node);
+                                                    // Determine type from pathTypes if available
+                                                    if (pathTypesData != null && i < pathTypesData.size()) {
+                                                        String typeStr = pathTypesData.get(i);
+                                                        node.type = "QUIZZES".equals(typeStr.trim()) ? 0 : 1;
+                                                    } else {
+                                                        node.type = 0; // Default to quiz
                                                     }
+
+                                                    learningPath.nodes.add(node);
                                                 }
                                             }
                                         }
                                     }
-
-                                    // Load path types
-                                    List<String> pathTypesData = (List<String>) document.get("pathTypes");
-                                    if (pathTypesData != null) {
-                                        learningPath.pathTypes = new ArrayList<>(pathTypesData);
-                                    }
-
-                                    g_allLearningPaths.add(learningPath);
-
-                                } catch (Exception e) {
-                                    Log.e("DbQuery", "Error parsing learning path document: " + document.getId(), e);
-                                    // Log the actual data structure for debugging
-                                    Log.e("DbQuery", "Document data: " + document.getData().toString());
                                 }
+
+                                // Load path types
+                                List<String> pathTypesData = (List<String>) document.get("pathTypes");
+                                if (pathTypesData != null) {
+                                    learningPath.pathTypes = new ArrayList<>(pathTypesData);
+                                }
+
+                                g_allLearningPaths.add(learningPath);
+
+                            } catch (Exception e) {
+                                Log.e("DbQuery", "Error parsing learning path document: " + document.getId(), e);
+                                // Log the actual data structure for debugging
+                                Log.e("DbQuery", "Document data: " + document.getData());
                             }
-
-                            // After loading all paths, fetch node titles for paths with simple structure
-                            fetchNodeTitlesForAllPaths(listener);
-
-                        } else {
-                            Log.e("DbQuery", "Error getting learning paths: ", task.getException());
-                            listener.onFailure();
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("DbQuery", "Failed to load learning paths", e);
+
+                        // After loading all paths, fetch node titles for paths with simple structure
+                        fetchNodeTitlesForAllPaths(listener);
+
+                    } else {
+                        Log.e("DbQuery", "Error getting learning paths: ", task.getException());
                         listener.onFailure();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DbQuery", "Failed to load learning paths", e);
+                    listener.onFailure();
                 });
     }
     private static void fetchNodeTitlesForAllPaths(MyCompleteListener listener) {
@@ -236,129 +221,123 @@ public class DbQuery {
         g_firestore.collection("LEARNING")
                 .document(pathId)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            if (document.exists()) {
-                                try {
-                                    // Use default constructor
-                                    LearningPath learningPath = new LearningPath();
-                                    learningPath.id = document.getId();
-                                    learningPath.title = document.getString("pathTitle");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            try {
+                                // Use default constructor
+                                LearningPath learningPath = new LearningPath();
+                                learningPath.id = document.getId();
+                                learningPath.title = document.getString("pathTitle");
 
-                                    // Load path nodes - handle both data structures
-                                    Object pathNodesObj = document.get("pathNodes");
-                                    if (pathNodesObj != null) {
-                                        learningPath.nodes = new ArrayList<>();
+                                // Load path nodes - handle both data structures
+                                Object pathNodesObj = document.get("pathNodes");
+                                if (pathNodesObj != null) {
+                                    learningPath.nodes = new ArrayList<>();
 
-                                        if (pathNodesObj instanceof List) {
-                                            List<?> pathNodesList = (List<?>) pathNodesObj;
+                                    if (pathNodesObj instanceof List) {
+                                        List<?> pathNodesList = (List<?>) pathNodesObj;
 
-                                            if (!pathNodesList.isEmpty()) {
-                                                Object firstItem = pathNodesList.get(0);
+                                        if (!pathNodesList.isEmpty()) {
+                                            Object firstItem = pathNodesList.get(0);
 
-                                                // Case 1: List of Strings (simple structure) - CHECK THIS FIRST
-                                                if (firstItem instanceof String) {
-                                                    Log.d("DbQuery", "Processing simple structure (List of Strings)");
-                                                    @SuppressWarnings("unchecked")
-                                                    List<String> nodeIds = (List<String>) pathNodesList;
+                                            // Case 1: List of Strings (simple structure) - CHECK THIS FIRST
+                                            if (firstItem instanceof String) {
+                                                Log.d("DbQuery", "Processing simple structure (List of Strings)");
+                                                @SuppressWarnings("unchecked")
+                                                List<String> nodeIds = (List<String>) pathNodesList;
 
-                                                    // Get path types to determine node types
-                                                    List<String> pathTypesData = (List<String>) document.get("pathTypes");
+                                                // Get path types to determine node types
+                                                List<String> pathTypesData = (List<String>) document.get("pathTypes");
 
-                                                    // Create nodes with the IDs and types
-                                                    for (int i = 0; i < nodeIds.size(); i++) {
-                                                        LearningPathNode node = new LearningPathNode();
-                                                        node.id = nodeIds.get(i);
-                                                        node.title = "Loading..."; // Will be loaded later
+                                                // Create nodes with the IDs and types
+                                                for (int i = 0; i < nodeIds.size(); i++) {
+                                                    LearningPathNode node = new LearningPathNode();
+                                                    node.id = nodeIds.get(i);
+                                                    node.title = "Loading..."; // Will be loaded later
 
-                                                        // Determine type from pathTypes if available
-                                                        if (pathTypesData != null && i < pathTypesData.size()) {
-                                                            String typeStr = pathTypesData.get(i);
-                                                            node.type = "QUIZZES".equals(typeStr.trim()) ? 0 : 1;
-                                                        } else {
-                                                            node.type = 0; // Default to quiz
-                                                        }
-
-                                                        learningPath.nodes.add(node);
+                                                    // Determine type from pathTypes if available
+                                                    if (pathTypesData != null && i < pathTypesData.size()) {
+                                                        String typeStr = pathTypesData.get(i);
+                                                        node.type = "QUIZZES".equals(typeStr.trim()) ? 0 : 1;
+                                                    } else {
+                                                        node.type = 0; // Default to quiz
                                                     }
 
-                                                    // Fetch node titles and then complete
-                                                    fetchNodeTitlesForPath(learningPath, listener);
-                                                    return;
+                                                    learningPath.nodes.add(node);
                                                 }
-                                                // Case 2: List of Maps (complex structure)
-                                                else if (firstItem instanceof Map) {
-                                                    Log.d("DbQuery", "Processing complex structure (List of Maps)");
-                                                    @SuppressWarnings("unchecked")
-                                                    List<Map<String, Object>> pathNodesData = (List<Map<String, Object>>) pathNodesList;
 
-                                                    for (Map<String, Object> nodeData : pathNodesData) {
-                                                        LearningPathNode node = new LearningPathNode();
-                                                        node.id = (String) nodeData.get("id");
-                                                        node.title = (String) nodeData.get("title");
-
-                                                        // Handle type conversion safely
-                                                        Object typeObj = nodeData.get("type");
-                                                        if (typeObj instanceof Long) {
-                                                            node.type = ((Long) typeObj).intValue();
-                                                        } else if (typeObj instanceof String) {
-                                                            String typeStr = (String) typeObj;
-                                                            node.type = "QUIZZES".equals(typeStr) ? 0 : 1;
-                                                        } else {
-                                                            node.type = 0;
-                                                        }
-
-                                                        learningPath.nodes.add(node);
-                                                    }
-
-                                                    // Set the global learning path and complete
-                                                    g_learningPath = learningPath;
-                                                    listener.onSucces();
-                                                    return;
-                                                }
-                                                else {
-                                                    Log.e("DbQuery", "Unknown pathNodes structure. First item type: " + firstItem.getClass().getSimpleName());
-                                                }
+                                                // Fetch node titles and then complete
+                                                fetchNodeTitlesForPath(learningPath, listener);
+                                                return;
                                             }
-                                        } else {
-                                            Log.e("DbQuery", "pathNodes is not a List. Type: " + pathNodesObj.getClass().getSimpleName());
+                                            // Case 2: List of Maps (complex structure)
+                                            else if (firstItem instanceof Map) {
+                                                Log.d("DbQuery", "Processing complex structure (List of Maps)");
+                                                @SuppressWarnings("unchecked")
+                                                List<Map<String, Object>> pathNodesData = (List<Map<String, Object>>) pathNodesList;
+
+                                                for (Map<String, Object> nodeData : pathNodesData) {
+                                                    LearningPathNode node = new LearningPathNode();
+                                                    node.id = (String) nodeData.get("id");
+                                                    node.title = (String) nodeData.get("title");
+
+                                                    // Handle type conversion safely
+                                                    Object typeObj = nodeData.get("type");
+                                                    if (typeObj instanceof Long) {
+                                                        node.type = ((Long) typeObj).intValue();
+                                                    } else if (typeObj instanceof String) {
+                                                        String typeStr = (String) typeObj;
+                                                        node.type = "QUIZZES".equals(typeStr) ? 0 : 1;
+                                                    } else {
+                                                        node.type = 0;
+                                                    }
+
+                                                    learningPath.nodes.add(node);
+                                                }
+
+                                                // Set the global learning path and complete
+                                                g_learningPath = learningPath;
+                                                listener.onSucces();
+                                                return;
+                                            }
+                                            else {
+                                                Log.e("DbQuery", "Unknown pathNodes structure. First item type: " + firstItem.getClass().getSimpleName());
+                                            }
                                         }
+                                    } else {
+                                        Log.e("DbQuery", "pathNodes is not a List. Type: " + pathNodesObj.getClass().getSimpleName());
                                     }
-
-                                    // Load path types if nodes weren't processed above
-                                    List<String> pathTypesData = (List<String>) document.get("pathTypes");
-                                    if (pathTypesData != null) {
-                                        learningPath.pathTypes = new ArrayList<>(pathTypesData);
-                                    }
-
-                                    g_learningPath = learningPath;
-                                    listener.onSucces();
-
-                                } catch (Exception e) {
-                                    Log.e("DbQuery", "Error parsing selected learning path", e);
-                                    // Log the actual data structure for debugging
-                                    Log.e("DbQuery", "Document data: " + document.getData().toString());
-                                    listener.onFailure();
                                 }
-                            } else {
-                                Log.e("DbQuery", "Learning path document does not exist: " + pathId);
+
+                                // Load path types if nodes weren't processed above
+                                List<String> pathTypesData = (List<String>) document.get("pathTypes");
+                                if (pathTypesData != null) {
+                                    learningPath.pathTypes = new ArrayList<>(pathTypesData);
+                                }
+
+                                g_learningPath = learningPath;
+                                listener.onSucces();
+
+                            } catch (Exception e) {
+                                Log.e("DbQuery", "Error parsing selected learning path", e);
+                                // Log the actual data structure for debugging
+                                Log.e("DbQuery", "Document data: " + Objects.requireNonNull(document.getData()));
                                 listener.onFailure();
                             }
                         } else {
-                            Log.e("DbQuery", "Error getting selected learning path: ", task.getException());
+                            Log.e("DbQuery", "Learning path document does not exist: " + pathId);
                             listener.onFailure();
                         }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("DbQuery", "Failed to select learning path", e);
+                    } else {
+                        Log.e("DbQuery", "Error getting selected learning path: ", task.getException());
                         listener.onFailure();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DbQuery", "Failed to select learning path", e);
+                    listener.onFailure();
                 });
     }
 
@@ -425,17 +404,6 @@ public class DbQuery {
         });
     }
 
-    public static LearningPath getLearningPathById(String pathId) {
-        if (g_allLearningPaths != null) {
-            for (LearningPath path : g_allLearningPaths) {
-                if (path.id != null && path.id.equals(pathId)) {
-                    return path;
-                }
-            }
-        }
-        return null;
-    }
-
     public static class LearningPath {
         public String id;
         public String title;
@@ -456,13 +424,6 @@ public class DbQuery {
             this.pathTypes = new ArrayList<>();
         }
 
-        // Full constructor
-        public LearningPath(String id, String title, List<LearningPathNode> nodes, List<String> pathTypes) {
-            this.id = id;
-            this.title = title;
-            this.nodes = nodes != null ? nodes : new ArrayList<>();
-            this.pathTypes = pathTypes != null ? pathTypes : new ArrayList<>();
-        }
     }
 
     public static class LearningPathNode {
@@ -484,10 +445,6 @@ public class DbQuery {
 
     public static class FlashcardModel {
         public String question, answer, frontImage, backImage;
-
-        // Default constructor
-        public FlashcardModel() {
-        }
 
         // Constructor with parameters
         public FlashcardModel(String q, String a, String fI, String bI) {
@@ -561,10 +518,6 @@ public class DbQuery {
                     .addOnFailureListener(e -> listener.onFailure());
         } else { listener.onFailure(); }
     }
-
-    public static void loadMilitaryJournals(Context context, MyCompleteListener listener) { if (g_militaryJournalList.isEmpty()) loadJournals(listener); else listener.onSucces(); }
-    public static void loadHomeJournals(Context context, MyCompleteListener listener) { if (g_homeJournalList.isEmpty()) loadJournals(listener); else listener.onSucces(); }
-
     public static void loadRanks(MyCompleteListener completeListener) {
         g_rankList.clear();
         FirebaseFirestore.getInstance().document("MILITARY/RO/CNMTV/RANKS").get()
@@ -594,11 +547,11 @@ public class DbQuery {
                         try {
                             String category = quizDoc.getString("category"); if (category == null || category.isEmpty()) continue;
                             Object tagsObj = quizDoc.get("tags");
-                            boolean isCNMTV = (tagsObj instanceof String && "CNMTV".equals(tagsObj)) || (tagsObj instanceof List && ((List<String>) tagsObj).contains("CNMTV"));
+                            boolean isCNMTV = ("CNMTV".equals(tagsObj)) || (tagsObj instanceof List && ((List<String>) tagsObj).contains("CNMTV"));
                             Quizz quiz = new Quizz(quizDoc.getString("title"), quizDoc.getString("imageUrl"), quizDoc.getId(), true, quizDoc.getString("createdBy"));
                             Map<String, List<Quizz>> targetMap = isCNMTV ? cnmtvMap : otherMap;
                             if (!targetMap.containsKey(category)) targetMap.put(category, new ArrayList<>());
-                            targetMap.get(category).add(quiz);
+                            Objects.requireNonNull(targetMap.get(category)).add(quiz);
                         } catch (Exception e) { Log.e(TAG, "Error processing quiz: " + e.getMessage()); }
                     }
                     for (Map.Entry<String, List<Quizz>> entry : cnmtvMap.entrySet()) g_militaryCatList.add(new CategoryModel(entry.getKey(), entry.getKey(), entry.getValue().size(), entry.getValue()));
@@ -610,7 +563,6 @@ public class DbQuery {
     }
 
     public static void loadMilitaryCategories(Context context, MyCompleteListener listener) { if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) loadCategories(context, listener); else listener.onSucces(); }
-    public static void loadHomeCategories(Context context, MyCompleteListener listener) { if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) loadCategories(context, listener); else listener.onSucces(); }
 
     public static void loadQuestions(String categoryId, String quizId, MyCompleteListener completeListener) {
         g_quesList.clear();

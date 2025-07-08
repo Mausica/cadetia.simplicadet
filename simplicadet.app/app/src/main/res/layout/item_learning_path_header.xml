@@ -31,6 +31,16 @@
             android:textStyle="bold"
             android:textColor="?attr/textNormal"
             android:fontFamily="@font/circular_bold" />
+        <TextView
+            android:id="@+id/pathLessons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text=""
+            android:visibility="gone"
+            android:textSize="@dimen/_10ssp"
+            android:textColor="?attr/textLight"
+            android:fontFamily="@font/circular_medium" />
 
     </LinearLayout>
 
