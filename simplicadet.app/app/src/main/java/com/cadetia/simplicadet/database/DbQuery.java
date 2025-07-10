@@ -31,7 +31,6 @@ public class DbQuery {
 
     public static final String TAG = "DbQuery";
     public static FirebaseFirestore g_firestore;
-
     public static List<JournalEntry> g_journalList = new ArrayList<>();
     public static List<CategoryModel> g_catList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
@@ -212,6 +211,7 @@ public class DbQuery {
             listener.onSucces();
         });
     }
+
     public static void selectLearningPath(String pathId, MyCompleteListener listener) {
         if (g_firestore == null) {
             listener.onFailure();
@@ -518,6 +518,7 @@ public class DbQuery {
                     .addOnFailureListener(e -> listener.onFailure());
         } else { listener.onFailure(); }
     }
+
     public static void loadRanks(MyCompleteListener completeListener) {
         g_rankList.clear();
         FirebaseFirestore.getInstance().document("MILITARY/RO/CNMTV/RANKS").get()
@@ -562,7 +563,11 @@ public class DbQuery {
                 .addOnFailureListener(e -> { Log.e(TAG, "Error: " + e.getMessage()); Toast.makeText(context, "Error", Toast.LENGTH_LONG).show(); listener.onFailure(); });
     }
 
-    public static void loadMilitaryCategories(Context context, MyCompleteListener listener) { if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty()) loadCategories(context, listener); else listener.onSucces(); }
+    public static void loadMilitaryCategories(Context context, MyCompleteListener listener) {
+        if (g_militaryCatList.isEmpty() && g_homeCatList.isEmpty())
+            loadCategories(context, listener);
+        else listener.onSucces();
+    }
 
     public static void loadQuestions(String categoryId, String quizId, MyCompleteListener completeListener) {
         g_quesList.clear();
