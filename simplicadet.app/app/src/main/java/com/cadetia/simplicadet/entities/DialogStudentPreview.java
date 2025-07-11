@@ -7,20 +7,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.R;
+
 import eightbitlab.com.blurview.BlurView;
 
-
-public class DialogConfirm {
+public class DialogStudentPreview {
 
     private static BlurView blurBackground;
 
-    public static void show(Context context, String title, String message, Runnable onConfirm, Boolean cancel) {
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_confirm, null);
+    public static void show(Context context, String rank, String name, String company, String platoon, String imageUrl) {
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_student_preview, null);
         Activity activity = (Activity) context;
 
         setupBlurBackground(activity);
@@ -29,23 +31,32 @@ public class DialogConfirm {
         builder.setView(dialogView);
 
         AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(cancel);
+        dialog.setCanceledOnTouchOutside(true);
 
         animateBlur(true);
 
         dialog.setOnDismissListener(dialogInterface -> animateBlur(false));
+        ImageView studentImage = dialogView.findViewById(R.id.studentImage);
+        TextView rankText = dialogView.findViewById(R.id.rankText);
+        TextView nameText = dialogView.findViewById(R.id.nameText);
+        TextView companyPlatoonText = dialogView.findViewById(R.id.companyPlatoonText);
+        Button okButton = dialogView.findViewById(R.id.okButton);
 
-        TextView titleText = dialogView.findViewById(R.id.titleText);
-        TextView messageText = dialogView.findViewById(R.id.messageText);
-        Button okButton = dialogView.findViewById(R.id.confirmButton);
+        if (rankText != null) rankText.setText(rank);
+        if (nameText != null) nameText.setText(name);
+        if (companyPlatoonText != null) companyPlatoonText.setText(company + " • " + platoon);
 
-        if (titleText != null) titleText.setText(title);
-        if (messageText != null) messageText.setText(message);
+        if (studentImage != null && imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(context)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_placeholder)
+                    .error(R.drawable.ic_placeholder)
+                    .into(studentImage);
+        }
 
-        okButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            if (onConfirm != null) onConfirm.run();
-        });
+        if (okButton != null) {
+            okButton.setOnClickListener(v -> dialog.dismiss());
+        }
 
         dialog.show();
     }

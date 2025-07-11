@@ -2,6 +2,7 @@
 <resources>
     <item name="soldier_state_key" type="id"/>
     <item name="platoon_index_key" type="id"/>
+    <item name="student_data_key" type="id" />
 
     <item name="platoon_status_present" type="id"/>
     <item name="platoon_status_home" type="id"/>

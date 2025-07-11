@@ -20,13 +20,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.cadetia.simplicadet.R;
+import com.cadetia.simplicadet.entities.DialogStudentPreview;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.otaliastudios.zoom.ZoomLayout;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +37,6 @@ public class MilitaryFragment3 extends Fragment {
     private static final String STATE_IS_ROTATED = "isRotated";
     private static final String STATE_ORIGINAL_WIDTH = "originalWidth";
     private static final String STATE_ORIGINAL_HEIGHT = "originalHeight";
-
     private static final int STATE_PRESENT = 0;
     private static final int STATE_HOME = 1;
     private static final int STATE_ABSENT = 2;
@@ -48,8 +45,6 @@ public class MilitaryFragment3 extends Fragment {
     private int originalHeight = -1;
     private ZoomLayout zoomLayout;
     private boolean isRotated = false;
-
-    // Firebase data
     private FirebaseFirestore db;
     private String companyName = "Compania";
     private int companyNumber = 0;
@@ -57,29 +52,34 @@ public class MilitaryFragment3 extends Fragment {
     private int[] ecCounts;
     private List<Student> allStudents = new ArrayList<>();
     private List<List<Student>> platoonStudents = new ArrayList<>();
-
     private int[] presentCount;
     private int[] homeCount;
     private int[] absentCount;
-    
+    private List<String> rankNames = new ArrayList<>();
+
     private static class Student {
         String name;
         int height;
         int platoon;
         String initials;
+        String rank;
+        String imageUrl;
+        String documentId;
 
-        Student(String name, int height, int platoon) {
+        Student(String name, int height, int platoon, String rank, String imageUrl, String documentId) {
             this.name = name;
             this.height = height;
             this.platoon = platoon;
+            this.rank = rank != null ? rank : "Unknown";
+            this.imageUrl = imageUrl;
+            this.documentId = documentId;
             this.initials = generateInitials(name);
         }
 
         private String generateInitials(String fullName) {
             String[] parts = fullName.trim().split("\\s+");
             if (parts.length >= 2) {
-                return parts[0].substring(0, 1).toUpperCase() +
-                        parts[1].substring(0, 1).toUpperCase();
+                return parts[0].substring(0, 1).toUpperCase() + parts[1].substring(0, 1).toUpperCase();
             } else if (parts.length == 1 && parts[0].length() >= 2) {
                 return parts[0].substring(0, 2).toUpperCase();
             } else {
@@ -100,297 +100,222 @@ public class MilitaryFragment3 extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Initialize zoom layout
         zoomLayout = view.findViewById(R.id.zoomLayout);
         if (zoomLayout != null) {
             zoomLayout.post(() -> {
                 originalWidth = zoomLayout.getWidth();
                 originalHeight = zoomLayout.getHeight();
             });
-        } else {
-            Log.e(TAG, "zoomLayout is null");
         }
+        loadRanks();
+    }
 
-        // Load Firebase data
-        loadFirebaseData();
+    private void loadRanks() {
+        db.collection("MILITARY").document("RO").collection("CNMTV").document("RANKS")
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        Map<String, Object> data = doc.getData();
+                        if (data != null) {
+                            rankNames.clear();
+                            rankNames.add("Unknown");
+                            for (int i = 1; i <= 8; i++) {
+                                Object rankData = data.get(String.valueOf(i));
+                                String rankName = "Unknown";
+
+                                if (rankData instanceof List) {
+                                    List<?> rankArray = (List<?>) rankData;
+                                    if (rankArray.size() > 0 && rankArray.get(0) instanceof String) {
+                                        rankName = (String) rankArray.get(0);
+                                    }
+                                }
+
+                                rankNames.add(rankName);
+                                Log.d(TAG, "Loaded rank " + i + ": " + rankName);
+                            }
+                        }
+                    }
+                    loadFirebaseData();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to load ranks", e);
+                    rankNames.clear();
+                    for (int i = 0; i <= 8; i++) rankNames.add("Unknown");
+                    loadFirebaseData();
+                });
+    }
+
+    private String getRankString(Object rankObj) {
+        if (rankObj instanceof Long) {
+            int rank = ((Long) rankObj).intValue();
+            if (rankNames != null && rank >= 0 && rank < rankNames.size()) {
+                String rankName = rankNames.get(rank);
+                return (rankName != null && !rankName.isEmpty()) ? rankName : "Unknown";
+            }
+            Log.w(TAG, "Invalid rank index: " + rank + ", rankNames size: " + (rankNames != null ? rankNames.size() : "null"));
+            return "Unknown";
+        } else if (rankObj instanceof Integer) {
+            int rank = ((Integer) rankObj).intValue();
+            if (rankNames != null && rank >= 0 && rank < rankNames.size()) {
+                String rankName = rankNames.get(rank);
+                return (rankName != null && !rankName.isEmpty()) ? rankName : "Unknown";
+            }
+            Log.w(TAG, "Invalid rank index: " + rank + ", rankNames size: " + (rankNames != null ? rankNames.size() : "null"));
+            return "Unknown";
+        }
+        return rankObj != null ? rankObj.toString() : "Unknown";
     }
 
     private void loadFirebaseData() {
-        Log.d(TAG, "Starting Firebase data load...");
-
-        // First, get the STATS document to get CP and EC values
-        db.collection("MILITARY")
-                .document("RO")
-                .collection("CNMTV")
-                .document("STUDENTS")
-                .collection("2025")
-                .document("STATS")
+        db.collection("MILITARY").document("RO").collection("CNMTV").document("STUDENTS").collection("2025").document("STATS")
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    Log.d(TAG, "STATS document loaded successfully");
-
                     if (documentSnapshot.exists()) {
                         Map<String, Object> data = documentSnapshot.getData();
-                        Log.d(TAG, "STATS data: " + data);
-
                         if (data != null) {
-                            // Get CP (company number)
                             Object cpObj = data.get("CP");
                             if (cpObj instanceof Number) {
                                 companyNumber = ((Number) cpObj).intValue();
-                                Log.d(TAG, "Company number: " + companyNumber);
                             } else {
-                                Log.w(TAG, "CP is not a number: " + cpObj);
-                                companyNumber = 1; // Default fallback
+                                companyNumber = 1;
                             }
-
-                            // Get EC array (students per platoon)
                             Object ecObj = data.get("EC");
-                            Log.d(TAG, "EC object: " + ecObj + " (type: " + (ecObj != null ? ecObj.getClass().getSimpleName() : "null") + ")");
-
                             if (ecObj instanceof List) {
-                                // EC is an array/list
                                 List<Object> ecList = (List<Object>) ecObj;
                                 platoonCount = ecList.size();
                                 ecCounts = new int[platoonCount];
-
-                                Log.d(TAG, "EC is a List with " + platoonCount + " platoons");
-
                                 for (int i = 0; i < platoonCount; i++) {
                                     Object count = ecList.get(i);
                                     if (count instanceof Number) {
                                         ecCounts[i] = ((Number) count).intValue();
-                                        Log.d(TAG, "EC[" + i + "] = " + ecCounts[i]);
                                     } else {
-                                        Log.w(TAG, "EC[" + i + "] is not a number: " + count);
-                                        ecCounts[i] = 0; // Default fallback
+                                        ecCounts[i] = 0;
                                     }
                                 }
                             } else if (ecObj instanceof Map) {
-                                // EC is a map (your original code)
                                 Map<String, Object> ecMap = (Map<String, Object>) ecObj;
                                 platoonCount = ecMap.size();
                                 ecCounts = new int[platoonCount];
-
-                                Log.d(TAG, "EC is a Map with " + platoonCount + " platoons");
-
                                 for (int i = 0; i < platoonCount; i++) {
                                     Object count = ecMap.get(String.valueOf(i));
                                     if (count instanceof Number) {
                                         ecCounts[i] = ((Number) count).intValue();
-                                        Log.d(TAG, "EC[" + i + "] = " + ecCounts[i]);
                                     } else {
-                                        Log.w(TAG, "EC[" + i + "] is not a number: " + count);
-                                        ecCounts[i] = 0; // Default fallback
+                                        ecCounts[i] = 0;
                                     }
                                 }
                             } else {
-                                Log.e(TAG, "EC is neither a List nor a Map: " + ecObj);
-                                // Fallback: create a simple setup with dummy data
                                 createFallbackData();
                                 return;
                             }
-
-                            // Validate that we have valid data
                             if (platoonCount <= 0 || ecCounts == null) {
-                                Log.e(TAG, "Invalid platoon data after parsing");
                                 createFallbackData();
                                 return;
                             }
-
-                            // Initialize stats arrays
                             presentCount = new int[platoonCount];
                             homeCount = new int[platoonCount];
                             absentCount = new int[platoonCount];
-
-                            // Initialize platoon students lists
                             platoonStudents.clear();
                             for (int i = 0; i < platoonCount; i++) {
                                 platoonStudents.add(new ArrayList<>());
                             }
-
-                            // Now load student data
                             loadStudentData();
                         } else {
-                            Log.e(TAG, "STATS document data is null");
                             createFallbackData();
                         }
                     } else {
-                        Log.e(TAG, "STATS document does not exist");
                         createFallbackData();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading STATS", e);
-                    createFallbackData();
-                });
+                .addOnFailureListener(e -> createFallbackData());
     }
 
     private void createFallbackData() {
-        Log.d(TAG, "Creating fallback data...");
-
         companyNumber = 2;
         platoonCount = 3;
         ecCounts = new int[]{24, 25, 26};
-
         presentCount = new int[platoonCount];
         homeCount = new int[platoonCount];
         absentCount = new int[platoonCount];
-
         platoonStudents.clear();
         for (int i = 0; i < platoonCount; i++) {
             platoonStudents.add(new ArrayList<>());
-
-            // Add some dummy students for testing
             for (int j = 0; j < Math.min(ecCounts[i], 5); j++) {
-                Student student = new Student("Student " + (j + 1) + " Platoon" + (i + 1), 175 + j, i);
+                Student student = new Student("Student " + (j + 1) + " Platoon" + (i + 1), 175 + j, i, "Unknown", "url", "id");
                 platoonStudents.get(i).add(student);
             }
         }
-
-        Log.d(TAG, "Fallback data created, building UI...");
         buildUI();
     }
 
     private void loadStudentData() {
-        Log.d(TAG, "Loading student data...");
-
-        db.collection("MILITARY")
-                .document("RO")
-                .collection("CNMTV")
-                .document("STUDENTS")
-                .collection("2025")
+        db.collection("MILITARY").document("RO").collection("CNMTV").document("STUDENTS").collection("2025")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Log.d(TAG, "Student query successful, found " + queryDocumentSnapshots.size() + " documents");
-
                     allStudents.clear();
-
                     for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                        Log.d(TAG, "Processing document: " + doc.getId());
-
                         if (!"STATS".equals(doc.getId())) {
                             Map<String, Object> data = doc.getData();
-                            Log.d(TAG, "Document data: " + data);
-
                             if (data != null) {
                                 String name = (String) data.get("NAME");
                                 Object heightObj = data.get("HEIGHT");
                                 Object platoonObj = data.get("PLUTON");
-
-                                Log.d(TAG, "Name: " + name + ", Height: " + heightObj + ", Platoon: " + platoonObj);
-
+                                Object rankObj = data.get("RANK");
+                                String imageUrl = (String) data.get("IMAGE");
                                 if (name != null && heightObj instanceof Number && platoonObj instanceof Number) {
                                     int height = ((Number) heightObj).intValue();
                                     int platoon = ((Number) platoonObj).intValue();
-
-                                    Student student = new Student(name, height, platoon);
+                                    String rank = getRankString(rankObj);
+                                    Student student = new Student(name, height, platoon, rank, imageUrl, doc.getId());
                                     allStudents.add(student);
-
-                                    Log.d(TAG, "Created student: " + student.name + " (initials: " + student.initials + ", platoon: " + student.platoon + ")");
-
-                                    // Add to appropriate platoon list (adjust for 0-based indexing)
                                     if (platoon >= 1 && platoon <= platoonCount) {
                                         platoonStudents.get(platoon - 1).add(student);
-                                        Log.d(TAG, "Added student to platoon " + (platoon - 1));
-                                    } else {
-                                        Log.w(TAG, "Student platoon " + platoon + " is out of range (1-" + platoonCount + ")");
                                     }
                                 }
                             }
                         }
                     }
-
-                    Log.d(TAG, "Total students loaded: " + allStudents.size());
-
-                    // Sort students by height (tallest first) within each platoon
                     for (int i = 0; i < platoonStudents.size(); i++) {
                         List<Student> platoonList = platoonStudents.get(i);
-                        Log.d(TAG, "Platoon " + i + " has " + platoonList.size() + " students");
-
                         Collections.sort(platoonList, new Comparator<Student>() {
                             @Override
                             public int compare(Student s1, Student s2) {
-                                return Integer.compare(s2.height, s1.height); // Descending order
+                                return Integer.compare(s2.height, s1.height);
                             }
                         });
                     }
-
-                    // Build the UI
-                    Log.d(TAG, "Building UI...");
                     buildUI();
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading students", e);
-                    // Build UI with empty data
-                    buildUI();
-                });
+                .addOnFailureListener(e -> buildUI());
     }
 
     private void buildUI() {
-        Log.d(TAG, "Building UI...");
-
-        if (getView() == null) {
-            Log.e(TAG, "getView() is null, cannot build UI");
-            return;
-        }
-
+        if (getView() == null) return;
         ViewGroup mindMapContainer = getView().findViewById(R.id.mindMapContainer);
-        if (mindMapContainer == null) {
-            Log.e(TAG, "mindMapContainer is null");
-            return;
-        }
-
-        Log.d(TAG, "Clearing existing views...");
+        if (mindMapContainer == null) return;
         mindMapContainer.removeAllViews();
-
         LinearLayout mainContainer = new LinearLayout(requireContext());
         mainContainer.setOrientation(LinearLayout.VERTICAL);
         mainContainer.setGravity(Gravity.CENTER_HORIZONTAL);
-        mainContainer.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-
+        mainContainer.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mindMapContainer.addView(mainContainer);
-        Log.d(TAG, "Main container added");
-
-        // COMPANY header - Fixed to use CP value
         String companyTitle = companyName + " " + companyNumber;
-        Log.d(TAG, "Creating company header: " + companyTitle);
         TextView companyHeader = createHeaderView(companyTitle, 800);
         mainContainer.addView(companyHeader);
-
-        // COMPANY stats
         TextView companyStats = new TextView(requireContext());
         companyStats.setGravity(Gravity.CENTER);
         companyStats.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         companyStats.setTypeface(getResources().getFont(R.font.circular_bold));
         companyStats.setPadding(10, 10, 10, 20);
-        LinearLayout.LayoutParams statsParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
+        LinearLayout.LayoutParams statsParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         statsParams.gravity = Gravity.CENTER_HORIZONTAL;
         companyStats.setLayoutParams(statsParams);
         mainContainer.addView(companyStats);
-        Log.d(TAG, "Company stats added");
-
-        // Container for platoons
         LinearLayout platoonsContainer = new LinearLayout(requireContext());
         platoonsContainer.setOrientation(LinearLayout.HORIZONTAL);
-        platoonsContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+        platoonsContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mainContainer.addView(platoonsContainer);
-        Log.d(TAG, "Platoons container added");
-
-        // Check if we have data to build platoons
         if (platoonCount <= 0 || ecCounts == null) {
-            Log.e(TAG, "No platoon data available - platoonCount: " + platoonCount + ", ecCounts: " +
-                    (ecCounts != null ? java.util.Arrays.toString(ecCounts) : "null"));
-
-            // Add a simple text view indicating no data
             TextView noDataText = new TextView(requireContext());
             noDataText.setText("No data available");
             noDataText.setGravity(Gravity.CENTER);
@@ -398,122 +323,99 @@ public class MilitaryFragment3 extends Fragment {
             mainContainer.addView(noDataText);
             return;
         }
-
-        // Build each platoon
-        Log.d(TAG, "Building " + platoonCount + " platoons...");
         for (int p = 0; p < platoonCount; p++) {
-            Log.d(TAG, "Building platoon " + p + " with " + ecCounts[p] + " students");
             buildPlatoon(p, platoonsContainer, companyStats);
         }
-
-        // Update company stats
         updateCompanyStats(companyStats);
-        Log.d(TAG, "UI build completed");
     }
 
     private void buildPlatoon(int platoonIndex, LinearLayout platoonsContainer, TextView companyStats) {
         int studentsInPlatoon = ecCounts[platoonIndex];
         String formationFormula = generateFormationFormula(studentsInPlatoon);
-
-        // Initialize stats for this platoon
         presentCount[platoonIndex] = studentsInPlatoon;
         homeCount[platoonIndex] = 0;
         absentCount[platoonIndex] = 0;
-
         LinearLayout platoonContainer = new LinearLayout(requireContext());
         platoonContainer.setOrientation(LinearLayout.VERTICAL);
         platoonContainer.setPadding(20, 20, 20, 20);
-        platoonContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        // Find the actual platoon number from students data
-        int actualPlatoonNumber = platoonIndex + 1; // Default fallback
+        platoonContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        int actualPlatoonNumber = platoonIndex + 1;
         if (!platoonStudents.get(platoonIndex).isEmpty()) {
             actualPlatoonNumber = platoonStudents.get(platoonIndex).get(0).platoon;
         }
-
-        // Platoon header
         TextView platoonHeader = createHeaderView("Plutonul " + actualPlatoonNumber, 330);
         platoonContainer.addView(platoonHeader);
-
-        // Platoon stats
         TextView platoonStats = new TextView(requireContext());
         updatePlatoonStats(platoonIndex, platoonStats);
         platoonContainer.addView(platoonStats);
-
-        // Parse formation formula
         String[] rows = formationFormula.split("\\n");
         final int numRows = rows.length;
         final int numCols = rows[0].length();
-
-        // Dynamic grid
         GridLayout grid = new GridLayout(requireContext());
         grid.setRowCount(numRows);
         grid.setColumnCount(numCols);
-
         int cellSizePx = 100;
         int marginPx = 55;
-        LinearLayout.LayoutParams gridLp = new LinearLayout.LayoutParams(
-                numCols * cellSizePx + marginPx,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        );
+        LinearLayout.LayoutParams gridLp = new LinearLayout.LayoutParams(numCols * cellSizePx + marginPx, ViewGroup.LayoutParams.WRAP_CONTENT);
         gridLp.gravity = Gravity.CENTER_HORIZONTAL;
         grid.setLayoutParams(gridLp);
-
-        // Get students for this platoon
         List<Student> students = platoonStudents.get(platoonIndex);
         int studentIndex = 0;
-
         for (int r = 0; r < numRows; r++) {
             for (int c = 0; c < numCols; c++) {
                 char ch = rows[r].charAt(c);
                 if (ch == '*') {
-                    // Create soldier view
                     View sv = getLayoutInflater().inflate(R.layout.item_formation, grid, false);
                     sv.getLayoutParams().width = 100;
                     sv.getLayoutParams().height = 100;
-
                     TextView tv = sv.findViewById(R.id.tv_soldier_initials);
-
-                    // Set initials from actual student data or empty if no student
+                    Student currentStudent = null;
                     if (studentIndex < students.size()) {
-                        Student student = students.get(studentIndex);
-                        tv.setText(student.initials);
+                        currentStudent = students.get(studentIndex);
+                        tv.setText(currentStudent.initials);
                     } else {
-                        tv.setText(""); // Empty space for missing students
+                        tv.setText("");
                     }
-
                     sv.setTag(R.id.soldier_state_key, STATE_PRESENT);
                     sv.setTag(R.id.platoon_index_key, platoonIndex);
+                    sv.setTag(R.id.student_data_key, currentStudent);
                     sv.setOnClickListener(v -> {
                         cycleState(v, platoonStats);
                         updateCompanyStats(companyStats);
                     });
-
+                    final Student finalStudent = currentStudent;
+                    sv.setOnLongClickListener(v -> {
+                        if (finalStudent != null) {
+                            showStudentPreview(finalStudent, platoonIndex);
+                        }
+                        return true;
+                    });
                     grid.addView(sv);
                     studentIndex++;
                 } else {
-                    // Empty spacer for alignment
                     View spacer = new View(requireContext());
                     spacer.setLayoutParams(new ViewGroup.LayoutParams(100, 100));
                     grid.addView(spacer);
                 }
             }
         }
-
         platoonContainer.addView(grid);
         platoonsContainer.addView(platoonContainer);
     }
 
+    private void showStudentPreview(Student student, int platoonIndex) {
+        if (student == null) return;
+        String rank = student.rank != null ? student.rank : "Unknown";
+        String companyText = companyName + " " + companyNumber;
+        String platoonText = "Plutonul " + student.platoon;
+        DialogStudentPreview.show(requireActivity(), rank, student.name, companyText, platoonText, student.imageUrl);
+    }
+
     private String generateFormationFormula(int studentCount) {
         if (studentCount <= 0) return "";
-
         int completeRows = studentCount / 3;
         int remainder = studentCount % 3;
-
         StringBuilder formula = new StringBuilder();
-
         if (remainder > 0) {
             for (int i = 0; i < completeRows; i++) {
                 formula.append("***\n");
@@ -533,7 +435,6 @@ public class MilitaryFragment3 extends Fragment {
                 }
             }
         }
-
         return formula.toString();
     }
 
@@ -544,14 +445,11 @@ public class MilitaryFragment3 extends Fragment {
         header.setTypeface(getResources().getFont(R.font.circular_bold));
         header.setGravity(Gravity.CENTER);
         header.setPadding(10, 10, 10, 10);
-
         GradientDrawable bg = new GradientDrawable();
         bg.setShape(GradientDrawable.RECTANGLE);
-        bg.setCornerRadius(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
+        bg.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
         bg.setColor(getThemeColor(R.attr.backgroundLight));
         header.setBackground(bg);
-
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.CENTER_HORIZONTAL;
         lp.setMargins(0, 0, 0, 10);
@@ -564,12 +462,9 @@ public class MilitaryFragment3 extends Fragment {
         int cs = (int) v.getTag(R.id.soldier_state_key);
         int ns = (cs + 1) % 3;
         v.setTag(R.id.soldier_state_key, ns);
-
         GradientDrawable d = new GradientDrawable();
         d.setShape(GradientDrawable.RECTANGLE);
-        d.setCornerRadius(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
-
+        d.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, requireContext().getResources().getDisplayMetrics()));
         int color;
         switch (ns) {
             case STATE_PRESENT:
@@ -600,9 +495,7 @@ public class MilitaryFragment3 extends Fragment {
         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         tv.setTypeface(getResources().getFont(R.font.circular_bold));
         tv.setPadding(10, 10, 10, 10);
-        tv.setText("EP: " + presentCount[i]
-                + " M: " + homeCount[i]
-                + " EA: " + absentCount[i]);
+        tv.setText("EP: " + presentCount[i] + " M: " + homeCount[i] + " EA: " + absentCount[i]);
     }
 
     private void updateCompanyStats(TextView tv) {
@@ -612,9 +505,7 @@ public class MilitaryFragment3 extends Fragment {
             totalAbsent += absentCount[i];
             totalPresent += presentCount[i];
         }
-        tv.setText("EP: " + totalPresent
-                + " M: " + totalHome
-                + " EA: " + totalAbsent);
+        tv.setText("EP: " + totalPresent + " M: " + totalHome + " EA: " + totalAbsent);
     }
 
     private int getThemeColor(int attr) {
@@ -660,7 +551,6 @@ public class MilitaryFragment3 extends Fragment {
                 zoomLayout.setTranslationX(0);
                 zoomLayout.setTranslationY(0);
                 zoomLayout.zoomTo(1.0f, true);
-
                 ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
                 params.width = originalWidth;
                 params.height = originalHeight;
@@ -680,55 +570,40 @@ public class MilitaryFragment3 extends Fragment {
 
     private void rotateToLandscape() {
         if (zoomLayout == null) return;
-
         ViewGroup parent = (ViewGroup) zoomLayout.getParent();
         ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
         int parentWidth = parent.getWidth();
         int parentHeight = parent.getHeight();
-
         float currentRotation = zoomLayout.getRotation();
         float currentTranslationX = zoomLayout.getTranslationX();
         float currentTranslationY = zoomLayout.getTranslationY();
         float currentZoom = zoomLayout.getZoom();
-
         int currentWidth = zoomLayout.getWidth();
         int currentHeight = zoomLayout.getHeight();
-
         params.width = currentHeight;
         params.height = currentWidth;
         zoomLayout.setLayoutParams(params);
-
         zoomLayout.post(() -> {
             int newWidth = zoomLayout.getWidth();
             int newHeight = zoomLayout.getHeight();
-
             float pivotX = newWidth / 2f;
             float pivotY = newHeight / 2f;
             zoomLayout.setPivotX(pivotX);
             zoomLayout.setPivotY(pivotY);
-
             float targetTranslationX = (parentWidth - newWidth) / 2f;
             float targetTranslationY = (parentHeight - newHeight) / 2f - 100;
-
             AnimatorSet animatorSet = new AnimatorSet();
-
             ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(zoomLayout, "rotation", currentRotation, 90f);
             rotationAnim.setDuration(400);
             rotationAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-
-            ObjectAnimator translationXAnim = ObjectAnimator.ofFloat(zoomLayout, "translationX",
-                    currentTranslationX, targetTranslationX);
-            ObjectAnimator translationYAnim = ObjectAnimator.ofFloat(zoomLayout, "translationY",
-                    currentTranslationY, targetTranslationY);
-
+            ObjectAnimator translationXAnim = ObjectAnimator.ofFloat(zoomLayout, "translationX", currentTranslationX, targetTranslationX);
+            ObjectAnimator translationYAnim = ObjectAnimator.ofFloat(zoomLayout, "translationY", currentTranslationY, targetTranslationY);
             animatorSet.playTogether(rotationAnim, translationXAnim, translationYAnim);
-
             animatorSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     zoomLayout.zoomTo(currentZoom * 0.9f, true);
                 }
-
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     zoomLayout.zoomTo(0.9f, true);
@@ -737,44 +612,34 @@ public class MilitaryFragment3 extends Fragment {
                     zoomLayout.setTranslationY(targetTranslationY);
                 }
             });
-
             animatorSet.start();
         });
     }
 
     private void resetToPortrait() {
         if (zoomLayout == null || originalWidth <= 0 || originalHeight <= 0) return;
-
         isRotated = false;
-
         float currentRotation = zoomLayout.getRotation();
         float currentTranslationX = zoomLayout.getTranslationX();
         float currentTranslationY = zoomLayout.getTranslationY();
         float currentZoom = zoomLayout.getZoom();
-
         ViewGroup.LayoutParams params = zoomLayout.getLayoutParams();
         params.width = originalWidth;
         params.height = originalHeight;
         zoomLayout.setLayoutParams(params);
-
         zoomLayout.post(() -> {
             AnimatorSet animatorSet = new AnimatorSet();
-
             ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(zoomLayout, "rotation", currentRotation, 0f);
             rotationAnim.setDuration(400);
             rotationAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-
             ObjectAnimator translationXAnim = ObjectAnimator.ofFloat(zoomLayout, "translationX", currentTranslationX, 0f);
             ObjectAnimator translationYAnim = ObjectAnimator.ofFloat(zoomLayout, "translationY", currentTranslationY, 0f);
-
             animatorSet.playTogether(rotationAnim, translationXAnim, translationYAnim);
-
             animatorSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
                     zoomLayout.zoomTo(currentZoom * 0.9f, true);
                 }
-
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     zoomLayout.zoomTo(1.0f, true);
@@ -783,7 +648,6 @@ public class MilitaryFragment3 extends Fragment {
                     zoomLayout.setTranslationY(0f);
                 }
             });
-
             animatorSet.start();
         });
     }
