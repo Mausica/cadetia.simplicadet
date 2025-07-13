@@ -22,7 +22,7 @@ public class DialogStudentPreview {
     private static BlurView blurBackground;
 
     public static void show(Context context, String rank, String name, String company, String platoon, String imageUrl) {
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_student_preview, null);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.popup_preview, null);
         Activity activity = (Activity) context;
 
         setupBlurBackground(activity);

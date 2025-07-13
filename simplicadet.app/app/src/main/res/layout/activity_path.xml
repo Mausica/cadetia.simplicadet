@@ -49,6 +49,20 @@
                     android:src="@drawable/uni_ic_close"
                     app:tint="?attr/textNormal"
                     tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:text="Clasa 11"
+                    android:fontFamily="@font/circular_bold"
+                    android:textSize="@dimen/_15sdp"
+                    android:textColor="?attr/textNormal"
+                    android:paddingEnd="@dimen/_45sdp"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom|center"
+                    android:textAlignment="center"
+                    tools:ignore="RtlSymmetry" />
+
             </LinearLayout>
         </FrameLayout>
 

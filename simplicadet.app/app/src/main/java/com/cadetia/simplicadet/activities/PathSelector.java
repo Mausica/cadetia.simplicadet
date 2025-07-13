@@ -43,7 +43,7 @@ public class PathSelector extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_path_selector);
+        setContentView(R.layout.activity_path);
 
         prefs = getSharedPreferences("LearningPathProgress", Context.MODE_PRIVATE);
 
