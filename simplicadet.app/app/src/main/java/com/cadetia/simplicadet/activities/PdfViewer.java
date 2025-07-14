@@ -23,7 +23,7 @@ import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
 
-public class PdfViewerActivity extends AppCompatActivity {
+public class PdfViewer extends AppCompatActivity {
 
     private PDFView pdfView;
     private View progressBar;
@@ -74,7 +74,7 @@ public class PdfViewerActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(() -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(PdfViewerActivity.this, "Failed to download PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PdfViewer.this, "Failed to download PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     finish();
                 });
             }
@@ -84,7 +84,7 @@ public class PdfViewerActivity extends AppCompatActivity {
                 if (!response.isSuccessful()) {
                     runOnUiThread(() -> {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(PdfViewerActivity.this, "Failed to download PDF: " + response.code(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PdfViewer.this, "Failed to download PDF: " + response.code(), Toast.LENGTH_SHORT).show();
                         finish();
                     });
                     response.close();
@@ -103,7 +103,7 @@ public class PdfViewerActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     runOnUiThread(() -> {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(PdfViewerActivity.this, "Failed to save PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PdfViewer.this, "Failed to save PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         finish();
                     });
                 } finally {
@@ -117,7 +117,7 @@ public class PdfViewerActivity extends AppCompatActivity {
         pdfView.fromFile(file)
                 .defaultPage(0)
                 .enableSwipe(true)
-                .scrollHandle(new DefaultScrollHandle(PdfViewerActivity.this))
+                .scrollHandle(new DefaultScrollHandle(PdfViewer.this))
                 .spacing(10)
                 .onLoad(new OnLoadCompleteListener() {
                     @Override
@@ -129,7 +129,7 @@ public class PdfViewerActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable t) {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(PdfViewerActivity.this, "Error loading PDF: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PdfViewer.this, "Error loading PDF: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 })
                 .load();

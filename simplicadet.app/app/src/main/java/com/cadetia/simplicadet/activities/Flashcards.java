@@ -22,7 +22,7 @@ import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlashcardsActivity extends AppCompatActivity {
+public class Flashcards extends AppCompatActivity {
     private AnimatorSet mSetRightOut, mSetLeftIn;
     private boolean mIsBackVisible = false;
     private View mCardFrontLayout, mCardBackLayout;
@@ -72,9 +72,9 @@ public class FlashcardsActivity extends AppCompatActivity {
             @Override public void onSucces() {
                 flashcards = DbQuery.g_flashcardList;
                 if (!flashcards.isEmpty()) showCurrentFlashcard();
-                else { Toast.makeText(FlashcardsActivity.this, "No flashcards.", Toast.LENGTH_SHORT).show(); finish(); }
+                else { Toast.makeText(Flashcards.this, "No flashcards.", Toast.LENGTH_SHORT).show(); finish(); }
             }
-            @Override public void onFailure() { Toast.makeText(FlashcardsActivity.this, "Failed to load.", Toast.LENGTH_SHORT).show(); finish(); }
+            @Override public void onFailure() { Toast.makeText(Flashcards.this, "Failed to load.", Toast.LENGTH_SHORT).show(); finish(); }
         });
     }
 

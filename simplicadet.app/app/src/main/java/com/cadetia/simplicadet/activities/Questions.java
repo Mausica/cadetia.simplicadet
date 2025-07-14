@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
@@ -39,7 +38,7 @@ import nl.dionsegijn.konfetti.core.emitter.Emitter;
 import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
 import nl.dionsegijn.konfetti.xml.KonfettiView;
 
-public class QuestionsActivity extends BaseActivity {
+public class Questions extends BaseActivity {
     private KonfettiView konfettiView = null;
     private TextView questionTextView;
     private TextView optionATextView, optionBTextView, optionCTextView, optionDTextView;

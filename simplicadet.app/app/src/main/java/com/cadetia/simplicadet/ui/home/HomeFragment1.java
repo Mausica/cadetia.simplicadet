@@ -31,10 +31,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.FlashcardsActivity;
-import com.cadetia.simplicadet.activities.Home;
+import com.cadetia.simplicadet.activities.Flashcards;
 import com.cadetia.simplicadet.activities.PathSelector;
-import com.cadetia.simplicadet.activities.QuestionsActivity;
+import com.cadetia.simplicadet.activities.Questions;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.JournalAdapter;
 import com.cadetia.simplicadet.adapters.LearningPathAdapter;
@@ -319,12 +318,12 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         if (!pathModel.isUnlocked()) { Toast.makeText(requireContext(), "Unlock previous first", Toast.LENGTH_SHORT).show(); return; }
         Intent intent;
         if (pathModel.getType() == 0) {
-            intent = new Intent(getActivity(), QuestionsActivity.class);
+            intent = new Intent(getActivity(), Questions.class);
             String categoryId = (currentLearningPath != null) ? currentLearningPath.title : "LearningPath";
             intent.putExtra("categoryId", categoryId);
             intent.putExtra("testId", pathModel.getId());
         } else {
-            intent = new Intent(getActivity(), FlashcardsActivity.class);
+            intent = new Intent(getActivity(), Flashcards.class);
             intent.putExtra("flashcardId", pathModel.getId());
         }
         intent.putExtra("position", position);

@@ -21,15 +21,18 @@
         tools:ignore="DiscouragedApi,LockedOrientationActivity"
         tools:targetApi="34">
         <activity
+            android:name=".activities.LanguageSelector"
+            android:exported="false" />
+        <activity
             android:name=".activities.PathSelector"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.Settings"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.QuestionsActivity"
+            android:name=".activities.Questions"
             android:exported="false"
             android:screenOrientation="portrait" />
 
@@ -64,15 +67,15 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.FlashcardsActivity"
+            android:name=".activities.Flashcards"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.CommunityActivity"
+            android:name=".activities.Community"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.PdfViewerActivity"
+            android:name=".activities.PdfViewer"
             android:exported="false"
             android:label="PDF Viewer" />
         <activity

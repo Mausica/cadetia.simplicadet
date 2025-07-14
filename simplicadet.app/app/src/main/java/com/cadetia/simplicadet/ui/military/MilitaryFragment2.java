@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.PdfViewerActivity;
+import com.cadetia.simplicadet.activities.PdfViewer;
 import com.cadetia.simplicadet.adapters.DocumentsAdapter;
 import com.cadetia.simplicadet.entities.Document;
 import com.cadetia.simplicadet.listeners.DocumentListener;
@@ -168,7 +168,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
     @Override
     public void onDocumentClicked(Document document, int position) {
         if (document.getPdfUrl() != null && !document.getPdfUrl().isEmpty()) {
-            Intent intent = new Intent(getActivity(), PdfViewerActivity.class);
+            Intent intent = new Intent(getActivity(), PdfViewer.class);
             intent.putExtra("pdfUrl", document.getPdfUrl());
             intent.putExtra("pdfTitle", document.getTitle());
             intent.putExtra("pdfSubtitle", document.getSubtitle());

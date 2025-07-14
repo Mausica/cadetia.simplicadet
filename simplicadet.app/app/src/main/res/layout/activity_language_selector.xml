@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_dark">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/language_top_bar_container"
+            android:elevation="1dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_60sdp">
+
+            <FrameLayout
+                android:id="@+id/language_blur_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blur_view_language"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/language_top_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/language_back_button"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/back_button"
+                    android:src="@drawable/uni_ic_close"
+                    app:tint="?attr/textNormal"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:text="@string/language"
+                    android:fontFamily="@font/circular_bold"
+                    android:textSize="@dimen/_15sdp"
+                    android:textColor="?attr/textNormal"
+                    android:paddingEnd="@dimen/_45sdp"
+                    android:layout_gravity="bottom"
+                    android:gravity="bottom|center"
+                    android:textAlignment="center"
+                    tools:ignore="RtlSymmetry" />
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <ScrollView
+            android:id="@+id/language_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/language_top_bar_container"
+            android:scrollbars="none"
+            android:paddingTop="@dimen/_20sdp">
+
+            <LinearLayout
+                android:id="@+id/language_list_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingBottom="@dimen/_32sdp" />
+
+        </ScrollView>
+    </RelativeLayout>
+</RelativeLayout>

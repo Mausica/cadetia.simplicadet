@@ -32,7 +32,7 @@ import java.util.Objects;
 
 import eightbitlab.com.blurview.BlurView;
 
-public class CommunityActivity extends AppCompatActivity {
+public class Community extends AppCompatActivity {
 
     private FragmentCommunityBinding binding;
     private View leaderboardFirstLayout;

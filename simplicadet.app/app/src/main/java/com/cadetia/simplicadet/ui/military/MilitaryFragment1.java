@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -28,14 +27,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import com.cadetia.simplicadet.R;
-import com.cadetia.simplicadet.activities.QuestionsActivity;
+import com.cadetia.simplicadet.activities.Questions;
 import com.cadetia.simplicadet.activities.ShowRedeem;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
 import com.cadetia.simplicadet.adapters.DestinationAdapter;
 import com.cadetia.simplicadet.adapters.JournalAdapter;
-import com.cadetia.simplicadet.adapters.MainTaskAdapter;
 import com.cadetia.simplicadet.adapters.RankAdapter;
-import com.cadetia.simplicadet.database.DatabaseClient;
 import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.model.CategoryModel;
@@ -45,7 +42,6 @@ import com.cadetia.simplicadet.model.RankModel;
 import com.cadetia.simplicadet.model.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -372,7 +368,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     public void onQuizClick(String categoryId, String testId) {
         // Get the context from categoryRecyclerView
         Context context = categoryRecyclerView.getContext();
-        Intent intent = new Intent(context, QuestionsActivity.class);
+        Intent intent = new Intent(context, Questions.class);
 
         // Add the categoryId and testId to the intent
         intent.putExtra("categoryId", categoryId);

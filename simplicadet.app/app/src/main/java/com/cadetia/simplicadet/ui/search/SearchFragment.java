@@ -15,10 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,7 +27,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.activities.Home;
-import com.cadetia.simplicadet.activities.QuestionsActivity;
+import com.cadetia.simplicadet.activities.Questions;
 import com.cadetia.simplicadet.adapters.CategoryAdapter;
 import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.databinding.FragmentSearchBinding;
@@ -341,7 +339,7 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
     public void onQuizClick(String categoryId, String testId) {
         Context context = getContext();
         if (context != null) {
-            Intent intent = new Intent(context, QuestionsActivity.class);
+            Intent intent = new Intent(context, Questions.class);
             intent.putExtra("categoryId", categoryId);
             intent.putExtra("testId", testId);
             startActivityForResult(intent, 1);
