@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -19,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -198,18 +200,35 @@ public class Settings extends BaseActivity {
         themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             int newMode = isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
             themePreferences.setThemeMode(newMode);
-            applyTheme();
+            animateThemeMorph(newMode);
         });
     }
 
-    private void applyTheme() {
-        AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
-        Intent intent = getIntent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
+    private void animateThemeMorph(final int newMode) {
+        final ViewGroup root = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
+        final View overlay = new View(this);
+        overlay.setBackgroundColor(ContextCompat.getColor(this, R.color.black));
+        overlay.setAlpha(0f);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        );
+        root.addView(overlay, params);
+
+        overlay.animate()
+                .alpha(1f)
+                .setDuration(200)
+                .withEndAction(() -> {
+                    AppCompatDelegate.setDefaultNightMode(newMode);
+                    new Handler().postDelayed(() -> {
+                        overlay.animate()
+                                .alpha(0f)
+                                .setDuration(200)
+                                .withEndAction(() -> root.removeView(overlay))
+                                .start();
+                    }, 150);
+                })
+                .start();
     }
 
     private void retrieveUserData() {
@@ -328,12 +347,13 @@ public class Settings extends BaseActivity {
             boolean languageChanged = data.getBooleanExtra("language_changed", false);
             if (languageChanged) {
                 currentLanguage = data.getStringExtra("new_language");
+
                 Intent intent = getIntent();
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 finish();
-                overridePendingTransition(0, 0);
+                overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
                 startActivity(intent);
-                overridePendingTransition(0, 0);
+                overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
             }
         }
     }
