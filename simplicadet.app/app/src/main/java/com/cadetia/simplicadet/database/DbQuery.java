@@ -588,6 +588,10 @@ public class DbQuery {
     }
 
     public static void loadLearningPath(MyCompleteListener listener) {
+
+        if (g_firestore == null) {
+            g_firestore = FirebaseFirestore.getInstance();
+        }
         g_firestore.collection("LEARNING").limit(1).get().addOnSuccessListener(querySnapshot -> {
             if (querySnapshot.isEmpty()) {
                 Log.e(TAG, "No learning path found");

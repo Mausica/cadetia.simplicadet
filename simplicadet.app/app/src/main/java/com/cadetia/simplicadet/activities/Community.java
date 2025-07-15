@@ -50,7 +50,10 @@ public class Community extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         ImageView backButton = findViewById(R.id.community_back);
-        backButton.setOnClickListener(v -> finish());
+        backButton.setOnClickListener(v -> {
+            finish();
+            overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
+        });
 
         setupBlurView();
         setupScrollListener();

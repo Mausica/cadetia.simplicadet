@@ -257,15 +257,23 @@ public class MilitaryFragment3 extends Fragment {
                         if (!"STATS".equals(doc.getId())) {
                             Map<String, Object> data = doc.getData();
                             if (data != null) {
-                                String name = (String) data.get("NAME");
+                                // SAFE extraction
+                                Object nameObj = data.get("NAME");
+                                String name = nameObj != null ? nameObj.toString() : "";
+
                                 Object heightObj = data.get("HEIGHT");
+                                int height = (heightObj instanceof Number) ? ((Number) heightObj).intValue() : 0;
+
                                 Object platoonObj = data.get("PLUTON");
+                                int platoon = (platoonObj instanceof Number) ? ((Number) platoonObj).intValue() : 0;
+
                                 Object rankObj = data.get("RANK");
-                                String imageUrl = (String) data.get("IMAGE");
-                                if (name != null && heightObj instanceof Number && platoonObj instanceof Number) {
-                                    int height = ((Number) heightObj).intValue();
-                                    int platoon = ((Number) platoonObj).intValue();
-                                    String rank = getRankString(rankObj);
+                                String rank = getRankString(rankObj);
+
+                                Object imageObj = data.get("IMAGE");
+                                String imageUrl = imageObj != null ? imageObj.toString() : "";
+
+                                if (!name.isEmpty() && height > 0 && platoon > 0) {
                                     Student student = new Student(name, height, platoon, rank, imageUrl, doc.getId());
                                     allStudents.add(student);
                                     if (platoon >= 1 && platoon <= platoonCount) {

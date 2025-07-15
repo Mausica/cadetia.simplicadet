@@ -143,9 +143,10 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
                 loadTaskFirstLayout();
                 if (NetworkUtils.isNetworkAvailable(requireContext())) {
                     loadJournals();
-                    loadSelectedLearningPath(); // <-- Changed this line
-                    // Preload images after a short delay
-                    new Handler().postDelayed(this::preloadJournalImages, 500);
+                    loadSelectedLearningPath();
+                    if (isAdded()) {
+                        new Handler().postDelayed(this::preloadJournalImages, 500);
+                    }
                 } else {
                     journalsLoaded = true;
                     categoriesLoaded = true;

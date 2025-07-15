@@ -66,13 +66,11 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     private boolean isNetworkAvailable = true;
     private String userEmail;
 
-    // Add this method to handle context attachment for localization
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
 
-    // Add this method to handle configuration changes
     @Override
     public void applyOverrideConfiguration(Configuration overrideConfiguration) {
         if (overrideConfiguration != null) {
@@ -91,7 +89,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
         Window window = getWindow();
 
-        // Detect current theme
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         boolean isDarkTheme = (currentNightMode == Configuration.UI_MODE_NIGHT_YES);
 
@@ -121,7 +118,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkChangeReceiver, filter);
 
-        // Custom navigation with fade animations
         navView.setOnNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
@@ -145,7 +141,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             }
         });
 
-        // Sync BottomNavigationView with current destination
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destId = destination.getId();
             if (destId == R.id.navigation_home || destId == R.id.navigation_search || destId == R.id.navigation_military) {
@@ -167,7 +162,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         drawerNameTextView = headerView.findViewById(R.id.drawer_name);
         drawerloadingButton = headerView.findViewById(R.id.loading_button);
 
-        // Retrieve and set user data
         retrieveUserData();
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -195,7 +189,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         String savedLanguage = LocaleHelper.getLanguage(this);
         if (!savedLanguage.equals(currentLanguage)) {
             currentLanguage = savedLanguage;
-            // Recreate activity to apply new language
             recreate();
         }
     }
@@ -207,13 +200,11 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     }
 
     private void navigationDrawer(Window view) {
-        // Get the current active fragment
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
         if (navHostFragment instanceof NavHostFragment) {
             Fragment primaryFragment = ((NavHostFragment) navHostFragment).getChildFragmentManager().getPrimaryNavigationFragment();
             boolean isMilitary = (primaryFragment instanceof MilitaryFragment);
 
-            // Get the navigation view and header
             NavigationView navigationView = findViewById(R.id.navigation_view);
             if (navigationView != null) {
                 View headerView = navigationView.getHeaderView(0);
@@ -223,14 +214,11 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                 SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
                 String userPhoto = sharedPreferences.getString("userPhoto", "");
 
-                // Find views in header
                 ShapeableImageView profileButton = headerView.findViewById(R.id.loading_button);
                 ProgressBar progressBar = headerView.findViewById(R.id.drawer_progress_bar);
 
-                // Update profile image
                 if (profileButton != null) {
                     if (!isNetworkAvailable || userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
-                        // Use different guest avatar based on section
                         if (isMilitary) {
                             Glide.with(this).load(R.raw.guest_military).into(profileButton);
                         } else {
@@ -241,7 +229,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                     }
                 }
 
-                // Update progress bar
                 if (progressBar != null) {
                     progressBar.setVisibility(View.VISIBLE);
                     progressBar.setIndeterminate(false);
@@ -261,6 +248,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             }
         }
     }
+
     private void checkInternetConnection() {
         boolean previousStatus = isNetworkAvailable;
         isNetworkAvailable = NetworkUtils.isNetworkAvailable(this);
@@ -283,7 +271,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     }
 
     private void showNoInternetDialog() {
-
         DialogConfirm.show(
                 this,
                 getString(R.string.no_internet_title),
@@ -301,6 +288,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                 false
         );
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         int itemId = menuItem.getItemId();
@@ -311,7 +299,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             return false;
         }
 
-        //BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_home);
 
         if (itemId == R.id.drawer_logout) {
@@ -323,7 +310,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Mausica/cadetia.simplicadet/releases"));
             startActivity(browserIntent);
         } else if (itemId == R.id.drawer_help) {
-            // navController.navigate(R.id.navigation_liked);
             Intent intent = new Intent(this, Community.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
@@ -331,6 +317,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             Intent intent = new Intent(Home.this, Settings.class);
             startActivity(intent);
             overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
+            finish();
         } else if (itemId == R.id.drawer_upload) {
             if (userEmail.equals("marius.gabryel2017@gmail.com")){
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -363,11 +350,9 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
     private void handleConnectionLost() {
         runOnUiThread(() -> {
-            // Force navigation to home
             if (!(getCurrentFragment() instanceof HomeFragment)) {
                 forceNavigationToHome();
             }
-            // Update UI
             retrieveUserData();
             showNoInternetDialog();
         });
@@ -387,7 +372,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                         TextUpload textUpload = new TextUpload();
                         textUpload.uploadQuestionsFromText(this, fileUri);
                     } else if (mimeType != null && (mimeType.contains("excel") || mimeType.contains("sheet"))) {
-
                         Toast.makeText(this, "Fișierele Excel nu mai sunt acceptate. Folosiți formatul text.", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(this, "Format de fișier neacceptat. Folosiți fișiere text (.txt).", Toast.LENGTH_LONG).show();
@@ -421,15 +405,12 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
     public void updateFabIcon(Fragment fragment) {
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
-        //ProgressBar progressBar = findViewById(R.id.progress_bar);
 
-        // Get the actual visible fragment from NavHost
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
         if (navHostFragment instanceof NavHostFragment) {
             Fragment primaryFragment = ((NavHostFragment) navHostFragment).getChildFragmentManager().getPrimaryNavigationFragment();
 
             if (primaryFragment instanceof HomeFragment) {
-                // Check child fragment for HomeFragment
                 fabMain.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.primary)));
                 Fragment childFragment = primaryFragment.getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
 
@@ -441,8 +422,9 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                     showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-                        HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
-                        homeFragment.actionController();
+                        if (primaryNavigationFragment instanceof HomeFragment) {
+                            ((HomeFragment) primaryNavigationFragment).actionController();
+                        }
                     });
                 } else if (childFragment instanceof HomeFragment3) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
@@ -452,12 +434,12 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                     showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-                        HomeFragment homeFragment = (HomeFragment) primaryNavigationFragment;
-                        homeFragment.actionController();
+                        if (primaryNavigationFragment instanceof HomeFragment) {
+                            ((HomeFragment) primaryNavigationFragment).actionController();
+                        }
                     });
                 }
             } else if (primaryFragment instanceof MilitaryFragment) {
-                // Check child fragment for MilitaryFragment
                 fabMain.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.military)));
                 Fragment childFragment = primaryFragment.getChildFragmentManager().findFragmentById(R.id.smallerFragmentContainer);
 
@@ -466,40 +448,42 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                     hideFab();
                 } else if (childFragment instanceof MilitaryFragment2) {
                     fabMain.setImageResource(R.drawable.home_ic_plus);
-                    showFab(); // Use the new method to restore layout
+                    showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-                        MilitaryFragment militaryFragment = (MilitaryFragment) primaryNavigationFragment;
-                        militaryFragment.actionController();
+                        if (primaryNavigationFragment instanceof MilitaryFragment) {
+                            ((MilitaryFragment) primaryNavigationFragment).actionController();
+                        }
                     });
                 } else if (childFragment instanceof MilitaryFragment3) {
                     fabMain.setImageResource(R.drawable.home_ic_rotate);
-                    showFab(); // Use the new method to restore layout
+                    showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-                        MilitaryFragment militaryFragment = (MilitaryFragment) primaryNavigationFragment;
-                        militaryFragment.actionController();
+                        if (primaryNavigationFragment instanceof MilitaryFragment) {
+                            ((MilitaryFragment) primaryNavigationFragment).actionController();
+                        }
                     });
                 } else if (childFragment instanceof MilitaryFragment4) {
                     fabMain.setImageResource(R.drawable.home_ic_time);
-                    showFab(); // Use the new method to restore layout
+                    showFab();
                     fabMain.setOnClickListener(v -> {
                         Fragment primaryNavigationFragment = navHostFragment.getChildFragmentManager().getPrimaryNavigationFragment();
-                        MilitaryFragment militaryFragment = (MilitaryFragment) primaryNavigationFragment;
-                        militaryFragment.actionController();
+                        if (primaryNavigationFragment instanceof MilitaryFragment) {
+                            ((MilitaryFragment) primaryNavigationFragment).actionController();
+                        }
                     });
                 }
             }
-
         } else {
             fabMain.setImageResource(R.drawable.home_ic_plus);
-            hideFab(); // Use your updated method
+            hideFab();
         }
     }
 
     public void hideFab() {
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
-        if (fabMain == null) return; // prevent crash
+        if (fabMain == null) return;
 
         fabMain.setImageResource(R.drawable.home_ic_plus);
         fabMain.setVisibility(View.GONE);
@@ -520,16 +504,12 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         FloatingActionButton fabMain = findViewById(R.id.fabMain);
         fabMain.setVisibility(View.VISIBLE);
 
-        // Get reference to the nav_card
         FrameLayout navCard = findViewById(R.id.nav_card);
 
-        // Restore original constraints
         androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
                 (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) navCard.getLayoutParams();
 
-        // Set end constraint back to fab_container
         params.endToStart = R.id.fab_container;
-        // Clear end constraint to parent
         params.endToEnd = -1;
 
         navCard.setLayoutParams(params);
@@ -543,11 +523,9 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
         drawerNameTextView.setText(userName);
 
-        // Always show guest icon when offline
         if (!isNetworkAvailable) {
             Glide.with(this).load(R.raw.guest_civil).into(drawerloadingButton);
         } else {
-            // Only load user photo if we have internet AND a valid photo URL
             if (userPhoto.isEmpty() || userPhoto.equals("no_photo") || userPhoto.equals("null")) {
                 Glide.with(this).load(R.raw.guest_civil).into(drawerloadingButton);
             } else {

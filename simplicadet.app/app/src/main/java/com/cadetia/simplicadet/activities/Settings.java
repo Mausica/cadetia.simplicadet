@@ -359,8 +359,10 @@ public class Settings extends BaseActivity {
     }
 
     private void navigateBackWithAnimation() {
-        finish();
+        Intent intent = new Intent(Settings.this, Home.class);
+        startActivity(intent);
         overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
+        finish();
     }
 
     @Override
