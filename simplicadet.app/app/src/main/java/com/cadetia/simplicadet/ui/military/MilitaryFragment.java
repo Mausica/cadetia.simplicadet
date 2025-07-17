@@ -84,7 +84,7 @@ public class MilitaryFragment extends Fragment {
                 .document("RO")
                 .collection("CNMTV")
                 .document("STUDENTS")
-                .collection("CP2")
+                .collection("2025")
                 .document(userEmail)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {

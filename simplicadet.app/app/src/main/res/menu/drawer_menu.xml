@@ -3,23 +3,23 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/drawer_new"
-            android:title="What's new"
+            android:title="@string/whats_new"
             android:icon="@drawable/home_ic_new"/>
         <item
             android:id="@+id/drawer_settings"
-            android:title="Settings"
+            android:title="@string/settings"
             android:icon="@drawable/home_ic_settings"/>
         <item
             android:id="@+id/drawer_upload"
-            android:title="Upload file"
+            android:title="@string/upload_file"
             android:icon="@drawable/home_ic_upload"/>
         <item
             android:id="@+id/drawer_logout"
-            android:title="Log out now"
+            android:title="@string/log_out"
             android:icon="@drawable/auth_ic_password"/>
         <item
             android:id="@+id/drawer_help"
-            android:title="Leaderboard"
+            android:title="@string/leaderboard"
             android:icon="@drawable/home_ic_trophy"/>
     </group>
 </menu>

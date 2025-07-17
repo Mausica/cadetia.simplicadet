@@ -49,6 +49,8 @@
     <string name="home_flow">Carduri</string>
     <string name="home_tasks">Sarcini</string>
     <string name="home_all">Toate</string>
+    <string name="home_search_quiz">Teste și Chestionare</string>
+    <string name="leaderboard">Clasament</string>
 
     <!-- Notes Feature -->
     <string name="hello_blank_fragment">Salut fragment gol</string>
@@ -80,6 +82,8 @@
     <string name="about_you">Despre tine</string>
     <string name="about_you_hint">Spune ceva despre tine pentru lume</string>
     <string name="locked_email">Email-ul este blocat</string>
+    <string name="whats_new">Ce e nou</string>
+    <string name="upload_file">Încarcă fișier</string>
 
     <!-- App Settings Section -->
     <string name="app_settings">Setări aplicație</string>
@@ -117,5 +121,8 @@
 
     <string name="clear_cache">Curăță memoria</string>
     <string name="clear_cache_confirmation">Ești sigur că vrei să ștergi cache-ul aplicației? Aceasta va elimina fișierele temporare și poate îmbunătăți performanța.</string>
+    <string name="community_weekly">Săptămânal</string>
+    <string name="community_all_time">Dintotdeauna</string>
+    <string name="task_title">Titlul sarcinii</string>
 
 </resources>

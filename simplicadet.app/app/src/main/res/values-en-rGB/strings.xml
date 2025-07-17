@@ -49,6 +49,7 @@
     <string name="home_flow">Cards</string>
     <string name="home_tasks">Tasks</string>
     <string name="home_all">All</string>
+    <string name="home_search_quiz">Quizzes and Tests</string>
 
     <!-- Notes Feature -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -80,6 +81,7 @@
     <string name="about_you">About you</string>
     <string name="about_you_hint">Say something about you for the world to see</string>
     <string name="locked_email">Email is locked</string>
+    <string name="leaderboard">Leaderboard</string>
 
     <!-- App Settings Section -->
     <string name="app_settings">App Settings</string>
@@ -89,6 +91,8 @@
     <string name="app_icon">App icon</string>
     <string name="language">English</string>
     <string name="default_text">Default</string>
+    <string name="whats_new">What\'s new</string>
+    <string name="upload_file">Upload file</string>
 
     <!-- Contact Section -->
     <string name="contact_us">Contact us</string>
@@ -117,5 +121,8 @@
 
     <string name="clear_cache">Clear Memory</string>
     <string name="clear_cache_confirmation">Are you sure you want to clear the app cache? This will remove temporary files and may improve performance.</string>
+    <string name="community_weekly">Weekly</string>
+    <string name="community_all_time">All Time</string>
+    <string name="task_title">Task Title</string>
 
 </resources>

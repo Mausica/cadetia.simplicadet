@@ -55,7 +55,7 @@
             android:textColor="?attr/textNormal"
             android:textSize="@dimen/_22ssp"
             android:fontFamily="@font/circular_medium"
-            android:text="Search" />
+            android:text="@string/home_search" />
 
     </LinearLayout>
 
@@ -78,7 +78,7 @@
         android:elevation="4dp"
         android:background="@drawable/uni_input_search"
         android:drawableStart="@drawable/uni_ic_search"
-        android:hint="Quizzes and Tests"
+        android:hint="@string/home_search_quiz"
         android:textSize="@dimen/_14ssp"
         android:textColor="?attr/textNormal"
         android:textColorHint="?attr/textLight"

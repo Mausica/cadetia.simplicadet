@@ -12,7 +12,7 @@
     <string name="navigation_drawer_close">Fermer le menu de navigation</string>
 
     <!-- Écran principal -->
-    <string name="main_title">La mission d\'abord, l\'ordre toujours !</string>
+    <string name="main_title">Mission d\'abord, ordre toujours!</string>
     <string name="main_google">Continuer avec Google</string>
     <string name="main_facebook">Continuer avec Facebook</string>
 
@@ -49,6 +49,7 @@
     <string name="home_flow">Cartes</string>
     <string name="home_tasks">Tâches</string>
     <string name="home_all">Tout</string>
+    <string name="home_search_quiz">Quiz et Tests</string>
 
     <!-- Fonctionnalité Notes -->
     <string name="hello_blank_fragment">Bonjour fragment vide</string>
@@ -58,6 +59,7 @@
     <string name="home_note_subtitle">Sous-titre de la note</string>
     <string name="home_type_note_here">Tapez votre note ici...</string>
     <string name="create_note_add">Ajouter</string>
+    <string name="leaderboard">Classement</string>
 
     <!-- Texte de substitution -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...</string>
@@ -89,6 +91,8 @@
     <string name="app_icon">Icône de l\'application</string>
     <string name="language">Français</string>
     <string name="default_text">Par défaut</string>
+    <string name="whats_new">Quoi de neuf</string>
+    <string name="upload_file">Charger fichier</string>
 
     <!-- Section Contact -->
     <string name="contact_us">Contactez-nous</string>
@@ -117,5 +121,7 @@
     <string name="logout_confirmation">Êtes-vous sûr de vouloir vous déconnecter ?</string>
 
     <string name="clear_cache_confirmation">Êtes-vous sûr de vouloir vider le cache de l\'application ? Cela supprimera les fichiers temporaires et peut améliorer les performances.</string>
-
+    <string name="community_weekly">Semaine</string>
+    <string name="community_all_time">Toujours</string>
+    <string name="task_title">Titre de la tâche</string>
 </resources>

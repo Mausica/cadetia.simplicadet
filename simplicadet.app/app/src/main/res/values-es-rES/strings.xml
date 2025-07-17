@@ -49,6 +49,7 @@
     <string name="home_flow">Tarjetas</string>
     <string name="home_tasks">Tareas</string>
     <string name="home_all">Todo</string>
+    <string name="home_search_quiz">Cuestionarios y Pruebas</string>
 
     <!-- Función de notas -->
     <string name="hello_blank_fragment">Hola, fragmento en blanco</string>
@@ -58,6 +59,7 @@
     <string name="home_note_subtitle">Subtítulo de la nota</string>
     <string name="home_type_note_here">Escribe la nota aquí...</string>
     <string name="create_note_add">Añadir</string>
+    <string name="leaderboard">Tabla de clasificación</string>
 
     <!-- Texto de marcador de posición -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...</string>
@@ -89,6 +91,8 @@
     <string name="app_icon">Icono de la app</string>
     <string name="language">Español</string>
     <string name="default_text">Por defecto</string>
+    <string name="whats_new">Qué hay de nuevo</string>
+    <string name="upload_file">Subir archivo</string>
 
     <!-- Sección de contacto -->
     <string name="contact_us">Contáctanos</string>
@@ -117,5 +121,7 @@
 
     <string name="clear_cache">Limpiar Caché</string>
     <string name="clear_cache_confirmation">¿Estás seguro de que quieres limpiar la caché de la aplicación? Esto eliminará archivos temporales y puede mejorar el rendimiento.</string>
-
+    <string name="community_weekly">Semanal</string>
+    <string name="community_all_time">Siempre</string>
+    <string name="task_title">Título de la tarea</string>
 </resources>

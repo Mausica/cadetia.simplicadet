@@ -49,6 +49,7 @@
     <string name="home_flow">Cards</string>
     <string name="home_tasks">Tasks</string>
     <string name="home_all">All</string>
+    <string name="home_search_quiz">Quizzes and Tests</string>
 
     <!-- Notes Feature -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -58,6 +59,7 @@
     <string name="home_note_subtitle">Note Subtitle</string>
     <string name="home_type_note_here">Type note here...</string>
     <string name="create_note_add">Add</string>
+    <string name="leaderboard">Leaderboard</string>
 
     <!-- Placeholder Text -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
@@ -89,6 +91,8 @@
     <string name="app_icon">App icon</string>
     <string name="language">English</string>
     <string name="default_text">Default</string>
+    <string name="whats_new">What\'s new</string>
+    <string name="upload_file">Upload file</string>
 
     <!-- Contact Section -->
     <string name="contact_us">Contact us</string>
@@ -134,6 +138,9 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="title_activity_path_selector">PathSelector</string>
+    <string name="community_weekly">Weekly</string>
+    <string name="community_all_time">All Time</string>
+    <string name="task_title">Task Title</string>
 
 
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="community_weekly">Weekly</string>
+    <string name="community_all_time">All Time</string>
+    <string name="task_title">Task Title</string>
+</resources>
