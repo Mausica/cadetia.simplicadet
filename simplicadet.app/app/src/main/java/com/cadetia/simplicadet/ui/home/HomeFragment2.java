@@ -48,6 +48,12 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     private FloatingActionButton fabMain;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
+
+    // Cache for loaded notes to avoid unnecessary database calls
+    private List<Note> cachedNotes;
+    private long lastLoadTime = 0;
+    private static final long CACHE_DURATION = 5000; // 5 seconds cache
+
     private final ActivityResultLauncher<Intent> createNoteLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -63,7 +69,8 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
     @Override
     public void onNoteDeleted() {
-        // Reload note list when a note is deleted
+        // Invalidate cache and reload notes
+        cachedNotes = null;
         loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, true);
     }
 
@@ -85,13 +92,18 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
         RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+
+        // Enable recycler view optimizations
+        notesRecyclerView.setHasFixedSize(true);
+        notesRecyclerView.setItemViewCacheSize(20);
+        notesRecyclerView.setDrawingCacheEnabled(true);
+        notesRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
         noteList = new ArrayList<>();
         notesAdapter = new NotesAdapter(noteList, this);
         notesRecyclerView.setAdapter(notesAdapter);
 
-        new Handler().postDelayed(() -> {
-            loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show
+        loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
 
         return view;
     }
@@ -99,10 +111,19 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     @Override
     public void onResume() {
         super.onResume();
-        showLoading(true);
-        new Handler().postDelayed(() -> {
+
+        long currentTime = System.currentTimeMillis();
+        if (cachedNotes != null && (currentTime - lastLoadTime) < CACHE_DURATION) {
+            // Use cached data
+            noteList.clear();
+            noteList.addAll(cachedNotes);
+            notesAdapter.notifyDataSetChanged();
+            showLoading(false);
+        } else {
+            // Load fresh data
+            showLoading(true);
             loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
-        }, 1000); // 1 second delay to show
+        }
     }
 
     private void showLoading(boolean show) {
@@ -125,13 +146,12 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
                         }
                     }, 250);
                 } else {
-                    Log.w(TAG, "Context is null, skipping animations");
+                    loadingLayout.setVisibility(View.GONE);
+                    contentView.setVisibility(View.VISIBLE);
                 }
             }
         }
     }
-
-
 
     @Override
     public void onNoteClicked(Note note, int position) {
@@ -141,7 +161,8 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
     @Override
     public void onNoteSaved() {
-
+        // Invalidate cache when note is saved
+        cachedNotes = null;
     }
 
     public void loadNotesInBackground(final int requestCode, final boolean isNoteDeleted) {
@@ -149,32 +170,48 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
             Log.w(TAG, "Executor is shutdown, skipping loadNotesInBackground");
             return;
         }
+
         executorService.execute(() -> {
-            List<Note> notes = NotesDatabase.getDatabase(requireContext()).noteDao().getAllNotes();
-            handler.post(() -> {
-                switch (requestCode) {
-                    case REQUEST_CODE_SHOW_NOTES:
-                    case REQUEST_CODE_ADD_NOTE:
-                        // Clear existing notes and add all notes
-                        noteList.clear();
-                        noteList.addAll(notes);
-                        notesAdapter.notifyDataSetChanged();
-                        break;
-                    case REQUEST_CODE_UPDATE_NOTE:
-                        if (isNoteDeleted) {
-                            // Note is deleted, notify adapter about the removal
-                            notesAdapter.notifyItemRemoved(noteClickedPosition);
-                        } else {
-                            // Note is updated, update the corresponding note in the list
-                            if (noteClickedPosition >= 0 && noteClickedPosition < notes.size()) {
-                                noteList.set(noteClickedPosition, notes.get(noteClickedPosition));
-                                notesAdapter.notifyItemChanged(noteClickedPosition);
+            try {
+                List<Note> notes = NotesDatabase.getDatabase(requireContext()).noteDao().getAllNotes();
+
+                cachedNotes = new ArrayList<>(notes);
+                lastLoadTime = System.currentTimeMillis();
+
+                handler.post(() -> {
+                    if (!isAdded()) return;
+
+                    switch (requestCode) {
+                        case REQUEST_CODE_SHOW_NOTES:
+                        case REQUEST_CODE_ADD_NOTE:
+                            noteList.clear();
+                            noteList.addAll(notes);
+                            notesAdapter.notifyDataSetChanged();
+                            break;
+                        case REQUEST_CODE_UPDATE_NOTE:
+                            if (isNoteDeleted) {
+                                if (noteClickedPosition >= 0 && noteClickedPosition < noteList.size()) {
+                                    noteList.remove(noteClickedPosition);
+                                    notesAdapter.notifyItemRemoved(noteClickedPosition);
+                                }
+                            } else {
+                                if (noteClickedPosition >= 0 && noteClickedPosition < notes.size()) {
+                                    noteList.set(noteClickedPosition, notes.get(noteClickedPosition));
+                                    notesAdapter.notifyItemChanged(noteClickedPosition);
+                                }
                             }
-                        }
-                        break;
-                }
-                showLoading(false);
-            });
+                            break;
+                    }
+                    showLoading(false);
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading notes", e);
+                handler.post(() -> {
+                    if (isAdded()) {
+                        showLoading(false);
+                    }
+                });
+            }
         });
     }
 
@@ -196,6 +233,16 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
     @Override
     public void onNoteSaved(boolean isNoteDeleted) {
+        // Invalidate cache and reload
+        cachedNotes = null;
         loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, isNoteDeleted);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
 }
