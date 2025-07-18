@@ -47,6 +47,7 @@ import com.cadetia.simplicadet.ui.military.MilitaryFragment2;
 import com.cadetia.simplicadet.ui.military.MilitaryFragment3;
 import com.cadetia.simplicadet.ui.military.MilitaryFragment4;
 import com.cadetia.simplicadet.utils.NetworkUtils;
+import com.cadetia.simplicadet.utils.VersionChecker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -167,6 +168,24 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
         final Handler handler = new Handler();
         handler.postDelayed(() -> navigationDrawer(window), 100);
+
+        VersionChecker.checkVersionOnHomeActivity(this, new VersionChecker.VersionCheckCallback() {
+            @Override
+            public void onVersionSupported() {
+            }
+            @Override
+            public void onVersionUnsupported() {
+                VersionChecker.showUnsupportedVersionDialogForHome(Home.this, () -> {
+                });
+            }
+            @Override
+            public void onMaintenanceMode() {
+                VersionChecker.showMaintenanceDialog(Home.this, null);
+            }
+            @Override
+            public void onOfflineMode() {
+            }
+        });
     }
 
     private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
@@ -342,9 +361,39 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     }
 
     private void handleConnectionRestored() {
-        runOnUiThread(() -> {
-            retrieveUserData();
-            Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
+        VersionChecker.checkVersion(this, new VersionChecker.VersionCheckCallback() {
+            @Override
+            public void onVersionSupported() {
+                runOnUiThread(() -> {
+                    retrieveUserData();
+                    Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onMaintenanceMode() {
+                VersionChecker.showMaintenanceDialog(Home.this, null);
+            }
+
+            @Override
+            public void onVersionUnsupported() {
+                runOnUiThread(() -> {
+                    VersionChecker.showUnsupportedVersionDialog(Home.this, () -> {
+                        firebaseAuth.signOut();
+                        Intent intent = new Intent(Home.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    });
+                });
+            }
+
+            @Override
+            public void onOfflineMode() {
+                runOnUiThread(() -> {
+                    retrieveUserData();
+                    Toast.makeText(Home.this, "Connection restored", Toast.LENGTH_SHORT).show();
+                });
+            }
         });
     }
 

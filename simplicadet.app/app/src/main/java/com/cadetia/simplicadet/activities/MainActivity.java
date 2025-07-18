@@ -26,6 +26,9 @@ import androidx.core.view.WindowCompat;
 import com.cadetia.simplicadet.dao.LanguagePreferences;
 import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
+import com.cadetia.simplicadet.utils.NetworkUtils;
+import com.cadetia.simplicadet.utils.VersionChecker;
+import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -66,11 +69,7 @@ import java.util.Objects;
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
-
-    private Button main_signup_button;
-    private Button main_login_button;
-    private Button main_facebook_button;
-    private Button main_google_button;
+    private Button main_signup_button, main_login_button, main_facebook_button, main_google_button;
     private FirebaseAuth firebaseAuth;
     private CallbackManager callbackManager;
     private LoadingView loadingViewMain;
@@ -94,7 +93,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Handle first launch language detection
         LanguagePreferences languagePreferences = new LanguagePreferences(this);
         if (languagePreferences.isFirstLaunch()) {
             String deviceLanguage = Locale.getDefault().getLanguage();
@@ -109,7 +107,6 @@ public class MainActivity extends BaseActivity {
             languagePreferences.setFirstLaunchComplete();
         }
 
-        // Initialize theme preferences
         ThemePreferences themePreferences = new ThemePreferences(this);
         AppCompatDelegate.setDefaultNightMode(themePreferences.getThemeMode());
 
@@ -125,15 +122,11 @@ public class MainActivity extends BaseActivity {
         FirebaseApp.initializeApp(this);
 
         loadingViewMain = findViewById(R.id.loadingViewMain);
-
-        // Initialize Firebase Auth
         firebaseAuth = FirebaseAuth.getInstance();
 
-        // Initialize Facebook SDK
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
-        // Animation
         RelativeLayout relativeLayout = findViewById(R.id.container);
         AnimationDrawable animationDrawable = (AnimationDrawable) relativeLayout.getBackground();
         animationDrawable.setEnterFadeDuration(2000);
@@ -144,36 +137,53 @@ public class MainActivity extends BaseActivity {
         window.setStatusBarColor(getResources().getColor(R.color.nothing));
         window.setNavigationBarColor(getResources().getColor(R.color.nothing));
 
-        // Use WindowCompat to set fitsSystemWindows to false
         View decorView = getWindow().getDecorView();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // For Android 11 and above
             WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         } else {
-            // For versions below Android 11
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
 
-        // Initialize UI components
         main_signup_button = findViewById(R.id.main_signup_button);
         main_login_button = findViewById(R.id.main_login_button);
         main_facebook_button = findViewById(R.id.main_facebook_button);
         main_google_button = findViewById(R.id.main_google_button);
 
-        // Set onClick listeners
-        main_signup_button.setOnClickListener(v -> animateButtonOnClick(main_signup_button, Signup.class));
+        main_signup_button.setOnClickListener(v -> {
+            if (checkNetworkAndShowDialog()) return;
+            animateButtonOnClick(main_signup_button, Signup.class);
+        });
 
-        main_login_button.setOnClickListener(v -> animateButtonOnClick(main_login_button, Login.class));
+        main_login_button.setOnClickListener(v -> {
+            if (checkNetworkAndShowDialog()) return;
+            animateButtonOnClick(main_login_button, Login.class);
+        });
 
         main_facebook_button.setOnClickListener(v -> {
+            if (checkNetworkAndShowDialog()) return;
             animateButtonOnClickNull(main_facebook_button);
             handleFacebookLogin();
         });
 
         main_google_button.setOnClickListener(v -> {
+            if (checkNetworkAndShowDialog()) return;
             animateButtonOnClickNull(main_google_button);
             buttonGoogleSignIn(v);
         });
+    }
+
+    private boolean checkNetworkAndShowDialog() {
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            DialogConfirm.show(
+                    this,
+                    "No Internet Connection",
+                    "Please check your internet connection and try again.",
+                    null,
+                    true
+            );
+            return true;
+        }
+        return false;
     }
 
     private boolean isLanguageSupported(String language) {
@@ -187,7 +197,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Remove the recreate call - let attachBaseContext handle locale
         DbQuery.g_firestore = FirebaseFirestore.getInstance();
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
@@ -198,35 +207,52 @@ public class MainActivity extends BaseActivity {
             String photourl = String.valueOf(user.getPhotoUrl());
             saveUserData(username, email, photourl);
             openHomeActivity();
+        } else {
+            checkVersionForNonLoggedUser();
         }
     }
 
-    // Handle Google Sign-in failure with proper feedback
-    public void buttonGoogleSignIn(View view) {
+    private void checkVersionForNonLoggedUser() {
+        VersionChecker.checkVersionOnMainActivity(this, new VersionChecker.VersionCheckCallback() {
+            @Override
+            public void onVersionSupported() {
+            }
 
-        // Initialize GoogleSignInOptions
+            @Override
+            public void onVersionUnsupported() {
+                VersionChecker.showUnsupportedVersionDialogForMain(MainActivity.this, null);
+            }
+
+            @Override
+            public void onMaintenanceMode() {
+                VersionChecker.showMaintenanceDialog(MainActivity.this, null);
+            }
+
+            @Override
+            public void onOfflineMode() {
+            }
+        });
+    }
+
+    public void buttonGoogleSignIn(View view) {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-        // Initialize GoogleSignInClient
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Sign out any previously signed-in account to ensure account selection
         mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
-            // Start the sign-in intent to prompt the user to choose their Google account
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
-
     }
+
     private void handleFacebookLogin() {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // Handle successful login
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
@@ -236,7 +262,6 @@ public class MainActivity extends BaseActivity {
                             String userEmail = object.getString("email");
                             String profilePicUrl = object.getJSONObject("picture").getJSONObject("data").getString("url");
 
-                            // Authenticate user with Firebase using Facebook credentials
                             AuthCredential credential = FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
                             startLoadingAnimation();
                             firebaseAuth.signInWithCredential(credential)
@@ -250,7 +275,6 @@ public class MainActivity extends BaseActivity {
                                                 saveUserData(userName, userEmail, profilePicUrl);
                                                 openHomeActivity();
                                             } else {
-                                                // If sign in fails, display a message to the user.
                                                 stopLoadingAnimation();
                                                 Log.w(TAG, "signInWithCredential:failure", task.getException());
                                                 Toast.makeText(MainActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
@@ -271,17 +295,14 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onCancel() {
-                // Handle cancelled login
             }
 
             @Override
             public void onError(FacebookException error) {
-                // Handle login error
             }
         });
     }
 
-    // Handle onActivityResult
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -298,12 +319,10 @@ public class MainActivity extends BaseActivity {
                     String idToken = account.getIdToken();
 
                     if (idToken != null) {
-                        // Got an ID token from Google. Use it to authenticate
                         AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
                         startLoadingAnimation();
                         firebaseAuth.signInWithCredential(firebaseCredential).addOnCompleteListener(this, task -> {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = firebaseAuth.getCurrentUser();
                                 assert user != null;
                                 user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(displayName).build());
@@ -327,10 +346,8 @@ public class MainActivity extends BaseActivity {
                 }
             } catch (ApiException e) {
                 if (e.getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-                    // Handle sign-in cancellation
                     Log.e(TAG, "Google sign-in canceled");
                 } else {
-                    // Handle other Google sign-in failures
                     Log.e(TAG, "Google sign-in failed", e);
                 }
             }
@@ -348,7 +365,6 @@ public class MainActivity extends BaseActivity {
                         .scaleY(1.0f)
                         .setDuration(50)
                         .withEndAction(() -> {
-                            // Open the specified activity
                             Intent intent = new Intent(button.getContext(), targetActivityClass);
                             button.getContext().startActivity(intent);
                         })
