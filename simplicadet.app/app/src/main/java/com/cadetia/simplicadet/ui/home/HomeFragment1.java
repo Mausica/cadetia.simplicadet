@@ -53,7 +53,6 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     private static final int LEARNING_PATH_REQUEST = 101;
     private static final int PATH_SELECTOR_REQUEST = 102;
     private static final long CACHE_DURATION = 30000;
-
     private RecyclerView categoryRecyclerView, mainTasksRecycler, journalRecyclerView;
     private MainTaskAdapter mainTaskAdapter;
     private JournalAdapter journalAdapter;
@@ -95,8 +94,8 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         mainTasksRecycler = view.findViewById(R.id.tasksMainRecyclerView);
         journalRecyclerView = view.findViewById(R.id.journalRecyclerView);
         learningPathHeader = view.findViewById(R.id.learningPathHeader);
-        setupViews();
         setupCache();
+        setupViews();
         resetLoadingState();
         showLoading(true);
         return view;
@@ -114,12 +113,21 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         learningPathPrefs = requireActivity().getSharedPreferences("LearningPathProgress", MODE_PRIVATE);
         mainTasksRecycler.setHasFixedSize(true);
         mainTasksRecycler.setItemViewCacheSize(15);
+        mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        mainTaskAdapter = new MainTaskAdapter(tasks);
+        mainTasksRecycler.setAdapter(mainTaskAdapter);
         journalRecyclerView.setHasFixedSize(true);
         journalRecyclerView.setItemViewCacheSize(10);
         journalRecyclerView.setDrawingCacheEnabled(true);
         journalRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        journalAdapter = new JournalAdapter(journalList, this, memCache);
+        journalRecyclerView.setAdapter(journalAdapter);
         categoryRecyclerView.setHasFixedSize(true);
         categoryRecyclerView.setItemViewCacheSize(8);
+        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        learningPathAdapter = new LearningPathAdapter(learningPathList, requireContext(), this);
+        categoryRecyclerView.setAdapter(learningPathAdapter);
     }
 
     private void setupCache() {
@@ -143,15 +151,14 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             if (cachedJournals != null && (currentTime - journalsLastLoad) < CACHE_DURATION) {
                 journalList.clear();
                 journalList.addAll(cachedJournals);
-                if (journalAdapter == null) setupJournalAdapter();
-                else journalAdapter.notifyDataSetChanged();
+                if (journalAdapter != null) journalAdapter.notifyDataSetChanged();
                 journalsLoaded = true;
                 checkAllDataLoaded();
             } else { loadJournals(); }
             if (cachedLearningPath != null && (currentTime - pathLastLoad) < CACHE_DURATION) {
                 currentLearningPath = cachedLearningPath;
                 populateLearningPathList();
-                setUpLearningPathRecyclerView();
+                if (learningPathAdapter != null) learningPathAdapter.notifyDataSetChanged();
                 updateLearningPathHeader();
                 categoriesLoaded = true;
                 checkAllDataLoaded();
@@ -170,6 +177,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             } catch (InterruptedException e) { executorService.shutdownNow(); Thread.currentThread().interrupt(); }
         }
         loadingLayout = null; contentView = null; categoryRecyclerView = null; mainTasksRecycler = null; journalRecyclerView = null; learningPathHeader = null; pathTitle = null; progressText = null; circularProgress = null;
+        mainTaskAdapter = null; journalAdapter = null; learningPathAdapter = null;
         super.onDestroyView();
     }
 
@@ -207,8 +215,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
                         if (!isFragmentSafe()) return;
                         tasks.clear();
                         if (taskList != null) { tasks.addAll(taskList); cachedTasks = new ArrayList<>(taskList); tasksLastLoad = System.currentTimeMillis(); }
-                        if (mainTaskAdapter == null) setUpTaskAdapter();
-                        else mainTaskAdapter.notifyDataSetChanged();
+                        if (mainTaskAdapter != null) mainTaskAdapter.notifyDataSetChanged();
                         tasksLoaded = true;
                         checkAllDataLoaded();
                     });
@@ -226,9 +233,10 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
 
     private void setupJournalAdapter() {
         if (isFragmentSafe() && journalRecyclerView != null) {
-            journalAdapter = new JournalAdapter(journalList, this, memCache);
-            journalRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            journalRecyclerView.setAdapter(journalAdapter);
+            if (journalAdapter == null) {
+                journalAdapter = new JournalAdapter(journalList, this, memCache);
+                journalRecyclerView.setAdapter(journalAdapter);
+            }
         }
     }
 
@@ -245,8 +253,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
                     journalsLastLoad = System.currentTimeMillis();
                     preloadJournalImages();
                 }
-                if (journalAdapter == null) setupJournalAdapter();
-                else journalAdapter.notifyDataSetChanged();
+                if (journalAdapter != null) journalAdapter.notifyDataSetChanged();
                 journalsLoaded = true;
                 checkAllDataLoaded();
             }
@@ -271,14 +278,6 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         }
     }
 
-    private void setUpTaskAdapter() {
-        if (isFragmentSafe() && mainTasksRecycler != null) {
-            mainTaskAdapter = new MainTaskAdapter(tasks);
-            mainTasksRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-            mainTasksRecycler.setAdapter(mainTaskAdapter);
-        }
-    }
-
     private void loadSelectedLearningPath() {
         SharedPreferences selectedPathPrefs = requireActivity().getSharedPreferences("SelectedLearningPath", MODE_PRIVATE);
         String selectedPathId = selectedPathPrefs.getString("selectedPathId", null);
@@ -288,7 +287,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
                 public void onSucces() {
                     if (!isFragmentSafe()) return;
                     currentLearningPath = DbQuery.g_learningPath;
-                    if (currentLearningPath != null) { cachedLearningPath = currentLearningPath; pathLastLoad = System.currentTimeMillis(); populateLearningPathList(); setUpLearningPathRecyclerView(); updateLearningPathHeader(); }
+                    if (currentLearningPath != null) { cachedLearningPath = currentLearningPath; pathLastLoad = System.currentTimeMillis(); populateLearningPathList(); if (learningPathAdapter != null) learningPathAdapter.notifyDataSetChanged(); updateLearningPathHeader(); }
                     categoriesLoaded = true;
                     checkAllDataLoaded();
                 }
@@ -304,7 +303,7 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
             public void onSucces() {
                 if (!isFragmentSafe()) return;
                 currentLearningPath = DbQuery.g_learningPath;
-                if (currentLearningPath != null) { cachedLearningPath = currentLearningPath; pathLastLoad = System.currentTimeMillis(); populateLearningPathList(); setUpLearningPathRecyclerView(); updateLearningPathHeader(); }
+                if (currentLearningPath != null) { cachedLearningPath = currentLearningPath; pathLastLoad = System.currentTimeMillis(); populateLearningPathList(); if (learningPathAdapter != null) learningPathAdapter.notifyDataSetChanged(); updateLearningPathHeader(); }
                 categoriesLoaded = true;
                 checkAllDataLoaded();
             }
@@ -343,14 +342,6 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         learningPathHeader.setVisibility(View.VISIBLE);
     }
 
-    private void setUpLearningPathRecyclerView() {
-        if (isFragmentSafe() && categoryRecyclerView != null) {
-            learningPathAdapter = new LearningPathAdapter(learningPathList, requireContext(), this);
-            categoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-            categoryRecyclerView.setAdapter(learningPathAdapter);
-        }
-    }
-
     @Override
     public void onJournalClick(String journalLink) {
         if (!NetworkUtils.isNetworkAvailable(requireContext())) { Toast.makeText(requireContext(), "No Internet", Toast.LENGTH_SHORT).show(); return; }
@@ -360,7 +351,9 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         }
     }
 
-    private void checkAllDataLoaded() { if (tasksLoaded && journalsLoaded && categoriesLoaded) showLoading(false); }
+    private void checkAllDataLoaded() {
+        if (tasksLoaded && journalsLoaded && categoriesLoaded) showLoading(false);
+    }
 
     @Override
     public void onPathNodeClick(int position, LearningPathModel pathModel) {

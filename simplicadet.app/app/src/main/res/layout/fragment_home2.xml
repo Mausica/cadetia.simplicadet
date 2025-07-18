@@ -14,15 +14,6 @@
         android:layout_gravity="center"
         android:gravity="center">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/loadingAnimationView"
-            android:layout_width="@dimen/_140sdp"
-            android:layout_height="@dimen/_140sdp"
-            android:layout_gravity="center_horizontal"
-            app:lottie_rawRes="@raw/anim_loading_blue"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true" />
-
     </FrameLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -50,7 +41,6 @@
                 android:paddingBottom="@dimen/_16sdp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabOrder"

@@ -40,19 +40,17 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     public static final int REQUEST_CODE_UPDATE_NOTE = 2;
     public static final int REQUEST_CODE_SHOW_NOTES = 3;
     private boolean isLoadingDismissed = false;
-    private View loadingLayout;
-    private View contentView;
     private List<Note> noteList;
     private NotesAdapter notesAdapter;
     public int noteClickedPosition = -1;
-    private FloatingActionButton fabMain;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private View loadingLayout;
+    private View contentView;
 
-    // Cache for loaded notes to avoid unnecessary database calls
     private List<Note> cachedNotes;
     private long lastLoadTime = 0;
-    private static final long CACHE_DURATION = 5000; // 5 seconds cache
+    private static final long CACHE_DURATION = 5000;
 
     private final ActivityResultLauncher<Intent> createNoteLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -64,12 +62,10 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     );
 
     public HomeFragment2() {
-        // Required empty public constructor
     }
 
     @Override
     public void onNoteDeleted() {
-        // Invalidate cache and reload notes
         cachedNotes = null;
         loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, true);
     }
@@ -82,9 +78,6 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home2, container, false);
 
-        //fabMain = view.findViewById(R.id.fabMain);
-        // fabMain.setOnClickListener(v -> showCreateNote(null, false));
-
         loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout2);
 
@@ -93,7 +86,6 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
         RecyclerView notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         notesRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
-        // Enable recycler view optimizations
         notesRecyclerView.setHasFixedSize(true);
         notesRecyclerView.setItemViewCacheSize(20);
         notesRecyclerView.setDrawingCacheEnabled(true);
@@ -114,13 +106,11 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
         long currentTime = System.currentTimeMillis();
         if (cachedNotes != null && (currentTime - lastLoadTime) < CACHE_DURATION) {
-            // Use cached data
             noteList.clear();
             noteList.addAll(cachedNotes);
             notesAdapter.notifyDataSetChanged();
             showLoading(false);
         } else {
-            // Load fresh data
             showLoading(true);
             loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, false);
         }
@@ -161,7 +151,6 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
     @Override
     public void onNoteSaved() {
-        // Invalidate cache when note is saved
         cachedNotes = null;
     }
 
@@ -233,7 +222,6 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
     @Override
     public void onNoteSaved(boolean isNoteDeleted) {
-        // Invalidate cache and reload
         cachedNotes = null;
         loadNotesInBackground(REQUEST_CODE_SHOW_NOTES, isNoteDeleted);
     }
