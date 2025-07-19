@@ -76,8 +76,8 @@ dependencies {
 
 
     // Design
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.1")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.1")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.2")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.2")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.constraintlayout.v214)
     implementation("com.otaliastudios:zoomlayout:1.9.0")
@@ -93,10 +93,11 @@ dependencies {
     implementation("com.google.guava:guava:32.1.3-android")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10")
 
     //PDF
     implementation ("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
-    implementation ("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Ads
     implementation("com.google.android.gms:play-services-ads:24.4.0")
@@ -106,7 +107,11 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.12.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("io.coil-kt:coil:2.5.0")
+    implementation("io.coil-kt:coil-svg:2.5.0")
+
+
 
     // Aesthetics
     implementation ("com.airbnb.android:lottie:4.2.0")

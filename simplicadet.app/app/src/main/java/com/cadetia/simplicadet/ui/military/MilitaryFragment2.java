@@ -2,15 +2,19 @@ package com.cadetia.simplicadet.ui.military;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -20,24 +24,32 @@ import com.cadetia.simplicadet.activities.PdfViewer;
 import com.cadetia.simplicadet.adapters.DocumentsAdapter;
 import com.cadetia.simplicadet.entities.Document;
 import com.cadetia.simplicadet.listeners.DocumentListener;
+import com.cadetia.simplicadet.utils.NetworkUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MilitaryFragment2 extends Fragment implements DocumentListener {
 
     private static final String TAG = "MilitaryFragment2";
-    private boolean isLoadingDismissed = false;
+    private static final long CACHE_DURATION = 30000;
     private View loadingLayout;
     private View contentView;
+    private RecyclerView documentsRecyclerView;
     private List<Document> documentList;
     private DocumentsAdapter documentsAdapter;
+    private List<Document> cachedDocuments;
+    private long documentsLastLoad = 0;
+    private boolean isLoadingDismissed = false;
+    private boolean documentsLoaded = false;
     private FirebaseFirestore db;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private LruCache<String, Bitmap> memCache;
 
     public MilitaryFragment2() {
         // Required empty public constructor
@@ -47,33 +59,131 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
         return new MilitaryFragment2();
     }
 
+    private ExecutorService getExecutorService() {
+        if (executorService == null || executorService.isShutdown()) {
+            executorService = Executors.newCachedThreadPool();
+        }
+        return executorService;
+    }
+
+    private boolean isFragmentSafe() {
+        return isAdded() && !isDetached() && getContext() != null;
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = FirebaseFirestore.getInstance();
+        setupCache();
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_military2, container, false);
 
         loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout2);
+        documentsRecyclerView = view.findViewById(R.id.notesRecyclerView);
 
+        setupRecyclerView();
+        resetLoadingState();
         showLoading(true);
 
-        db = FirebaseFirestore.getInstance();
+        return view;
+    }
 
-        RecyclerView documentsRecyclerView = view.findViewById(R.id.notesRecyclerView);
-        documentsRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+    private void setupCache() {
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+
+        memCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024;
+            }
+        };
+    }
+
+    private void setupRecyclerView() {
+        documentsRecyclerView.setHasFixedSize(true);
+        documentsRecyclerView.setItemViewCacheSize(10);
+        documentsRecyclerView.setDrawingCacheEnabled(true);
+        documentsRecyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
+        documentsRecyclerView.setLayoutManager(
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        );
+
         documentList = new ArrayList<>();
         documentsAdapter = new DocumentsAdapter(documentList, this);
         documentsRecyclerView.setAdapter(documentsAdapter);
+    }
 
-        new Handler().postDelayed(this::loadDocumentsFromFirestore, 1000);
-
-        return view;
+    private void resetLoadingState() {
+        isLoadingDismissed = false;
+        documentsLoaded = false;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        long currentTime = System.currentTimeMillis();
+
+        resetLoadingState();
         showLoading(true);
-        new Handler().postDelayed(this::loadDocumentsFromFirestore, 1000);
+
+        if (NetworkUtils.isNetworkAvailable(requireContext())) {
+            // Load documents with cache
+            if (cachedDocuments != null && (currentTime - documentsLastLoad) < CACHE_DURATION) {
+                documentList.clear();
+                documentList.addAll(cachedDocuments);
+                if (documentsAdapter != null) {
+                    documentsAdapter.notifyDataSetChanged();
+                }
+                documentsLoaded = true;
+                checkAllDataLoaded();
+            } else {
+                loadDocumentsFromFirestore();
+            }
+        } else {
+            if (cachedDocuments != null) {
+                documentList.clear();
+                documentList.addAll(cachedDocuments);
+                if (documentsAdapter != null) {
+                    documentsAdapter.notifyDataSetChanged();
+                }
+            }
+            documentsLoaded = true;
+            checkAllDataLoaded();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
+
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+            try {
+                if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    executorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                executorService.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        // Clear view references
+        loadingLayout = null;
+        contentView = null;
+        documentsRecyclerView = null;
+        documentsAdapter = null;
+
+        super.onDestroyView();
     }
 
     private void showLoading(boolean show) {
@@ -86,35 +196,43 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                 isLoadingDismissed = true;
 
                 Context context = getContext();
-                if (context != null) {
+                if (context != null && isAdded()) {
                     loadingLayout.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
-                    new Handler().postDelayed(() -> {
-                        if (loadingLayout != null && isAdded()) {
+                    handler.postDelayed(() -> {
+                        if (loadingLayout != null && contentView != null && isAdded()) {
                             loadingLayout.setVisibility(View.GONE);
                             contentView.setVisibility(View.VISIBLE);
                             contentView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
                         }
                     }, 250);
                 } else {
-                    Log.w(TAG, "Context is null, skipping animations");
+                    if (loadingLayout != null && contentView != null) {
+                        loadingLayout.setVisibility(View.GONE);
+                        contentView.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }
     }
 
     private void loadDocumentsFromFirestore() {
-        executorService.execute(() -> {
-            // Accesăm direct documentul DOCUMENTS
+        getExecutorService().execute(() -> {
+            if (!isFragmentSafe()) return;
+
             db.collection("MILITARY")
                     .document("RO")
                     .collection("CNMTV")
                     .document("DOCUMENTS")
                     .get()
                     .addOnCompleteListener(task -> {
+                        if (!isFragmentSafe()) return;
+
                         if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
                             List<Document> documents = new ArrayList<>();
+
                             for (int fieldIndex = 0; fieldIndex <= 2; fieldIndex++) {
-                                ArrayList<String> docArray = (ArrayList<String>) task.getResult().get(String.valueOf(fieldIndex));
+                                ArrayList<String> docArray = (ArrayList<String>) task.getResult()
+                                        .get(String.valueOf(fieldIndex));
 
                                 if (docArray != null && docArray.size() >= 4) {
                                     String title = docArray.get(0);
@@ -126,6 +244,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                                         date = docArray.get(4);
                                     }
                                     String docId = String.valueOf(fieldIndex);
+
                                     Document document = new Document(
                                             docId,
                                             title,
@@ -136,51 +255,89 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                                             fieldIndex
                                     );
 
-                                    Log.d(TAG, "Document încărcat: Titlu=" + title +
-                                            ", Subtitlu=" + subtitle +
-                                            ", Imagine=" + imageUrl +
+                                    Log.d(TAG, "Document loaded: Title=" + title +
+                                            ", Subtitle=" + subtitle +
+                                            ", Image=" + imageUrl +
                                             ", PDF=" + pdfUrl +
-                                            ", Data=" + date);
+                                            ", Date=" + date);
 
                                     documents.add(document);
                                 } else {
-                                    Log.e(TAG, "Array-ul de la indexul " + fieldIndex + " este null sau incomplet");
+                                    Log.e(TAG, "Array at index " + fieldIndex + " is null or incomplete");
                                 }
                             }
 
+                            // Cache the documents
+                            cachedDocuments = new ArrayList<>(documents);
+                            documentsLastLoad = System.currentTimeMillis();
+
                             handler.post(() -> {
+                                if (!isFragmentSafe()) return;
+
                                 documentList.clear();
                                 documentList.addAll(documents);
-                                documentsAdapter.notifyDataSetChanged();
-                                Log.d(TAG, "Documente încărcate: " + documents.size());
+                                if (documentsAdapter != null) {
+                                    documentsAdapter.notifyDataSetChanged();
+                                }
+                                Log.d(TAG, "Documents loaded: " + documents.size());
 
-                                showLoading(false);
+                                documentsLoaded = true;
+                                checkAllDataLoaded();
                             });
                         } else {
-                            Log.e(TAG, "Eroare la obținerea documentului DOCUMENTS: ",
-                                    task.getException() != null ? task.getException() : new Exception("Document inexistent"));
-                            handler.post(() -> showLoading(false));
+                            Log.e(TAG, "Error getting DOCUMENTS document: ",
+                                    task.getException() != null ? task.getException() :
+                                            new Exception("Document does not exist"));
+                            handler.post(() -> {
+                                documentsLoaded = true;
+                                checkAllDataLoaded();
+                            });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        if (isFragmentSafe()) {
+                            Log.e(TAG, "Failed to load documents from Firestore", e);
+                            handler.post(() -> {
+                                documentsLoaded = true;
+                                checkAllDataLoaded();
+                            });
                         }
                     });
         });
     }
 
+    private void checkAllDataLoaded() {
+        if (documentsLoaded) {
+            showLoading(false);
+        }
+    }
+
     @Override
     public void onDocumentClicked(Document document, int position) {
+        if (!NetworkUtils.isNetworkAvailable(requireContext())) {
+            return;
+        }
+
         if (document.getPdfUrl() != null && !document.getPdfUrl().isEmpty()) {
-            Intent intent = new Intent(getActivity(), PdfViewer.class);
-            intent.putExtra("pdfUrl", document.getPdfUrl());
-            intent.putExtra("pdfTitle", document.getTitle());
-            intent.putExtra("pdfSubtitle", document.getSubtitle());
-            startActivity(intent);
+            try {
+                Intent intent = new Intent(getActivity(), PdfViewer.class);
+                intent.putExtra("pdfUrl", document.getPdfUrl());
+                intent.putExtra("pdfTitle", document.getTitle());
+                intent.putExtra("pdfSubtitle", document.getSubtitle());
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e(TAG, "Error opening PDF viewer", e);
+            }
         } else {
-            Log.e(TAG, "URL-ul PDF este null sau gol pentru documentul: " + document.getTitle());
+            Log.e(TAG, "PDF URL is null or empty for document: " + document.getTitle());
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        executorService.shutdown();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
 }
