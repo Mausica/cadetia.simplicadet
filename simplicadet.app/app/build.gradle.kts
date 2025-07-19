@@ -90,10 +90,6 @@ dependencies {
     implementation("com.intuit.ssp:ssp-android:1.1.0")
 
     //AI
-    implementation("com.google.guava:guava:32.1.3-android")
-    implementation("org.reactivestreams:reactive-streams:1.0.4")
-    implementation("org.apache.poi:poi-ooxml:5.2.3")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10")
 
     //PDF
     implementation ("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
@@ -110,7 +106,6 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("io.coil-kt:coil:2.5.0")
     implementation("io.coil-kt:coil-svg:2.5.0")
-
 
 
     // Aesthetics

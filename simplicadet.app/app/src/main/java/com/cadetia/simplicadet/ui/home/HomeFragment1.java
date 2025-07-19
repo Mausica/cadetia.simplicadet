@@ -140,33 +140,6 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        long currentTime = System.currentTimeMillis();
-        retrieveUserData();
-        resetLoadingState();
-        showLoading(true);
-        loadTasks();
-        if (NetworkUtils.isNetworkAvailable(requireContext())) {
-            if (cachedJournals != null && (currentTime - journalsLastLoad) < CACHE_DURATION) {
-                journalList.clear();
-                journalList.addAll(cachedJournals);
-                if (journalAdapter != null) journalAdapter.notifyDataSetChanged();
-                journalsLoaded = true;
-                checkAllDataLoaded();
-            } else { loadJournals(); }
-            if (cachedLearningPath != null && (currentTime - pathLastLoad) < CACHE_DURATION) {
-                currentLearningPath = cachedLearningPath;
-                populateLearningPathList();
-                if (learningPathAdapter != null) learningPathAdapter.notifyDataSetChanged();
-                updateLearningPathHeader();
-                categoriesLoaded = true;
-                checkAllDataLoaded();
-            } else { loadSelectedLearningPath(); }
-        } else { journalsLoaded = true; categoriesLoaded = true; checkAllDataLoaded(); }
-    }
-
-    @Override
     public void onDestroyView() {
         if (handler != null) handler.removeCallbacksAndMessages(null);
         if (journalAdapter != null) journalAdapter.cleanup();
@@ -408,11 +381,89 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         }
     }
 
+    private boolean hasLearningPathChanged() {
+        SharedPreferences selectedPathPrefs = requireActivity().getSharedPreferences("SelectedLearningPath", MODE_PRIVATE);
+        String selectedPathId = selectedPathPrefs.getString("selectedPathId", null);
+
+        if (cachedLearningPath == null && selectedPathId == null) return false;
+        if (cachedLearningPath == null || selectedPathId == null) return true;
+
+        return !selectedPathId.equals(cachedLearningPath.id);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        long currentTime = System.currentTimeMillis();
+        retrieveUserData();
+        resetLoadingState();
+        showLoading(true);
+        loadTasks();
+
+        if (NetworkUtils.isNetworkAvailable(requireContext())) {
+            if (cachedJournals != null && (currentTime - journalsLastLoad) < CACHE_DURATION) {
+                journalList.clear();
+                journalList.addAll(cachedJournals);
+                if (journalAdapter != null) journalAdapter.notifyDataSetChanged();
+                journalsLoaded = true;
+                checkAllDataLoaded();
+            } else {
+                loadJournals();
+            }
+
+            boolean pathChanged = hasLearningPathChanged();
+            if (!pathChanged && cachedLearningPath != null && (currentTime - pathLastLoad) < CACHE_DURATION) {
+                currentLearningPath = cachedLearningPath;
+                populateLearningPathList();
+                if (learningPathAdapter != null) learningPathAdapter.notifyDataSetChanged();
+                updateLearningPathHeader();
+                categoriesLoaded = true;
+                checkAllDataLoaded();
+            } else {
+                if (pathChanged) {
+                    cachedLearningPath = null;
+                }
+                loadSelectedLearningPath();
+            }
+        } else {
+            journalsLoaded = true;
+            categoriesLoaded = true;
+            checkAllDataLoaded();
+        }
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         retrieveUserData();
-        if (requestCode == PATH_SELECTOR_REQUEST && resultCode == Activity.RESULT_OK) { cachedLearningPath = null; loadSelectedLearningPath(); return; }
+
+        if (requestCode == PATH_SELECTOR_REQUEST && resultCode == Activity.RESULT_OK) {
+            cachedLearningPath = null;
+            pathLastLoad = 0;
+
+            resetLoadingState();
+            showLoading(true);
+            loadTasks();
+
+            if (NetworkUtils.isNetworkAvailable(requireContext())) {
+                if (cachedJournals != null && (System.currentTimeMillis() - journalsLastLoad) < CACHE_DURATION) {
+                    journalList.clear();
+                    journalList.addAll(cachedJournals);
+                    if (journalAdapter != null) journalAdapter.notifyDataSetChanged();
+                    journalsLoaded = true;
+                    checkAllDataLoaded();
+                } else {
+                    loadJournals();
+                }
+
+                loadSelectedLearningPath();
+            } else {
+                journalsLoaded = true;
+                categoriesLoaded = true;
+                checkAllDataLoaded();
+            }
+            return;
+        }
+
         if (requestCode == LEARNING_PATH_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             int position = data.getIntExtra("position", -1);
             if (position == -1) position = lastClickedPosition;
@@ -426,12 +477,25 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
                     int total = data.getIntExtra("totalQuestions", 0);
                     long time = data.getLongExtra("totalTime", 0L);
                     DbQuery.updateTotalScore(userEmail, score, new MyCompleteListener() {
-                        @Override public void onSucces() {}
-                        @Override public void onFailure() {}
+                        @Override
+                        public void onSucces() {
+                        }
+
+                        @Override
+                        public void onFailure() {
+                        }
                     });
-                    if (score > 0) { handler.postDelayed(() -> { showRedeemDialog(score, correct, total, (float) time / 1000); markNodeAsCompleted(finalPosition); }, 1000); }
-                    else { markNodeAsCompleted(finalPosition); }
-                } else { markNodeAsCompleted(finalPosition); }
+                    if (score > 0) {
+                        handler.postDelayed(() -> {
+                            showRedeemDialog(score, correct, total, (float) time / 1000);
+                            markNodeAsCompleted(finalPosition);
+                        }, 1000);
+                    } else {
+                        markNodeAsCompleted(finalPosition);
+                    }
+                } else {
+                    markNodeAsCompleted(finalPosition);
+                }
             }
         }
     }
