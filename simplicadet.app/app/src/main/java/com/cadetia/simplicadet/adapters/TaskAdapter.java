@@ -1,4 +1,4 @@
-package com.cadetia.simplicadet.adapters;// TaskAdapter.java
+package com.cadetia.simplicadet.adapters;
 
 import android.annotation.SuppressLint;
 import android.graphics.Paint;
@@ -62,7 +62,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TextView date;
         TextView month;
         TextView title;
-        //TextView description;
         TextView time;
         CheckBox checkBoxGlow;
         View glowedView;
@@ -74,13 +73,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             date = itemView.findViewById(R.id.date);
             month = itemView.findViewById(R.id.month);
             title = itemView.findViewById(R.id.title);
-            //description = itemView.findViewById(R.id.description);
             time = itemView.findViewById(R.id.time);
             checkBoxGlow = itemView.findViewById(R.id.checked_task);
             glowedView = itemView.findViewById(R.id.view_glowed);
-            //imageButton = itemView.findViewById(R.id.delete_task);
-
-            //imageButton.setOnClickListener(v -> deleteTask(getAdapterPosition()));
         }
 
         private class UpdateTaskAsyncTask extends AsyncTask<Task, Void, Void> {
@@ -98,38 +93,23 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         @SuppressLint("ResourceAsColor")
         void bind(Task task) {
             if (task != null) {
+                boolean isPlaceholder = task.getTaskId() == -1;
                 title.setText(task.getTaskTitle());
-                //description.setText(task.getTaskDescription());
                 time.setText(task.getLastAlarm());
 
-                // Set checkbox state
                 checkBoxGlow.setOnCheckedChangeListener(null);
                 checkBoxGlow.setChecked(task.isComplete());
+                checkBoxGlow.setEnabled(!isPlaceholder);
 
-                // Update view color based on initial checkbox state
-                if (task.isComplete()) {
+                if (isPlaceholder) {
                     glowedView.setBackgroundResource(R.drawable.glow_effect_green);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         glowedView.setOutlineSpotShadowColor(R.color.green);
-                        title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }
+                    title.setAlpha(0.7f);
                 } else {
-                    glowedView.setBackgroundResource(R.drawable.glow_effect_red);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        glowedView.setOutlineSpotShadowColor(R.color.red);
-                        title.setPaintFlags(0);
-                    }
-                }
-
-                checkBoxGlow.setOnCheckedChangeListener(null); // Remove previous listener to avoid infinite loop
-
-                checkBoxGlow.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    // Update database with checkbox state
-                    task.setCompleted(isChecked);
-                    new UpdateTaskAsyncTask().execute(task);
-
-                    // Update view color based on checkbox state
-                    if (isChecked) {
+                    title.setAlpha(1.0f);
+                    if (task.isComplete()) {
                         glowedView.setBackgroundResource(R.drawable.glow_effect_green);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                             glowedView.setOutlineSpotShadowColor(R.color.green);
@@ -142,7 +122,27 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                             title.setPaintFlags(0);
                         }
                     }
-                });
+                }
+
+                if (!isPlaceholder) {
+                    checkBoxGlow.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        task.setCompleted(isChecked);
+                        new UpdateTaskAsyncTask().execute(task);
+                        if (isChecked) {
+                            glowedView.setBackgroundResource(R.drawable.glow_effect_green);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                glowedView.setOutlineSpotShadowColor(R.color.green);
+                                title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            }
+                        } else {
+                            glowedView.setBackgroundResource(R.drawable.glow_effect_red);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                glowedView.setOutlineSpotShadowColor(R.color.red);
+                                title.setPaintFlags(0);
+                            }
+                        }
+                    });
+                }
 
                 try {
                     Date date = inputDateFormat.parse(task.getDate());
@@ -151,18 +151,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     String day = items1[0];
                     String dd = items1[1];
                     String month = items1[2];
-
                     this.day.setText(day);
                     this.date.setText(dd);
                     this.month.setText(month);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 itemView.setOnClickListener(v -> {
-                    // Open the edit dialog when a task is clicked
-                    if (editListener != null) {
+                    if (editListener != null && !isPlaceholder) {
                         editListener.onTaskEdit(task);
                     }
                 });

@@ -30,9 +30,9 @@ public class HomeFragment4 extends Fragment implements TaskAdapter.DeleteTaskLis
     ImageView noDataImage;
     TaskAdapter taskAdapter;
     List<Task> tasks = new ArrayList<>();
+    private Task placeholderTask;
 
     public HomeFragment4() {
-        // Required empty public constructor
     }
 
     public static HomeFragment4 newInstance() {
@@ -42,30 +42,19 @@ public class HomeFragment4 extends Fragment implements TaskAdapter.DeleteTaskLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home4, container, false);
-
         tasksRecycler = view.findViewById(R.id.tasksRecyclerView);
-        //addTask = view.findViewById(R.id.fabTask);
-        //addTask.setOnClickListener(v -> showCreateTask());
-
-
         setUpAdapter();
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         getSavedTasks();
-
         return view;
     }
 
     private void showEditTask(Task task) {
+        if (task == placeholderTask) return;
         CreateTaskBottom createTaskBottom = new CreateTaskBottom();
-
-        // Pass the task details to the bottom sheet fragment
         createTaskBottom.setEditMode(true);
         createTaskBottom.setTaskToEdit(task);
-
-        // Pass the taskId to the bottom sheet fragment for editing
         createTaskBottom.setTaskId(task.getTaskId(), true);
-
         createTaskBottom.setTaskSavedListener(this);
         createTaskBottom.show(getChildFragmentManager(), createTaskBottom.getTag());
     }
@@ -99,37 +88,39 @@ public class HomeFragment4 extends Fragment implements TaskAdapter.DeleteTaskLis
             protected void onPostExecute(List<Task> fetchedTasks) {
                 super.onPostExecute(fetchedTasks);
                 tasks.clear();
-                tasks.addAll(fetchedTasks);
+                if (fetchedTasks.isEmpty()) {
+                    placeholderTask = new Task();
+                    placeholderTask.setTaskTitle("Start by clicking on ➕");
+                    placeholderTask.setDate("28-7-2025");
+                    placeholderTask.setLastAlarm("12:00");
+                    placeholderTask.setTaskId(-1);
+                    tasks.add(placeholderTask);
+                } else {
+                    placeholderTask = null;
+                    tasks.addAll(fetchedTasks);
+                }
                 taskAdapter.notifyDataSetChanged();
             }
         }
-
         GetSavedTasks savedTasks = new GetSavedTasks();
         savedTasks.execute();
     }
 
     @Override
     public void onTaskSaved() {
-        // This method is called when a task is saved in CreateTaskBottom
-        // You can refresh the task list here
         getSavedTasks();
     }
 
     @Override
     public void onTaskEdit(Task task) {
-        // Open the edit dialog when a task is clicked
         showEditTask(task);
     }
 
     @Override
     public void onTaskDeleted(int taskId) {
-        // Perform database deletion using Room or other methods
-        // based on your implementation in HomeFragment4
         DatabaseClient.getInstance(requireContext())
                 .getAppDatabase()
                 .dataBaseAction()
                 .deleteTaskFromId(taskId);
     }
-
-
 }

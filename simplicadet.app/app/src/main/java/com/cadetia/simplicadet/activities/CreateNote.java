@@ -413,18 +413,21 @@ public class CreateNote extends BottomSheetDialogFragment {
     }
 
     private void setIndicatorColor(){
-        // If the stored color is set to "dynamic", resolve the attribute again.
+        int colorValue;
         if("dynamic".equals(selectedNoteColor)){
             TypedValue typedValue = new TypedValue();
             requireContext().getTheme().resolveAttribute(R.attr.backgroundLight, typedValue, true);
-            selectedNoteColor = String.format("#%06X", (0xFFFFFF & typedValue.data));
+            colorValue = typedValue.data;
+        } else {
+            colorValue = Color.parseColor(selectedNoteColor);
         }
-        if (viewSubtitleIndicator != null && selectedNoteColor != null) {
-            int color = Color.parseColor(selectedNoteColor);
-            ViewCompat.setBackgroundTintList(viewSubtitleIndicator, ColorStateList.valueOf(color));
-            ViewCompat.setBackgroundTintList(viewTitleIndicator, ColorStateList.valueOf(color));
+
+        if (viewSubtitleIndicator != null) {
+            ViewCompat.setBackgroundTintList(viewSubtitleIndicator, ColorStateList.valueOf(colorValue));
+            ViewCompat.setBackgroundTintList(viewTitleIndicator, ColorStateList.valueOf(colorValue));
         }
-        Log.e("ColorDebug", "Selected Color: " + selectedNoteColor);
+
+        Log.e("ColorDebug", "Selected Color: " + selectedNoteColor + ", Resolved Value: " + String.format("#%06X", (0xFFFFFF & colorValue)));
     }
 
     private void selectImage(){
