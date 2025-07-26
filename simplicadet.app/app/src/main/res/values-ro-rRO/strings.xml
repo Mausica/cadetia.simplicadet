@@ -99,7 +99,7 @@
     <string name="follow_us">Urmărește-ne pe X</string>
     <string name="like_facebook">Apreciază-ne pe Facebook</string>
     <string name="help">Ajutor</string>
-    <string name="terms_and_conditions">Termeni și condiții</string>
+    <string name="terms_and_conditions">Feedback</string>
     <string name="privacy_policy">Politica de confidențialitate</string>
 
     <!-- Danger Zone -->
@@ -124,5 +124,23 @@
     <string name="community_weekly">Săptămânal</string>
     <string name="community_all_time">Dintotdeauna</string>
     <string name="task_title">Titlul sarcinii</string>
+
+    <!-- Account Deletion -->
+    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.</string>
+    <string name="account_deleted_success">Your account has been successfully deleted.</string>
+    <string name="account_deletion_reauth_required">Please log out and log back in, then try deleting your account again.</string>
+    <string name="error_deleting_account">Failed to delete account. Please try again.</string>
+
+    <!-- Password Reset -->
+    <string name="reset_password_confirmation">Are you sure you want to reset your password? A reset link will be sent to your email address.</string>
+    <string name="password_reset_email_sent">Password reset email sent. Please check your inbox and follow the instructions.</string>
+
+    <!-- Error Messages -->
+    <string name="error_opening_browser">Unable to open browser. Please try again.</string>
+    <string name="error_no_email">No email address found for your account.</string>
+    <string name="error_not_logged_in">You are not currently logged in.</string>
+    <string name="error_sending_reset_email">Failed to send password reset email. Please try again.</string>
+    <string name="error_no_email_app">No email app found on your device.</string>
+    <string name="error_sending_email">Unable to open email app. Please try again.</string>
 
 </resources>

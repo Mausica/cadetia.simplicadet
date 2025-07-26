@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -33,6 +35,7 @@ import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Locale;
 
@@ -47,13 +50,14 @@ public class Settings extends BaseActivity {
     private Switch themeSwitch;
     private TextView settingsName, settingsEmail, charName, charDescription;
     private ImageView settingsImage, languageIcon, languageArrow;
-    private RelativeLayout languageLayout, clearButton;
+    private RelativeLayout languageLayout, clearButton, privacyButton, termsButton, deleteButton, passwordButton, helpButton;
     private TextView languageText;
     private Button logoutButton;
     private EditText editDescription;
     private final int MAX_NAME_LENGTH = 60;
     private final int MAX_DESC_LENGTH = 90;
     private static final int LANGUAGE_SELECTOR_REQUEST = 1001;
+    private FirebaseAuth mAuth;
 
     private final String[] languageCodes = {"en_GB", "es_ES", "fr_FR", "ro_RO"};
     private final String[] languageNames = {"English", "Español", "Français", "Română"};
@@ -84,6 +88,8 @@ public class Settings extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
 
         themePreferences = new ThemePreferences(this);
         if (!themePreferences.isThemeSet()) {
@@ -120,6 +126,11 @@ public class Settings extends BaseActivity {
         languageText = findViewById(R.id.language_text);
         logoutButton = findViewById(R.id.logout_button);
         clearButton = findViewById(R.id.settings_clear);
+        privacyButton = findViewById(R.id.settings_privacy);
+        termsButton = findViewById(R.id.settings_terms);
+        deleteButton = findViewById(R.id.settings_delete);
+        passwordButton = findViewById(R.id.settings_password);
+        helpButton = findViewById(R.id.settings_help);
         editDescription = findViewById(R.id.settings_about);
         charName = findViewById(R.id.char_name);
         charDescription = findViewById(R.id.char_description);
@@ -139,6 +150,31 @@ public class Settings extends BaseActivity {
             handleClearCache();
         });
 
+        privacyButton.setOnClickListener(v -> {
+            animateButtonOnClick(privacyButton);
+            openPrivacyPolicy();
+        });
+
+        termsButton.setOnClickListener(v -> {
+            animateButtonOnClick(termsButton);
+            openFeedbackForm();
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            animateButtonOnClick(deleteButton);
+            handleAccountDeletion();
+        });
+
+        passwordButton.setOnClickListener(v -> {
+            animateButtonOnClick(passwordButton);
+            handlePasswordReset();
+        });
+
+        helpButton.setOnClickListener(v -> {
+            animateButtonOnClick(helpButton);
+            openHelpEmail();
+        });
+
         languageLayout.setOnClickListener(v -> {
             animateButtonOnClick(languageLayout);
             Intent intent = new Intent(this, LanguageSelector.class);
@@ -147,6 +183,91 @@ public class Settings extends BaseActivity {
         });
 
         findViewById(R.id.back_button).setOnClickListener(v -> navigateBackWithAnimation());
+    }
+
+    private void openHelpEmail() {
+        try {
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setType("message/rfc822");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"mausica.contact@gmail.com"});
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Help - SimpliCadet");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+
+            Intent chooser = Intent.createChooser(emailIntent, "Send Email");
+            if (chooser.resolveActivity(getPackageManager()) != null) {
+                startActivity(chooser);
+            } else {
+                Toast.makeText(this, getString(R.string.error_no_email_app), Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, getString(R.string.error_sending_email), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openPrivacyPolicy() {
+        try {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://mausica.github.io/simplicadet.legal/"));
+            startActivity(browserIntent);
+        } catch (Exception e) {
+            Toast.makeText(this, getString(R.string.error_opening_browser), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void openFeedbackForm() {
+        try {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://forms.gle/ykFkVshf5Hf3oEi29"));
+            startActivity(browserIntent);
+        } catch (Exception e) {
+            Toast.makeText(this, getString(R.string.error_opening_browser), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void handleAccountDeletion() {
+        DialogConfirm.show(this, getString(R.string.delete_account), getString(R.string.delete_account_confirmation), () -> {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                currentUser.delete()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(this, getString(R.string.account_deleted_success), Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(this, MainActivity.class));
+                                finish();
+                            } else {
+                                if (task.getException() != null && task.getException().getMessage() != null &&
+                                        task.getException().getMessage().contains("requires-recent-login")) {
+                                    Toast.makeText(this, getString(R.string.account_deletion_reauth_required), Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(this, getString(R.string.error_deleting_account), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            } else {
+                Toast.makeText(this, getString(R.string.error_not_logged_in), Toast.LENGTH_SHORT).show();
+            }
+        }, true);
+    }
+
+    private void handlePasswordReset() {
+        DialogConfirm.show(this, getString(R.string.reset_password), getString(R.string.reset_password_confirmation), () -> {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                String userEmail = currentUser.getEmail();
+                if (userEmail != null) {
+                    mAuth.sendPasswordResetEmail(userEmail)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(this, getString(R.string.password_reset_email_sent), Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(this, getString(R.string.error_sending_reset_email), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(this, getString(R.string.error_no_email), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.error_not_logged_in), Toast.LENGTH_SHORT).show();
+            }
+        }, true);
     }
 
     private void handleLogout() {
