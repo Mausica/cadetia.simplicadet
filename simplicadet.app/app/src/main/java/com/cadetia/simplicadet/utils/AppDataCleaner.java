@@ -54,6 +54,58 @@ public class AppDataCleaner {
         clearDatabaseCache();
         clearTemporaryFiles(context);
         clearImageCaches(context);
+        clearPdfFiles(context);
+    }
+
+    public static void clearAppCache(Context context) {
+        try {
+            deleteDir(context.getCacheDir());
+            if (context.getExternalCacheDir() != null) {
+                deleteDir(context.getExternalCacheDir());
+            }
+
+            clearDataDirectories(context);
+
+            new Thread(() -> {
+                try {
+                    Glide.get(context).clearDiskCache();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error clearing Glide disk cache", e);
+                }
+            }).start();
+
+            Glide.get(context).clearMemory();
+
+            Log.d(TAG, "App cache cleared successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing app cache", e);
+        }
+    }
+
+    private static void clearDataDirectories(Context context) {
+        try {
+            File dataDir = new File(context.getFilesDir().getParent());
+            if (dataDir.exists()) {
+                File[] dataDirs = dataDir.listFiles();
+                if (dataDirs != null) {
+                    for (File dir : dataDirs) {
+                        if (dir.isDirectory()) {
+                            String dirName = dir.getName();
+                            if (dirName.contains("cache") ||
+                                    dirName.contains("webview") ||
+                                    dirName.contains("tmp") ||
+                                    dirName.equals("app_textures") ||
+                                    dirName.equals("app_webview") ||
+                                    dirName.equals("code_cache")) {
+                                deleteDir(dir);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing data directories", e);
+        }
     }
 
     private static void clearAllCaches(Context context) {
@@ -94,6 +146,66 @@ public class AppDataCleaner {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error clearing temporary files", e);
+        }
+    }
+
+    private static void clearPdfFiles(Context context) {
+        try {
+            clearPdfFromDirectory(context.getFilesDir());
+
+            if (context.getExternalFilesDir(null) != null) {
+                clearPdfFromDirectory(context.getExternalFilesDir(null));
+            }
+
+            clearPdfFromDirectory(context.getCacheDir());
+            if (context.getExternalCacheDir() != null) {
+                clearPdfFromDirectory(context.getExternalCacheDir());
+            }
+
+            File downloadsDir = new File(context.getFilesDir(), "downloads");
+            if (downloadsDir.exists()) {
+                clearPdfFromDirectory(downloadsDir);
+            }
+
+            File documentsDir = new File(context.getFilesDir(), "documents");
+            if (documentsDir.exists()) {
+                clearPdfFromDirectory(documentsDir);
+            }
+
+            File militaryDir = new File(context.getFilesDir(), "military");
+            if (militaryDir.exists()) {
+                clearPdfFromDirectory(militaryDir);
+            }
+
+            Log.d(TAG, "PDF files cleared successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing PDF files", e);
+        }
+    }
+
+    private static void clearPdfFromDirectory(File directory) {
+        if (directory == null || !directory.exists() || !directory.isDirectory()) {
+            return;
+        }
+
+        try {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        clearPdfFromDirectory(file);
+                    } else if (file.isFile() && file.getName().toLowerCase().endsWith(".pdf")) {
+                        boolean deleted = file.delete();
+                        if (deleted) {
+                            Log.d(TAG, "Deleted PDF file: " + file.getName());
+                        } else {
+                            Log.w(TAG, "Failed to delete PDF file: " + file.getName());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error clearing PDFs from directory: " + directory.getAbsolutePath(), e);
         }
     }
 

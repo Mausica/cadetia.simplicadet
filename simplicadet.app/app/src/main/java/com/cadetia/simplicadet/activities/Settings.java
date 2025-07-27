@@ -34,6 +34,7 @@ import com.cadetia.simplicadet.dao.LanguagePreferences;
 import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.entities.DialogConfirm;
+import com.cadetia.simplicadet.utils.AppDataCleaner;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -49,7 +50,7 @@ public class Settings extends BaseActivity {
     private ThemePreferences themePreferences;
     private Switch themeSwitch;
     private TextView settingsName, settingsEmail, charName, charDescription;
-    private ImageView settingsImage, languageIcon, languageArrow;
+    private ImageView settingsImage, languageIcon;
     private RelativeLayout languageLayout, clearButton, privacyButton, termsButton, deleteButton, passwordButton, helpButton;
     private TextView languageText;
     private Button logoutButton;
@@ -122,7 +123,6 @@ public class Settings extends BaseActivity {
         themeSwitch = findViewById(R.id.theme_switch);
         languageLayout = findViewById(R.id.settings_language);
         languageIcon = findViewById(R.id.language_icon);
-        languageArrow = findViewById(R.id.language_arrow);
         languageText = findViewById(R.id.language_text);
         logoutButton = findViewById(R.id.logout_button);
         clearButton = findViewById(R.id.settings_clear);
@@ -279,8 +279,9 @@ public class Settings extends BaseActivity {
     }
 
     private void handleClearCache() {
-        DialogConfirm.show(this, getString(R.string.clear_cache), getString(R.string.clear_cache_confirmation),
-                this::clearAppCache, true);
+        DialogConfirm.show(this, getString(R.string.clear_cache), getString(R.string.clear_cache_confirmation), () -> {
+            AppDataCleaner.clearAppCache(this);
+        }, true);
     }
 
     private String getSystemLanguage() {
@@ -351,6 +352,7 @@ public class Settings extends BaseActivity {
                 })
                 .start();
     }
+
 
     private void retrieveUserData() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
@@ -429,37 +431,6 @@ public class Settings extends BaseActivity {
         });
     }
 
-    private void clearAppCache() {
-        try {
-            deleteDir(getCacheDir());
-            if (getExternalCacheDir() != null) {
-                deleteDir(getExternalCacheDir());
-            }
-            new Thread(() -> {
-                Glide.get(this).clearDiskCache();
-                runOnUiThread(() -> {});
-            }).start();
-            Glide.get(this).clearMemory();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean deleteDir(java.io.File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            if (children != null) {
-                for (String child : children) {
-                    boolean success = deleteDir(new java.io.File(dir, child));
-                    if (!success) return false;
-                }
-            }
-            return dir.delete();
-        } else if (dir != null && dir.isFile()) {
-            return dir.delete();
-        }
-        return false;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
