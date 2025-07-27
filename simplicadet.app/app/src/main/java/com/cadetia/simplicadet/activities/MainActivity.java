@@ -26,6 +26,7 @@ import androidx.core.view.WindowCompat;
 import com.cadetia.simplicadet.dao.LanguagePreferences;
 import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.dao.ThemePreferences;
+import com.cadetia.simplicadet.entities.InstitutionSelectionDialog;
 import com.cadetia.simplicadet.utils.NetworkUtils;
 import com.cadetia.simplicadet.utils.VersionChecker;
 import com.cadetia.simplicadet.entities.DialogConfirm;
@@ -201,16 +202,20 @@ public class MainActivity extends BaseActivity {
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            String email = user.getEmail();
-            String username = user.getDisplayName();
-            String photourl = String.valueOf(user.getPhotoUrl());
-            saveUserData(username, email, photourl);
-            openHomeActivity();
+            checkIfFirstLogin(currentUser);
         } else {
             checkVersionForNonLoggedUser();
         }
     }
+
+    private void checkIfFirstLogin(FirebaseUser user) {
+        String email = user.getEmail();
+        String username = user.getDisplayName();
+        String photourl = String.valueOf(user.getPhotoUrl());
+        saveUserData(username, email, photourl);
+        openHomeActivity();
+    }
+
 
     private void checkVersionForNonLoggedUser() {
         VersionChecker.checkVersionOnMainActivity(this, new VersionChecker.VersionCheckCallback() {
@@ -272,8 +277,7 @@ public class MainActivity extends BaseActivity {
                                                 FirebaseUser user = firebaseAuth.getCurrentUser();
                                                 assert user != null;
                                                 user.updateProfile(new UserProfileChangeRequest.Builder().setPhotoUri(Uri.parse(profilePicUrl)).build());
-                                                saveUserData(userName, userEmail, profilePicUrl);
-                                                openHomeActivity();
+                                                checkIfFirstLogin(user);
                                             } else {
                                                 stopLoadingAnimation();
                                                 Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -326,17 +330,7 @@ public class MainActivity extends BaseActivity {
                                 FirebaseUser user = firebaseAuth.getCurrentUser();
                                 assert user != null;
                                 user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(displayName).build());
-                                saveUserData(displayName, email, photoUrl);
-                                DbQuery.createUserData(email, displayName, photoUrl, new MyCompleteListener() {
-                                    @Override
-                                    public void onSucces() {
-                                        openHomeActivity();
-                                    }
-                                    @Override
-                                    public void onFailure() {
-                                        Log.e(TAG, "Something went wrong");
-                                    }
-                                });
+                                checkIfFirstLogin(user);
                             } else {
                                 stopLoadingAnimation();
                                 Log.e(TAG, "signInWithCredential:failure", task.getException());
@@ -392,6 +386,7 @@ public class MainActivity extends BaseActivity {
         stopLoadingAnimation();
         finish();
     }
+
 
     private void saveUserData(String userName, String userEmail, String userPhoto) {
         SharedPreferences.Editor editor = getSharedPreferences("UserData", MODE_PRIVATE).edit();

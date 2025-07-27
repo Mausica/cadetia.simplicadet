@@ -1,5 +1,8 @@
 package com.cadetia.simplicadet.activities;
 
+import static com.cadetia.simplicadet.database.DbQuery.getCellValueAsString;
+
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +15,15 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.ArrayMap;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,8 +42,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.cadetia.simplicadet.dao.LocaleHelper;
+import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.database.TextUpload;
 import com.cadetia.simplicadet.entities.DialogConfirm;
+import com.cadetia.simplicadet.entities.InstitutionSelectionDialog;
+import com.cadetia.simplicadet.entities.UploadTypeDialog;
+import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.ui.home.HomeFragment;
 import com.cadetia.simplicadet.ui.home.HomeFragment1;
 import com.cadetia.simplicadet.ui.home.HomeFragment2;
@@ -57,6 +69,16 @@ import com.cadetia.simplicadet.R;
 import com.cadetia.simplicadet.ads.InterstitialAdd;
 import com.cadetia.simplicadet.databinding.ActivityHomeBinding;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class Home extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String currentLanguage;
     private InterstitialAdd interstitialAdd;
@@ -66,6 +88,9 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     private DrawerLayout drawerLayout;
     private boolean isNetworkAvailable = true;
     private String userEmail;
+
+    private boolean isAdmin = false;
+    private String userInstitution = "";
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -164,6 +189,9 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         drawerloadingButton = headerView.findViewById(R.id.loading_button);
 
         retrieveUserData();
+        checkUserPermissions();
+        checkIfNeedsInstitutionSelection();
+
         firebaseAuth = FirebaseAuth.getInstance();
 
         final Handler handler = new Handler();
@@ -202,6 +230,109 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         }
     };
 
+    private void checkIfNeedsInstitutionSelection() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
+        String email = sharedPreferences.getString("userEmail", "");
+
+        DbQuery.g_firestore.collection("USERS").document(email).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (!documentSnapshot.exists()) {
+                        showInstitutionSelectionDialog();
+                    }
+                });
+    }
+
+    private void showInstitutionSelectionDialog() {
+        InstitutionSelectionDialog.show(this, new InstitutionSelectionDialog.InstitutionSelectionCallback() {
+            @Override
+            public void onInstitutionSelected(String institution, String accessCode) {
+                SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
+                String email = sharedPreferences.getString("userEmail", "");
+                String name = sharedPreferences.getString("userName", "");
+                String photo = sharedPreferences.getString("userPhoto", "");
+
+                if ("INDIVIDUAL".equals(institution)) {
+                    createIndividualUser(email, name, photo);
+                } else {
+                    if (accessCode == null || accessCode.trim().isEmpty()) {
+                        Toast.makeText(Home.this, "Please enter an access code", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    DbQuery.validateAndLockAccessCode(accessCode.trim(), email, new DbQuery.AccessCodeValidationCallback() {
+                        @Override
+                        public void onAccessCodeValid(DbQuery.AccessCodeData data) {
+                            Map<String, Object> userData = new ArrayMap<>();
+                            userData.put("EMAIL_ID", email);
+                            userData.put("NAME", data.name);
+                            userData.put("PHOTO", photo);
+                            userData.put("TOTAL_SCORE", 0);
+                            userData.put("ADMIN", false);
+                            userData.put("PREMIUM", false);
+                            userData.put("DATE", System.currentTimeMillis());
+                            userData.put("INSTITUTION", data.institution);
+                            userData.put("HEIGHT", data.height);
+                            userData.put("PLUTON", data.pluton);
+                            userData.put("RANK", data.rank);
+
+                            DbQuery.g_firestore.collection("USERS").document(email).set(userData)
+                                    .addOnSuccessListener(unused -> {
+                                        if (data.year != null && !data.year.isEmpty()) {
+                                            String institutionPath = "MILITARY/RO/" + data.institution + "/STUDENTS/" + data.year;
+                                            DbQuery.g_firestore.collection(institutionPath).document(email).set(userData);
+                                        }
+
+                                        DbQuery.g_firestore.collection("ACCESS_CODES").document(accessCode.trim()).delete();
+
+                                        SharedPreferences.Editor editor = getSharedPreferences("UserData", MODE_PRIVATE).edit();
+                                        editor.putString("userInstitution", data.institution);
+                                        editor.apply();
+
+                                        checkUserPermissions();
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(Home.this, "Error creating user account", Toast.LENGTH_LONG).show());
+                        }
+
+                        @Override
+                        public void onAccessCodeInvalid() {
+                            Toast.makeText(Home.this, "Invalid or already used access code", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                firebaseAuth.signOut();
+                Intent intent = new Intent(Home.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+    }
+
+    private void createIndividualUser(String email, String name, String photo) {
+        Map<String, Object> userData = new ArrayMap<>();
+        userData.put("EMAIL_ID", email);
+        userData.put("NAME", name);
+        userData.put("PHOTO", photo);
+        userData.put("TOTAL_SCORE", 0);
+        userData.put("ADMIN", false);
+        userData.put("PREMIUM", false);
+        userData.put("DATE", System.currentTimeMillis());
+        userData.put("INSTITUTION", "INDIVIDUAL");
+
+        DbQuery.g_firestore.collection("USERS").document(email).set(userData)
+                .addOnSuccessListener(unused -> {
+                    SharedPreferences.Editor editor = getSharedPreferences("UserData", MODE_PRIVATE).edit();
+                    editor.putString("userInstitution", "INDIVIDUAL");
+                    editor.apply();
+
+                    checkUserPermissions();
+                })
+                .addOnFailureListener(e -> Toast.makeText(Home.this, "Error creating individual user account", Toast.LENGTH_LONG).show());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -218,6 +349,35 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         unregisterReceiver(networkChangeReceiver);
     }
 
+    private void checkUserPermissions() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
+        String email = sharedPreferences.getString("userEmail", "");
+
+        DbQuery.checkUserPermissions(email, new DbQuery.PermissionCallback() {
+            @Override
+            public void onPermissionsReceived(boolean admin, boolean premium, String institution) {
+                isAdmin = admin;
+                userInstitution = institution;
+                updateNavigationMenu();
+            }
+
+            @Override
+            public void onFailure() {
+                isAdmin = false;
+                userInstitution = "INDIVIDUAL";
+            }
+        });
+    }
+
+    private void updateNavigationMenu() {
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem uploadItem = menu.findItem(R.id.drawer_upload);
+
+        if (uploadItem != null) {
+            uploadItem.setVisible(isAdmin);
+        }
+    }
     private void navigationDrawer(Window view) {
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
         if (navHostFragment instanceof NavHostFragment) {
@@ -338,18 +498,45 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
             overridePendingTransition(R.anim.fade_in_d, R.anim.fade_out_d);
             finish();
         } else if (itemId == R.id.drawer_upload) {
-            if (userEmail.equals("marius.gabryel2017@gmail.com")){
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("*/*");
-                String[] mimeTypes = {"text/plain", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                startActivityForResult(intent, 1);
-            } else
+            if (isAdmin) {
+                showUploadTypeDialog();
+            } else {
                 Toast.makeText(this, "Nu ai permisiunea necesară!", Toast.LENGTH_LONG).show();
+            }
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showUploadTypeDialog() {
+        UploadTypeDialog.show(this, new UploadTypeDialog.UploadTypeCallback() {
+            @Override
+            public void onQuizUpload() {
+                selectQuizFile();
+            }
+
+            @Override
+            public void onStudentUpload() {
+                selectStudentFile();
+            }
+
+            @Override
+            public void onCancel() {
+            }
+        });
+    }
+
+    private void selectQuizFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("text/plain");
+        startActivityForResult(intent, 1);
+    }
+
+    private void selectStudentFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        startActivityForResult(intent, 2);
     }
 
     private void forceNavigationToHome() {
@@ -411,23 +598,107 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            if (data != null) {
-                Uri fileUri = data.getData();
-                if (fileUri != null) {
-                    String mimeType = getContentResolver().getType(fileUri);
-
-                    if (mimeType != null && mimeType.contains("text/plain")) {
-                        TextUpload textUpload = new TextUpload();
-                        textUpload.uploadQuestionsFromText(this, fileUri);
-                    } else if (mimeType != null && (mimeType.contains("excel") || mimeType.contains("sheet"))) {
-                        Toast.makeText(this, "Fișierele Excel nu mai sunt acceptate. Folosiți formatul text.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(this, "Format de fișier neacceptat. Folosiți fișiere text (.txt).", Toast.LENGTH_LONG).show();
-                    }
+        if (resultCode == RESULT_OK && data != null) {
+            Uri fileUri = data.getData();
+            if (fileUri != null) {
+                if (requestCode == 1) {
+                    TextUpload textUpload = new TextUpload();
+                    textUpload.uploadQuestionsFromText(this, fileUri);
+                } else if (requestCode == 2) {
+                    showInstitutionYearDialog(fileUri);
+                } else if (requestCode == 3) {
+                    uploadAccessCodesFromExcel(fileUri);
                 }
             }
         }
+    }
+
+    private void uploadAccessCodesFromExcel(Uri fileUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+
+            List<DbQuery.AccessCodeData> accessCodes = new ArrayList<>();
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row != null) {
+                    String accessCode = getCellValueAsString(row.getCell(0));
+                    String name = getCellValueAsString(row.getCell(1));
+                    String institution = getCellValueAsString(row.getCell(2));
+                    String year = getCellValueAsString(row.getCell(3));
+                    String photo = getCellValueAsString(row.getCell(4));
+                    String height = getCellValueAsString(row.getCell(5));
+                    String pluton = getCellValueAsString(row.getCell(6));
+                    String rank = getCellValueAsString(row.getCell(7));
+
+                    DbQuery.AccessCodeData accessCodeData = new DbQuery.AccessCodeData(
+                            accessCode, name, year, institution, photo,
+                            Integer.parseInt(height.isEmpty() ? "170" : height),
+                            Integer.parseInt(pluton.isEmpty() ? "1" : pluton),
+                            Integer.parseInt(rank.isEmpty() ? "0" : rank)
+                    );
+
+                    accessCodes.add(accessCodeData);
+                }
+            }
+
+            DbQuery.uploadAccessCodes(accessCodes, new MyCompleteListener() {
+                @Override
+                public void onSucces() {
+                    Toast.makeText(Home.this, "Access codes uploaded successfully", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure() {
+                    Toast.makeText(Home.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            workbook.close();
+            inputStream.close();
+
+        } catch (Exception e) {
+            Log.e("Home", "Error uploading access codes", e);
+            Toast.makeText(this, "Error uploading access codes", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showInstitutionYearDialog(Uri fileUri) {
+        Dialog dialog = new Dialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_institution_year, null);
+        dialog.setContentView(view);
+
+        EditText editInstitution = view.findViewById(R.id.edit_institution);
+        EditText editYear = view.findViewById(R.id.edit_year);
+        Button btnUpload = view.findViewById(R.id.btn_upload);
+        Button btnCancel = view.findViewById(R.id.btn_cancel);
+
+        btnUpload.setOnClickListener(v -> {
+            String institution = editInstitution.getText().toString().trim();
+            String year = editYear.getText().toString().trim();
+
+            if (!institution.isEmpty() && !year.isEmpty()) {
+                DbQuery.uploadStudentsWithAccessCodes(this, fileUri, institution, year, new MyCompleteListener() {
+                    @Override
+                    public void onSucces() {
+                        Toast.makeText(Home.this, "Students and access codes uploaded successfully", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Toast.makeText(Home.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                dialog.dismiss();
+            } else {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     @Override

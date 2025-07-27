@@ -1,6 +1,9 @@
 package com.cadetia.simplicadet.database;
 
+import static java.sql.Types.NUMERIC;
+
 import android.content.Context;
+import android.net.Uri;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
@@ -14,12 +17,21 @@ import com.cadetia.simplicadet.model.RankModel;
 import com.cadetia.simplicadet.model.UserModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -470,27 +482,6 @@ public class DbQuery {
                 .addOnFailureListener(e -> userScoreListener.onFailure());
     }
 
-    public static void createUserData(String email, String name, String photo, MyCompleteListener completeListener) {
-        g_firestore.collection("USERS").document(email).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Map<String, Object> updates = new ArrayMap<>();
-                        updates.put("NAME", name); updates.put("PHOTO", photo);
-                        documentSnapshot.getReference().update(updates)
-                                .addOnSuccessListener(unused -> completeListener.onSucces())
-                                .addOnFailureListener(e -> completeListener.onFailure());
-                    } else {
-                        Map<String, Object> userData = new ArrayMap<>();
-                        userData.put("EMAIL_ID", email); userData.put("NAME", name);
-                        userData.put("PHOTO", photo); userData.put("TOTAL_SCORE", 0);
-                        g_firestore.collection("USERS").document(email).set(userData)
-                                .addOnSuccessListener(unused -> incrementUserCount(completeListener))
-                                .addOnFailureListener(e -> completeListener.onFailure());
-                    }
-                })
-                .addOnFailureListener(e -> completeListener.onFailure());
-    }
-
     private static void incrementUserCount(MyCompleteListener completeListener) {
         g_firestore.collection("USERS").document("TOTAL_USERS").update("COUNT", FieldValue.increment(1))
                 .addOnSuccessListener(unused -> completeListener.onSucces())
@@ -538,7 +529,6 @@ public class DbQuery {
                 })
                 .addOnFailureListener(e -> completeListener.onFailure());
     }
-
     public static void loadCategories(Context context, MyCompleteListener listener) {
         g_catList.clear(); g_militaryCatList.clear(); g_homeCatList.clear();
         g_firestore.collection("QUIZZES").get()
@@ -699,5 +689,248 @@ public class DbQuery {
                         listener.onSucces();
                     } else { listener.onFailure(); }
                 }).addOnFailureListener(e -> listener.onFailure());
+    }
+
+    private static void validateInstitutionCode(String institution, String accessCode, ValidationCallback callback) {
+        g_firestore.collection("INSTITUTION_CODES").document(institution).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists() && accessCode.equals(doc.getString("code"))) {
+                        callback.onResult(true);
+                    } else {
+                        callback.onResult(false);
+                    }
+                })
+                .addOnFailureListener(e -> callback.onResult(false));
+    }
+
+    private static void createIndividualUser(String email, String name, String photo, MyCompleteListener completeListener) {
+        Map<String, Object> userData = new ArrayMap<>();
+        userData.put("EMAIL_ID", email);
+        userData.put("NAME", name);
+        userData.put("PHOTO", photo);
+        userData.put("TOTAL_SCORE", 0);
+        userData.put("ADMIN", false);
+        userData.put("PREMIUM", false);
+        userData.put("DATE", System.currentTimeMillis());
+        userData.put("INSTITUTION", "INDIVIDUAL");
+
+        g_firestore.collection("USERS").document(email).set(userData)
+                .addOnSuccessListener(unused -> incrementUserCount(completeListener))
+                .addOnFailureListener(e -> completeListener.onFailure());
+    }
+
+    private static void createInstitutionUser(String email, String name, String photo, String institution, MyCompleteListener completeListener) {
+        Map<String, Object> userData = new ArrayMap<>();
+        userData.put("EMAIL_ID", email);
+        userData.put("NAME", name);
+        userData.put("PHOTO", photo);
+        userData.put("TOTAL_SCORE", 0);
+        userData.put("ADMIN", false);
+        userData.put("PREMIUM", false);
+        userData.put("DATE", System.currentTimeMillis());
+        userData.put("INSTITUTION", institution);
+
+        g_firestore.collection("USERS").document(email).set(userData)
+                .addOnSuccessListener(unused -> incrementUserCount(completeListener))
+                .addOnFailureListener(e -> completeListener.onFailure());
+    }
+
+    public static String getCellValueAsString(Cell cell) {
+        if (cell == null) return "";
+        switch (cell.getCellType()) {
+            case STRING: return cell.getStringCellValue();
+            case NUMERIC: return String.valueOf((int) cell.getNumericCellValue());
+            default: return "";
+        }
+    }
+
+    public static void checkUserPermissions(String email, PermissionCallback callback) {
+        g_firestore.collection("USERS").document(email).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        boolean isAdmin = doc.getBoolean("ADMIN") != null ? doc.getBoolean("ADMIN") : false;
+                        boolean isPremium = doc.getBoolean("PREMIUM") != null ? doc.getBoolean("PREMIUM") : false;
+                        String institution = doc.getString("INSTITUTION");
+                        callback.onPermissionsReceived(isAdmin, isPremium, institution);
+                    } else {
+                        callback.onFailure();
+                    }
+                })
+                .addOnFailureListener(e -> callback.onFailure());
+    }
+
+    public interface ValidationCallback {
+        void onResult(boolean isValid);
+    }
+
+    public interface InstitutionCallback {
+        void onInstitutionsReceived(List<String> institutions);
+        void onFailure();
+    }
+
+    public interface PermissionCallback {
+        void onPermissionsReceived(boolean isAdmin, boolean isPremium, String institution);
+        void onFailure();
+    }
+    public static void uploadAccessCodes(List<AccessCodeData> accessCodes, MyCompleteListener completeListener) {
+        WriteBatch batch = g_firestore.batch();
+
+        for (AccessCodeData accessCode : accessCodes) {
+            DocumentReference docRef = g_firestore.collection("ACCESS_CODES").document(accessCode.accessCode);
+
+            Map<String, Object> data = new ArrayMap<>();
+            data.put("name", accessCode.name);
+            data.put("email", accessCode.email);
+            data.put("institution", accessCode.institution);
+            data.put("photo", accessCode.photo);
+            data.put("height", accessCode.height);
+            data.put("pluton", accessCode.pluton);
+            data.put("rank", accessCode.rank);
+            data.put("createdAt", System.currentTimeMillis());
+
+            batch.set(docRef, data);
+        }
+
+        batch.commit()
+                .addOnSuccessListener(unused -> completeListener.onSucces())
+                .addOnFailureListener(e -> completeListener.onFailure());
+    }
+    public interface AccessCodeValidationCallback {
+        void onAccessCodeValid(AccessCodeData data);
+        void onAccessCodeInvalid();
+    }
+
+    public static class AccessCodeData {
+        public String accessCode;
+        public String name;
+        public String email;
+        public String institution;
+        public String photo;
+        public int height;
+        public int pluton;
+        public int rank;
+        public String year;
+
+        public AccessCodeData() {}
+
+        public AccessCodeData(String accessCode, String name, String email, String institution,
+                              String photo, int height, int pluton, int rank) {
+            this.accessCode = accessCode;
+            this.name = name;
+            this.email = email;
+            this.institution = institution;
+            this.photo = photo;
+            this.height = height;
+            this.pluton = pluton;
+            this.rank = rank;
+        }
+    }
+
+    public static void uploadStudentsWithAccessCodes(Context context, Uri fileUri, String institution, String year, MyCompleteListener completeListener) {
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(fileUri);
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+
+            List<AccessCodeData> accessCodes = new ArrayList<>();
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row != null) {
+                    String accessCode = getCellValueAsString(row.getCell(0));
+                    String name = getCellValueAsString(row.getCell(1));
+                    String institutionFromFile = getCellValueAsString(row.getCell(2));
+                    String yearFromFile = getCellValueAsString(row.getCell(3));
+                    String photo = getCellValueAsString(row.getCell(4));
+                    String height = getCellValueAsString(row.getCell(5));
+                    String pluton = getCellValueAsString(row.getCell(6));
+                    String rank = getCellValueAsString(row.getCell(7));
+
+                    AccessCodeData accessCodeData = new AccessCodeData();
+                    accessCodeData.accessCode = accessCode;
+                    accessCodeData.name = name;
+                    accessCodeData.institution = institutionFromFile.isEmpty() ? institution : institutionFromFile;
+                    accessCodeData.year = yearFromFile.isEmpty() ? year : yearFromFile;
+                    accessCodeData.photo = photo;
+                    accessCodeData.height = Integer.parseInt(height.isEmpty() ? "175" : height);
+                    accessCodeData.pluton = Integer.parseInt(pluton.isEmpty() ? "1" : pluton);
+                    accessCodeData.rank = Integer.parseInt(rank.isEmpty() ? "0" : rank);
+
+                    accessCodes.add(accessCodeData);
+                }
+            }
+
+            WriteBatch batch = g_firestore.batch();
+
+            for (AccessCodeData accessCode : accessCodes) {
+                DocumentReference docRef = g_firestore.collection("ACCESS_CODES").document(accessCode.accessCode);
+                Map<String, Object> data = new ArrayMap<>();
+                data.put("name", accessCode.name);
+                data.put("institution", accessCode.institution);
+                data.put("photo", accessCode.photo);
+                data.put("height", accessCode.height);
+                data.put("pluton", accessCode.pluton);
+                data.put("rank", accessCode.rank);
+                data.put("year", accessCode.year);
+                data.put("createdAt", System.currentTimeMillis());
+                data.put("locked", false);
+                batch.set(docRef, data);
+            }
+
+            batch.commit()
+                    .addOnSuccessListener(unused -> completeListener.onSucces())
+                    .addOnFailureListener(e -> completeListener.onFailure());
+
+            workbook.close();
+            inputStream.close();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error uploading students with access codes", e);
+            completeListener.onFailure();
+        }
+    }
+
+    public static void validateAndLockAccessCode(String accessCode, String email, AccessCodeValidationCallback callback) {
+        if (accessCode == null || accessCode.trim().isEmpty()) {
+            callback.onAccessCodeInvalid();
+            return;
+        }
+
+        g_firestore.collection("ACCESS_CODES").document(accessCode.trim()).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        Boolean locked = doc.getBoolean("locked");
+                        if (locked != null && locked) {
+                            callback.onAccessCodeInvalid();
+                            return;
+                        }
+
+                        Map<String, Object> data = doc.getData();
+                        if (data != null) {
+                            AccessCodeData accessCodeData = new AccessCodeData();
+                            accessCodeData.name = (String) data.get("name");
+                            accessCodeData.email = email;
+                            accessCodeData.institution = (String) data.get("institution");
+                            accessCodeData.photo = (String) data.get("photo");
+                            accessCodeData.year = (String) data.get("year");
+                            Long height = (Long) data.get("height");
+                            Long pluton = (Long) data.get("pluton");
+                            Long rank = (Long) data.get("rank");
+                            accessCodeData.height = height != null ? height.intValue() : 175;
+                            accessCodeData.pluton = pluton != null ? pluton.intValue() : 1;
+                            accessCodeData.rank = rank != null ? rank.intValue() : 0;
+
+                            g_firestore.collection("ACCESS_CODES").document(accessCode.trim())
+                                    .update("locked", true)
+                                    .addOnSuccessListener(unused -> callback.onAccessCodeValid(accessCodeData))
+                                    .addOnFailureListener(e -> callback.onAccessCodeInvalid());
+                        } else {
+                            callback.onAccessCodeInvalid();
+                        }
+                    } else {
+                        callback.onAccessCodeInvalid();
+                    }
+                })
+                .addOnFailureListener(e -> callback.onAccessCodeInvalid());
     }
 }
