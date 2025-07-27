@@ -440,27 +440,94 @@ public class DbQuery {
     }
 
     public static void loadCategories(Context context, String institution, MyCompleteListener listener) {
-        g_catList.clear(); g_militaryCatList.clear(); g_homeCatList.clear();
+        g_catList.clear();
+        g_militaryCatList.clear();
+        g_homeCatList.clear();
+
         g_firestore.collection("QUIZZES").get()
                 .addOnSuccessListener(quizSnapshots -> {
-                    Map<String, List<Quizz>> institutionMap = new HashMap<>(), otherMap = new HashMap<>();
+                    Map<String, List<Quizz>> institutionMap = new HashMap<>();
+                    Map<String, List<Quizz>> otherMap = new HashMap<>();
+
                     for (QueryDocumentSnapshot quizDoc : quizSnapshots) {
                         try {
-                            String category = quizDoc.getString("category"); if (category == null || category.isEmpty()) continue;
+                            String category = quizDoc.getString("category");
+                            if (category == null || category.isEmpty()) continue;
+
                             Object tagsObj = quizDoc.get("tags");
-                            boolean isInstitution = (institution.equals(tagsObj)) || (tagsObj instanceof List && ((List<String>) tagsObj).contains(institution));
-                            Quizz quiz = new Quizz(quizDoc.getString("title"), quizDoc.getString("imageUrl"), quizDoc.getId(), true, quizDoc.getString("createdBy"));
+                            boolean isInstitution = false;
+
+                            if (tagsObj != null) {
+                                if (tagsObj instanceof String) {
+                                    // Handle single string tag
+                                    String tagString = ((String) tagsObj).trim();
+                                    isInstitution = institution.trim().equalsIgnoreCase(tagString);
+                                    Log.d(TAG, "String comparison: '" + institution.trim() + "' vs '" + tagString + "' = " + isInstitution);
+                                } else if (tagsObj instanceof List) {
+                                    // Handle list of tags
+                                    List<?> tagsList = (List<?>) tagsObj;
+                                    for (Object tag : tagsList) {
+                                        if (tag instanceof String) {
+                                            String tagString = ((String) tag).trim();
+                                            if (institution.trim().equalsIgnoreCase(tagString)) {
+                                                isInstitution = true;
+                                                Log.d(TAG, "List match found: " + tagString);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    Log.d(TAG, "List comparison result: " + isInstitution);
+                                }
+                            }
+
+                            Quizz quiz = new Quizz(
+                                    quizDoc.getString("title"),
+                                    quizDoc.getString("imageUrl"),
+                                    quizDoc.getId(),
+                                    true,
+                                    quizDoc.getString("createdBy")
+                            );
+
                             Map<String, List<Quizz>> targetMap = isInstitution ? institutionMap : otherMap;
-                            if (!targetMap.containsKey(category)) targetMap.put(category, new ArrayList<>());
+                            if (!targetMap.containsKey(category)) {
+                                targetMap.put(category, new ArrayList<>());
+                            }
                             Objects.requireNonNull(targetMap.get(category)).add(quiz);
-                        } catch (Exception e) { Log.e(TAG, "Error processing quiz: " + e.getMessage()); }
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing quiz: " + e.getMessage(), e);
+                        }
                     }
-                    for (Map.Entry<String, List<Quizz>> entry : institutionMap.entrySet()) g_militaryCatList.add(new CategoryModel(entry.getKey(), entry.getKey(), entry.getValue().size(), entry.getValue()));
-                    for (Map.Entry<String, List<Quizz>> entry : otherMap.entrySet()) g_homeCatList.add(new CategoryModel(entry.getKey(), entry.getKey(), entry.getValue().size(), entry.getValue()));
-                    g_catList.addAll(g_militaryCatList); g_catList.addAll(g_homeCatList);
+
+                    // Create category models
+                    for (Map.Entry<String, List<Quizz>> entry : institutionMap.entrySet()) {
+                        g_militaryCatList.add(new CategoryModel(
+                                entry.getKey(),
+                                entry.getKey(),
+                                entry.getValue().size(),
+                                entry.getValue()
+                        ));
+                    }
+
+                    for (Map.Entry<String, List<Quizz>> entry : otherMap.entrySet()) {
+                        g_homeCatList.add(new CategoryModel(
+                                entry.getKey(),
+                                entry.getKey(),
+                                entry.getValue().size(),
+                                entry.getValue()
+                        ));
+                    }
+
+                    g_catList.addAll(g_militaryCatList);
+                    g_catList.addAll(g_homeCatList);
+
                     listener.onSucces();
                 })
-                .addOnFailureListener(e -> { Log.e(TAG, "Error: " + e.getMessage()); Toast.makeText(context, "Error", Toast.LENGTH_LONG).show(); listener.onFailure(); });
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error loading categories: " + e.getMessage(), e);
+                    Toast.makeText(context, "Error loading categories", Toast.LENGTH_LONG).show();
+                    listener.onFailure();
+                });
     }
 
     public static void loadMilitaryCategories(Context context, String institution, MyCompleteListener listener) {
@@ -605,6 +672,21 @@ public class DbQuery {
                     }
                 })
                 .addOnFailureListener(e -> callback.onFailure());
+    }
+
+    public static void clearAllCache() {
+        Log.d(TAG, "Clearing all DbQuery cache");
+        g_journalList.clear();
+        g_catList.clear();
+        g_quesList.clear();
+        g_rankList.clear();
+        g_militaryJournalList.clear();
+        g_homeJournalList.clear();
+        g_flashcardList.clear();
+        g_militaryCatList.clear();
+        g_homeCatList.clear();
+        g_allLearningPaths.clear();
+        g_learningPath = null;
     }
 
     public interface PermissionCallback {

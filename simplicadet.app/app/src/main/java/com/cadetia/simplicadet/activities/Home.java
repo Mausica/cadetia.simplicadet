@@ -87,6 +87,8 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     ShapeableImageView drawerloadingButton;
     private DrawerLayout drawerLayout;
     private boolean isNetworkAvailable = true;
+
+    private TextView drawerInstitutionTextView;
     private String userEmail;
 
     private boolean isAdmin = false;
@@ -187,8 +189,12 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
         drawerNameTextView = headerView.findViewById(R.id.drawer_name);
         drawerloadingButton = headerView.findViewById(R.id.loading_button);
+        drawerNameTextView = headerView.findViewById(R.id.drawer_name);
+        drawerInstitutionTextView = headerView.findViewById(R.id.drawer_institution);
+        drawerloadingButton = headerView.findViewById(R.id.loading_button);
 
         retrieveUserData();
+        refreshUserInstitution();
         checkUserPermissions();
         checkIfNeedsInstitutionSelection();
 
@@ -428,18 +434,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         }
     }
 
-    private void checkInternetConnection() {
-        boolean previousStatus = isNetworkAvailable;
-        isNetworkAvailable = NetworkUtils.isNetworkAvailable(this);
-
-        if (previousStatus != isNetworkAvailable) {
-            if (isNetworkAvailable) {
-                handleConnectionRestored();
-            } else {
-                handleConnectionLost();
-            }
-        }
-    }
 
     private Fragment getCurrentFragment() {
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_home);
@@ -835,13 +829,39 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         navCard.setLayoutParams(params);
     }
 
+    private void refreshUserInstitution() {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
+        String email = sharedPreferences.getString("userEmail", "");
+
+        if (!email.isEmpty()) {
+            DbQuery.g_firestore.collection("USERS").document(email).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String newInstitution = documentSnapshot.getString("INSTITUTION");
+                            if (newInstitution != null) {
+                                SharedPreferences.Editor editor = getSharedPreferences("UserData", MODE_PRIVATE).edit();
+                                editor.putString("userInstitution", newInstitution);
+                                editor.apply();
+
+                                if (drawerInstitutionTextView != null) {
+                                    drawerInstitutionTextView.setText(newInstitution);
+                                }
+                            }
+                        }
+                    });
+        }
+    }
     private void retrieveUserData() {
         SharedPreferences sharedPreferences = getSharedPreferences("UserData", MODE_PRIVATE);
         String userName = sharedPreferences.getString("userName", "");
         String userPhoto = sharedPreferences.getString("userPhoto", "");
+        String userInstitution = sharedPreferences.getString("userInstitution", "Student");
         userEmail = sharedPreferences.getString("userEmail", "");
 
         drawerNameTextView.setText(userName);
+        if (drawerInstitutionTextView != null) {
+            drawerInstitutionTextView.setText(userInstitution);
+        }
 
         if (!isNetworkAvailable) {
             Glide.with(this).load(R.raw.guest_civil).into(drawerloadingButton);

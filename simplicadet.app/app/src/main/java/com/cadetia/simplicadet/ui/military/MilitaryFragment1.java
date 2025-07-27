@@ -104,6 +104,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
     private String userEmail;
     private String userInstitution;
+    private String cachedInstitution; // Track the institution for which data is cached
     private LruCache<String, Bitmap> memCache;
     private FirebaseFirestore db;
 
@@ -192,6 +193,39 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Clear all cached data when institution changes
+     */
+    private void clearCacheIfInstitutionChanged() {
+        if (cachedInstitution == null || !cachedInstitution.equals(userInstitution)) {
+            Log.d(TAG, "Institution changed from '" + cachedInstitution + "' to '" + userInstitution + "', clearing cache");
+
+            // Clear all cached data
+            cachedRanks = null;
+            cachedJournals = null;
+            cachedDestinations = null;
+            cachedCategories = null;
+            cachedAboutData = null;
+
+            // Reset cache timestamps
+            ranksLastLoad = 0;
+            journalsLastLoad = 0;
+            destinationsLastLoad = 0;
+            categoriesLastLoad = 0;
+            aboutLastLoad = 0;
+
+            // Clear memory cache
+            if (memCache != null) {
+                memCache.evictAll();
+            }
+
+            // Update cached institution
+            cachedInstitution = userInstitution;
+
+            Log.d(TAG, "Cache cleared for institution change");
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -201,6 +235,9 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         showLoading(true);
 
         if (userInstitution == null) retrieveUserData();
+
+        // Clear cache if institution has changed
+        clearCacheIfInstitutionChanged();
 
         loadAboutDataWithCache(currentTime);
         loadImagesWithCache();

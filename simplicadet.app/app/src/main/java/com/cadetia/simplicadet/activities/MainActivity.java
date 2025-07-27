@@ -29,6 +29,7 @@ import com.cadetia.simplicadet.dao.ThemePreferences;
 import com.cadetia.simplicadet.entities.InstitutionSelectionDialog;
 import com.cadetia.simplicadet.utils.NetworkUtils;
 import com.cadetia.simplicadet.utils.VersionChecker;
+import com.cadetia.simplicadet.utils.AppDataCleaner;
 import com.cadetia.simplicadet.entities.DialogConfirm;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -76,6 +77,7 @@ public class MainActivity extends BaseActivity {
     private LoadingView loadingViewMain;
     private static final int RC_SIGN_IN = 9001;
     private static final String DEFAULT_LANGUAGE = "en_GB";
+    private String lastLoggedInUser = null;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -171,6 +173,9 @@ public class MainActivity extends BaseActivity {
             animateButtonOnClickNull(main_google_button);
             buttonGoogleSignIn(v);
         });
+
+        SharedPreferences prefs = getSharedPreferences("UserData", MODE_PRIVATE);
+        lastLoggedInUser = prefs.getString("userEmail", null);
     }
 
     private boolean checkNetworkAndShowDialog() {
@@ -202,9 +207,22 @@ public class MainActivity extends BaseActivity {
 
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser != null) {
-            checkIfFirstLogin(currentUser);
+            checkIfUserChanged(currentUser);
         } else {
             checkVersionForNonLoggedUser();
+        }
+    }
+
+    private void checkIfUserChanged(FirebaseUser user) {
+        String currentUserEmail = user.getEmail();
+
+        if (lastLoggedInUser != null && !lastLoggedInUser.equals(currentUserEmail)) {
+            Log.d(TAG, "User changed from " + lastLoggedInUser + " to " + currentUserEmail + ", clearing all data");
+            AppDataCleaner.clearAllAppData(this, () -> {
+                checkIfFirstLogin(user);
+            });
+        } else {
+            checkIfFirstLogin(user);
         }
     }
 
@@ -215,7 +233,6 @@ public class MainActivity extends BaseActivity {
         saveUserData(username, email, photourl);
         openHomeActivity();
     }
-
 
     private void checkVersionForNonLoggedUser() {
         VersionChecker.checkVersionOnMainActivity(this, new VersionChecker.VersionCheckCallback() {
@@ -277,7 +294,7 @@ public class MainActivity extends BaseActivity {
                                                 FirebaseUser user = firebaseAuth.getCurrentUser();
                                                 assert user != null;
                                                 user.updateProfile(new UserProfileChangeRequest.Builder().setPhotoUri(Uri.parse(profilePicUrl)).build());
-                                                checkIfFirstLogin(user);
+                                                checkIfUserChanged(user);
                                             } else {
                                                 stopLoadingAnimation();
                                                 Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -330,7 +347,7 @@ public class MainActivity extends BaseActivity {
                                 FirebaseUser user = firebaseAuth.getCurrentUser();
                                 assert user != null;
                                 user.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName(displayName).build());
-                                checkIfFirstLogin(user);
+                                checkIfUserChanged(user);
                             } else {
                                 stopLoadingAnimation();
                                 Log.e(TAG, "signInWithCredential:failure", task.getException());
@@ -386,7 +403,6 @@ public class MainActivity extends BaseActivity {
         stopLoadingAnimation();
         finish();
     }
-
 
     private void saveUserData(String userName, String userEmail, String userPhoto) {
         SharedPreferences.Editor editor = getSharedPreferences("UserData", MODE_PRIVATE).edit();
