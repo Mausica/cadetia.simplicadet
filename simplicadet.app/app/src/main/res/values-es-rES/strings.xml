@@ -127,20 +127,20 @@
 
 
     <!-- Account Deletion -->
-    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.</string>
-    <string name="account_deleted_success">Your account has been successfully deleted.</string>
-    <string name="account_deletion_reauth_required">Please log out and log back in, then try deleting your account again.</string>
-    <string name="error_deleting_account">Failed to delete account. Please try again.</string>
+    <string name="delete_account_confirmation">¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer y eliminará permanentemente todos tus datos.</string>
+    <string name="account_deleted_success">Tu cuenta ha sido eliminada exitosamente.</string>
+    <string name="account_deletion_reauth_required">Por favor cierra sesión y vuelve a iniciar sesión, luego intenta eliminar tu cuenta nuevamente.</string>
+    <string name="error_deleting_account">Error al eliminar la cuenta. Por favor inténtalo de nuevo.</string>
 
     <!-- Password Reset -->
-    <string name="reset_password_confirmation">Are you sure you want to reset your password? A reset link will be sent to your email address.</string>
-    <string name="password_reset_email_sent">Password reset email sent. Please check your inbox and follow the instructions.</string>
+    <string name="reset_password_confirmation">¿Estás seguro de que quieres restablecer tu contraseña? Se enviará un enlace de restablecimiento a tu dirección de correo electrónico.</string>
+    <string name="password_reset_email_sent">Correo de restablecimiento de contraseña enviado. Por favor revisa tu bandeja de entrada y sigue las instrucciones.</string>
 
     <!-- Error Messages -->
-    <string name="error_opening_browser">Unable to open browser. Please try again.</string>
-    <string name="error_no_email">No email address found for your account.</string>
-    <string name="error_not_logged_in">You are not currently logged in.</string>
-    <string name="error_sending_reset_email">Failed to send password reset email. Please try again.</string>
-    <string name="error_no_email_app">No email app found on your device.</string>
-    <string name="error_sending_email">Unable to open email app. Please try again.</string>
+    <string name="error_opening_browser">No se puede abrir el navegador. Por favor inténtalo de nuevo.</string>
+    <string name="error_no_email">No se encontró dirección de correo electrónico para tu cuenta.</string>
+    <string name="error_not_logged_in">Actualmente no has iniciado sesión.</string>
+    <string name="error_sending_reset_email">Error al enviar el correo de restablecimiento de contraseña. Por favor inténtalo de nuevo.</string>
+    <string name="error_no_email_app">No se encontró aplicación de correo en tu dispositivo.</string>
+    <string name="error_sending_email">No se puede abrir la aplicación de correo. Por favor inténtalo de nuevo.</string>
 </resources>

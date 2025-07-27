@@ -126,20 +126,20 @@
     <string name="task_title">Titre de la tâche</string>
 
     <!-- Account Deletion -->
-    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.</string>
-    <string name="account_deleted_success">Your account has been successfully deleted.</string>
-    <string name="account_deletion_reauth_required">Please log out and log back in, then try deleting your account again.</string>
-    <string name="error_deleting_account">Failed to delete account. Please try again.</string>
+    <string name="delete_account_confirmation">Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne peut pas être annulée et supprimera définitivement toutes vos données.</string>
+    <string name="account_deleted_success">Votre compte a été supprimé avec succès.</string>
+    <string name="account_deletion_reauth_required">Veuillez vous déconnecter et vous reconnecter, puis essayez de supprimer votre compte à nouveau.</string>
+    <string name="error_deleting_account">Échec de la suppression du compte. Veuillez réessayer.</string>
 
     <!-- Password Reset -->
-    <string name="reset_password_confirmation">Are you sure you want to reset your password? A reset link will be sent to your email address.</string>
-    <string name="password_reset_email_sent">Password reset email sent. Please check your inbox and follow the instructions.</string>
+    <string name="reset_password_confirmation">Êtes-vous sûr de vouloir réinitialiser votre mot de passe ? Un lien de réinitialisation sera envoyé à votre adresse e-mail.</string>
+    <string name="password_reset_email_sent">E-mail de réinitialisation du mot de passe envoyé. Veuillez vérifier votre boîte de réception et suivre les instructions.</string>
 
     <!-- Error Messages -->
-    <string name="error_opening_browser">Unable to open browser. Please try again.</string>
-    <string name="error_no_email">No email address found for your account.</string>
-    <string name="error_not_logged_in">You are not currently logged in.</string>
-    <string name="error_sending_reset_email">Failed to send password reset email. Please try again.</string>
-    <string name="error_no_email_app">No email app found on your device.</string>
-    <string name="error_sending_email">Unable to open email app. Please try again.</string>
+    <string name="error_opening_browser">Impossible d\'ouvrir le navigateur. Veuillez réessayer.</string>
+    <string name="error_no_email">Aucune adresse e-mail trouvée pour votre compte.</string>
+    <string name="error_not_logged_in">Vous n\'êtes actuellement pas connecté.</string>
+    <string name="error_sending_reset_email">Échec de l\'envoi de l\'e-mail de réinitialisation du mot de passe. Veuillez réessayer.</string>
+    <string name="error_no_email_app">Aucune application e-mail trouvée sur votre appareil.</string>
+    <string name="error_sending_email">Impossible d\'ouvrir l\'application e-mail. Veuillez réessayer.</string>
 </resources>

@@ -126,21 +126,21 @@
     <string name="task_title">Titlul sarcinii</string>
 
     <!-- Account Deletion -->
-    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone and will permanently remove all your data.</string>
-    <string name="account_deleted_success">Your account has been successfully deleted.</string>
-    <string name="account_deletion_reauth_required">Please log out and log back in, then try deleting your account again.</string>
-    <string name="error_deleting_account">Failed to delete account. Please try again.</string>
+    <string name="delete_account_confirmation">Ești sigur că vrei să îți ștergi contul? Această acțiune nu poate fi anulată și va elimina permanent toate datele tale.</string>
+    <string name="account_deleted_success">Contul tău a fost șters cu succes.</string>
+    <string name="account_deletion_reauth_required">Te rog să te deconectezi și să te conectezi din nou, apoi încearcă să îți ștergi contul din nou.</string>
+    <string name="error_deleting_account">Eșec la ștergerea contului. Te rog să încerci din nou.</string>
 
     <!-- Password Reset -->
-    <string name="reset_password_confirmation">Are you sure you want to reset your password? A reset link will be sent to your email address.</string>
-    <string name="password_reset_email_sent">Password reset email sent. Please check your inbox and follow the instructions.</string>
+    <string name="reset_password_confirmation">Ești sigur că vrei să îți resetezi parola? Un link de resetare va fi trimis la adresa ta de email.</string>
+    <string name="password_reset_email_sent">Email-ul de resetare a parolei a fost trimis. Te rog să verifici căsuța poștală și să urmezi instrucțiunile.</string>
 
     <!-- Error Messages -->
-    <string name="error_opening_browser">Unable to open browser. Please try again.</string>
-    <string name="error_no_email">No email address found for your account.</string>
-    <string name="error_not_logged_in">You are not currently logged in.</string>
-    <string name="error_sending_reset_email">Failed to send password reset email. Please try again.</string>
-    <string name="error_no_email_app">No email app found on your device.</string>
-    <string name="error_sending_email">Unable to open email app. Please try again.</string>
+    <string name="error_opening_browser">Nu se poate deschide browserul. Te rog să încerci din nou.</string>
+    <string name="error_no_email">Nu s-a găsit nicio adresă de email pentru contul tău.</string>
+    <string name="error_not_logged_in">Nu ești conectat în prezent.</string>
+    <string name="error_sending_reset_email">Eșec la trimiterea email-ului de resetare a parolei. Te rog să încerci din nou.</string>
+    <string name="error_no_email_app">Nu s-a găsit nicio aplicație de email pe dispozitivul tău.</string>
+    <string name="error_sending_email">Nu se poate deschide aplicația de email. Te rog să încerci din nou.</string>
 
 </resources>
