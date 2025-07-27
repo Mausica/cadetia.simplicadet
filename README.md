@@ -1,5 +1,5 @@
 
-# Simplicadet `1.3b` 🚀🎖️
+# Simplicadet `1.4b` 🚀🎖️
 
 <img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
 
