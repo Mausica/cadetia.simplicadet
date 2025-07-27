@@ -45,8 +45,8 @@ import com.cadetia.simplicadet.dao.LocaleHelper;
 import com.cadetia.simplicadet.database.DbQuery;
 import com.cadetia.simplicadet.database.TextUpload;
 import com.cadetia.simplicadet.entities.DialogConfirm;
+import com.cadetia.simplicadet.entities.DialogUploadType;
 import com.cadetia.simplicadet.entities.InstitutionSelectionDialog;
-import com.cadetia.simplicadet.entities.UploadTypeDialog;
 import com.cadetia.simplicadet.listeners.MyCompleteListener;
 import com.cadetia.simplicadet.ui.home.HomeFragment;
 import com.cadetia.simplicadet.ui.home.HomeFragment1;
@@ -504,7 +504,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     }
 
     private void showUploadTypeDialog() {
-        UploadTypeDialog.show(this, new UploadTypeDialog.UploadTypeCallback() {
+        DialogUploadType.show(this, new DialogUploadType.UploadTypeCallback() {
             @Override
             public void onQuizUpload() {
                 selectQuizFile();
@@ -517,6 +517,7 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
 
             @Override
             public void onCancel() {
+                // Handle cancel if needed, or leave empty
             }
         });
     }
@@ -591,7 +592,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK && data != null) {
             Uri fileUri = data.getData();
             if (fileUri != null) {
@@ -599,11 +599,62 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
                     TextUpload textUpload = new TextUpload();
                     textUpload.uploadQuestionsFromText(this, fileUri);
                 } else if (requestCode == 2) {
-                    showInstitutionYearDialog(fileUri);
+                    uploadStudentsFromExcel(fileUri);
                 } else if (requestCode == 3) {
                     uploadAccessCodesFromExcel(fileUri);
                 }
             }
+        }
+    }
+    private void uploadStudentsFromExcel(Uri fileUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+            List<DbQuery.AccessCodeData> accessCodes = new ArrayList<>();
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row != null) {
+                    String accessCode = getCellValueAsString(row.getCell(0));
+                    String name = getCellValueAsString(row.getCell(1));
+                    String institution = getCellValueAsString(row.getCell(2));
+                    String year = getCellValueAsString(row.getCell(3));
+                    String photo = getCellValueAsString(row.getCell(4));
+                    String height = getCellValueAsString(row.getCell(5));
+                    String pluton = getCellValueAsString(row.getCell(6));
+                    String rank = getCellValueAsString(row.getCell(7));
+                    if (!accessCode.isEmpty() && !name.isEmpty() && !institution.isEmpty() && !year.isEmpty()) {
+                        DbQuery.AccessCodeData accessCodeData = new DbQuery.AccessCodeData();
+                        accessCodeData.accessCode = accessCode;
+                        accessCodeData.name = name;
+                        accessCodeData.institution = institution;
+                        accessCodeData.year = year;
+                        accessCodeData.photo = photo;
+                        accessCodeData.height = Integer.parseInt(height.isEmpty() ? "175" : height);
+                        accessCodeData.pluton = Integer.parseInt(pluton.isEmpty() ? "1" : pluton);
+                        accessCodeData.rank = Integer.parseInt(rank.isEmpty() ? "0" : rank);
+                        accessCodes.add(accessCodeData);
+                    }
+                }
+            }
+            if (accessCodes.isEmpty()) {
+                Toast.makeText(this, "No valid student data found", Toast.LENGTH_LONG).show();
+                return;
+            }
+            DbQuery.uploadStudentsWithAccessCodesDirectly(accessCodes, new MyCompleteListener() {
+                @Override
+                public void onSucces() {
+                    Toast.makeText(Home.this, "Students uploaded: " + accessCodes.size() + " records", Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void onFailure() {
+                    Toast.makeText(Home.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                }
+            });
+            workbook.close();
+            inputStream.close();
+        } catch (Exception e) {
+            Toast.makeText(this, "Error reading Excel file", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -659,41 +710,6 @@ public class Home extends BaseActivity implements NavigationView.OnNavigationIte
         }
     }
 
-    private void showInstitutionYearDialog(Uri fileUri) {
-        Dialog dialog = new Dialog(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_institution_year, null);
-        dialog.setContentView(view);
-
-        EditText editInstitution = view.findViewById(R.id.edit_institution);
-        EditText editYear = view.findViewById(R.id.edit_year);
-        Button btnUpload = view.findViewById(R.id.btn_upload);
-        Button btnCancel = view.findViewById(R.id.btn_cancel);
-
-        btnUpload.setOnClickListener(v -> {
-            String institution = editInstitution.getText().toString().trim();
-            String year = editYear.getText().toString().trim();
-
-            if (!institution.isEmpty() && !year.isEmpty()) {
-                DbQuery.uploadStudentsWithAccessCodes(this, fileUri, institution, year, new MyCompleteListener() {
-                    @Override
-                    public void onSucces() {
-                        Toast.makeText(Home.this, "Students and access codes uploaded successfully", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Toast.makeText(Home.this, "Upload failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                dialog.dismiss();
-            } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-        dialog.show();
-    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {

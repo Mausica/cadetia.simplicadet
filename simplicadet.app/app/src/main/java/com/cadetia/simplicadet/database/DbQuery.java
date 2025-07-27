@@ -689,6 +689,27 @@ public class DbQuery {
         g_learningPath = null;
     }
 
+    public static void uploadStudentsWithAccessCodesDirectly(List<AccessCodeData> accessCodes, MyCompleteListener completeListener) {
+        WriteBatch batch = g_firestore.batch();
+        for (AccessCodeData accessCode : accessCodes) {
+            DocumentReference docRef = g_firestore.collection("ACCESS_CODES").document(accessCode.accessCode);
+            Map<String, Object> data = new ArrayMap<>();
+            data.put("name", accessCode.name);
+            data.put("institution", accessCode.institution);
+            data.put("photo", accessCode.photo);
+            data.put("height", accessCode.height);
+            data.put("pluton", accessCode.pluton);
+            data.put("rank", accessCode.rank);
+            data.put("year", accessCode.year);
+            data.put("createdAt", System.currentTimeMillis());
+            data.put("locked", false);
+            batch.set(docRef, data);
+        }
+        batch.commit()
+                .addOnSuccessListener(unused -> completeListener.onSucces())
+                .addOnFailureListener(e -> completeListener.onFailure());
+    }
+
     public interface PermissionCallback {
         void onPermissionsReceived(boolean isAdmin, boolean isPremium, String institution);
         void onFailure();

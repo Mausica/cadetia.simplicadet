@@ -1,36 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:layout_height="match_parent"
+    android:id="@+id/layoutUploadTypeContainer">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Upload Type"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp" />
-
-    <Button
-        android:id="@+id/btn_quiz_upload"
+    <LinearLayout
+        android:id="@+id/upload_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload Quiz Questions"
-        android:layout_marginBottom="8dp" />
+        android:background="@drawable/background_delete_note"
+        android:layout_marginLeft="@dimen/_40sdp"
+        android:layout_marginRight="@dimen/_40sdp"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/_16sdp"
+        android:elevation="7dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/btn_student_upload"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload Students Data"
-        android:layout_marginBottom="16dp" />
+        <!-- Title -->
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_16sdp"
+            android:paddingEnd="@dimen/_16sdp"
+            android:text="Select Upload Type"
+            android:fontFamily="@font/circular_regular"
+            android:textAlignment="center"
+            android:textColor="?attr/textNormal"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/_15sdp" />
 
-    <Button
-        android:id="@+id/btn_cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancel" />
+        <!-- Description (optional) -->
+        <TextView
+            android:id="@+id/descriptionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/circular_regular"
+            android:paddingStart="@dimen/_16sdp"
+            android:paddingEnd="@dimen/_16sdp"
+            android:textAlignment="center"
+            android:text="Choose what type of data you want to upload"
+            android:textColor="?attr/textDark"
+            android:textSize="@dimen/_12ssp"
+            android:layout_marginBottom="@dimen/_12sdp"
+            android:visibility="gone" />
 
-</LinearLayout>
+        <!-- Dividing Line -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <!-- Upload Quiz Questions Button -->
+        <Button
+            android:id="@+id/btn_quiz_upload"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_gravity="center"
+            android:background="@color/nothing"
+            android:elevation="0dp"
+            android:fontFamily="@font/circular_regular"
+            android:text="Upload Quiz Questions"
+            android:textAllCaps="false"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/_14ssp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <!-- Dividing Line -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <!-- Upload Students Data Button -->
+        <Button
+            android:id="@+id/btn_student_upload"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_gravity="center"
+            android:background="@color/nothing"
+            android:elevation="0dp"
+            android:fontFamily="@font/circular_regular"
+            android:text="Upload Students Data"
+            android:textAllCaps="false"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/_14ssp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <!-- Dividing Line -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <!-- Cancel Button -->
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_36sdp"
+            android:layout_gravity="center"
+            android:background="@color/nothing"
+            android:elevation="0dp"
+            android:fontFamily="@font/circular_medium"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="?attr/textDark"
+            android:textSize="@dimen/_14ssp"
+            android:textStyle="normal"
+            tools:ignore="TouchTargetSizeCheck" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
