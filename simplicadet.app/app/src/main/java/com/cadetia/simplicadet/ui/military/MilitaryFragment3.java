@@ -1,9 +1,12 @@
 package com.cadetia.simplicadet.ui.military;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -56,6 +59,7 @@ public class MilitaryFragment3 extends Fragment {
     private int[] homeCount;
     private int[] absentCount;
     private List<String> rankNames = new ArrayList<>();
+    private String userInstitution;
 
     private static class Student {
         String name;
@@ -107,11 +111,13 @@ public class MilitaryFragment3 extends Fragment {
                 originalHeight = zoomLayout.getHeight();
             });
         }
+        retrieveUserData();
         loadRanks();
     }
 
     private void loadRanks() {
-        db.collection("MILITARY").document("RO").collection("CNMTV").document("RANKS")
+        if (userInstitution == null) return;
+        db.collection("MILITARY").document("RO").collection(userInstitution).document("RANKS")
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
@@ -167,7 +173,8 @@ public class MilitaryFragment3 extends Fragment {
     }
 
     private void loadFirebaseData() {
-        db.collection("MILITARY").document("RO").collection("CNMTV").document("STUDENTS").collection("2025").document("STATS")
+        if (userInstitution == null) return;
+        db.collection("MILITARY").document("RO").collection(userInstitution).document("STUDENTS").collection("2025").document("STATS")
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -249,7 +256,8 @@ public class MilitaryFragment3 extends Fragment {
     }
 
     private void loadStudentData() {
-        db.collection("MILITARY").document("RO").collection("CNMTV").document("STUDENTS").collection("2025")
+        if (userInstitution == null) return;
+        db.collection("MILITARY").document("RO").collection(userInstitution).document("STUDENTS").collection("2025")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     allStudents.clear();
@@ -257,7 +265,6 @@ public class MilitaryFragment3 extends Fragment {
                         if (!"STATS".equals(doc.getId())) {
                             Map<String, Object> data = doc.getData();
                             if (data != null) {
-                                // SAFE extraction
                                 Object nameObj = data.get("NAME");
                                 String name = nameObj != null ? nameObj.toString() : "";
 
@@ -520,6 +527,13 @@ public class MilitaryFragment3 extends Fragment {
         TypedValue tv = new TypedValue();
         requireContext().getTheme().resolveAttribute(attr, tv, true);
         return tv.data;
+    }
+
+    private void retrieveUserData() {
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserData", MODE_PRIVATE);
+            userInstitution = sharedPreferences.getString("userInstitution", "");
+        }
     }
 
     @Override

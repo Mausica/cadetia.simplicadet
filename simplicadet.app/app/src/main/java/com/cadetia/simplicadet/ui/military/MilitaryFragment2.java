@@ -1,7 +1,10 @@
 package com.cadetia.simplicadet.ui.military;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,9 +53,9 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
     private ExecutorService executorService;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private LruCache<String, Bitmap> memCache;
+    private String userInstitution;
 
     public MilitaryFragment2() {
-        // Required empty public constructor
     }
 
     public static MilitaryFragment2 newInstance() {
@@ -75,6 +78,7 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
         setupCache();
+        retrieveUserData();
     }
 
     @Override
@@ -130,11 +134,12 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
         super.onResume();
         long currentTime = System.currentTimeMillis();
 
+        if (userInstitution == null) retrieveUserData();
+
         resetLoadingState();
         showLoading(true);
 
         if (NetworkUtils.isNetworkAvailable(requireContext())) {
-            // Load documents with cache
             if (cachedDocuments != null && (currentTime - documentsLastLoad) < CACHE_DURATION) {
                 documentList.clear();
                 documentList.addAll(cachedDocuments);
@@ -177,7 +182,6 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
             }
         }
 
-        // Clear view references
         loadingLayout = null;
         contentView = null;
         documentsRecyclerView = null;
@@ -216,12 +220,13 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
     }
 
     private void loadDocumentsFromFirestore() {
+        if (userInstitution == null) return;
         getExecutorService().execute(() -> {
             if (!isFragmentSafe()) return;
 
             db.collection("MILITARY")
                     .document("RO")
-                    .collection("CNMTV")
+                    .collection(userInstitution)
                     .document("DOCUMENTS")
                     .get()
                     .addOnCompleteListener(task -> {
@@ -267,7 +272,6 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
                                 }
                             }
 
-                            // Cache the documents
                             cachedDocuments = new ArrayList<>(documents);
                             documentsLastLoad = System.currentTimeMillis();
 
@@ -330,6 +334,13 @@ public class MilitaryFragment2 extends Fragment implements DocumentListener {
             }
         } else {
             Log.e(TAG, "PDF URL is null or empty for document: " + document.getTitle());
+        }
+    }
+
+    private void retrieveUserData() {
+        if (getActivity() != null) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserData", MODE_PRIVATE);
+            userInstitution = sharedPreferences.getString("userInstitution", "");
         }
     }
 

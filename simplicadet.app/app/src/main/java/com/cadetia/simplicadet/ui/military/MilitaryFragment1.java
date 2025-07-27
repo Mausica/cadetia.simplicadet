@@ -62,7 +62,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     private static final String TAG = "MilitaryFragment1";
     private static final long CACHE_DURATION = 30000;
 
-    // UI Components
     private RecyclerView categoryRecyclerView;
     private RecyclerView rankRecyclerView;
     private RecyclerView journalRecyclerView;
@@ -103,8 +102,8 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     private boolean destinationsLoaded = false;
     private boolean aboutLoaded = false;
 
-    // Other
     private String userEmail;
+    private String userInstitution;
     private LruCache<String, Bitmap> memCache;
     private FirebaseFirestore db;
 
@@ -126,7 +125,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_military1, container, false);
 
-        // Initialize views
         loadingLayout = view.findViewById(R.id.layout_loading);
         contentView = view.findViewById(R.id.contentLayout1);
         rankRecyclerView = view.findViewById(R.id.rankRecyclerView);
@@ -142,6 +140,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         setupRecyclerViews();
         resetLoadingState();
         showLoading(true);
+        retrieveUserData();
 
         return view;
     }
@@ -200,6 +199,8 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
         resetLoadingState();
         showLoading(true);
+
+        if (userInstitution == null) retrieveUserData();
 
         loadAboutDataWithCache(currentTime);
         loadImagesWithCache();
@@ -267,7 +268,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 setupDestinationRecyclerView();
             }
 
-            // Mark all as loaded when offline
             journalsLoaded = true;
             categoriesLoaded = true;
             ranksLoaded = true;
@@ -298,7 +298,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             }
         }
 
-        // Clear view references
         loadingLayout = null;
         contentView = null;
         categoryRecyclerView = null;
@@ -310,7 +309,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         rankTitle = null;
         destinationTitle = null;
 
-        // Clear adapter references
         rankAdapter = null;
         journalAdapter = null;
         categoryAdapter = null;
@@ -339,7 +337,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                         }
                     }, 250);
                 } else {
-                    // Fallback without animation if context is null
                     loadingLayout.setVisibility(View.GONE);
                     contentView.setVisibility(View.VISIBLE);
                 }
@@ -349,7 +346,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
 
     private void loadAboutDataWithCache(long currentTime) {
         if (cachedAboutData != null && (currentTime - aboutLastLoad) < CACHE_DURATION) {
-            // Use cached data
             updateAboutUI(cachedAboutData);
             aboutLoaded = true;
             checkAllDataLoaded();
@@ -359,7 +355,8 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     private void loadAboutData() {
-        db.document("MILITARY/RO/CNMTV/ABOUT")
+        if (userInstitution == null) return;
+        db.document("MILITARY/RO/" + userInstitution + "/ABOUT")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (!isFragmentSafe()) return;
@@ -394,18 +391,18 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     private void loadImagesWithCache() {
-        if (!isFragmentSafe()) return;
+        if (!isFragmentSafe() || userInstitution == null) return;
         Context ctx = requireContext();
         if (schoolLogo != null) {
             Glide.with(ctx)
-                    .load("https://firebasestorage.googleapis.com/v0/b/simplicadet.firebasestorage.app/o/MILITARY%2FRO%2FCNMTV%2Flogo.png?alt=media")
+                    .load("https://firebasestorage.googleapis.com/v0/b/simplicadet.firebasestorage.app/o/MILITARY%2FRO%2F" + userInstitution + "%2Flogo.png?alt=media")
                     .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).override(500, 500).dontTransform())
                     .into(schoolLogo);
         }
         if (schoolMotto != null) {
             coil.ImageLoader loader = SvgImageLoader.get(ctx);
             coil.request.ImageRequest req = new coil.request.ImageRequest.Builder(ctx)
-                    .data("https://firebasestorage.googleapis.com/v0/b/simplicadet.firebasestorage.app/o/MILITARY%2FRO%2FCNMTV%2Fmotto.svg?alt=media")
+                    .data("https://firebasestorage.googleapis.com/v0/b/simplicadet.firebasestorage.app/o/MILITARY%2FRO%2F" + userInstitution + "%2Fmotto.svg?alt=media")
                     .target(schoolMotto)
                     .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
                     .diskCachePolicy(coil.request.CachePolicy.ENABLED)
@@ -415,16 +412,9 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         }
     }
 
-    private void loadSvgFromUrl(String url, ImageView iv) {
-        if (!isFragmentSafe()) return;
-        SvgImageLoader.get(requireContext()).enqueue(
-                new coil.request.ImageRequest.Builder(requireContext()).data(url).target(iv)
-                        .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
-                        .diskCachePolicy(coil.request.CachePolicy.ENABLED).build());
-    }
-
     private void loadDestinations() {
-        db.document("MILITARY/RO/CNMTV/PICTURES")
+        if (userInstitution == null) return;
+        db.document("MILITARY/RO/" + userInstitution + "/PICTURES")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (!isFragmentSafe()) return;
@@ -445,7 +435,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                                 Collections.shuffle(destinationItems);
                             }
 
-                            // Cache the data
                             cachedDestinations = new ArrayList<>(destinationItems);
                             destinationsLastLoad = System.currentTimeMillis();
 
@@ -524,7 +513,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     private void loadRanks() {
-        DbQuery.loadRanks(new MyCompleteListener() {
+        DbQuery.loadRanks(userInstitution, new MyCompleteListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSucces() {
@@ -533,7 +522,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 rankList.clear();
                 rankList.addAll(DbQuery.g_rankList);
 
-                // Cache the data
                 cachedRanks = new ArrayList<>(DbQuery.g_rankList);
                 ranksLastLoad = System.currentTimeMillis();
 
@@ -571,7 +559,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     private void loadJournals() {
-        DbQuery.loadJournals(new MyCompleteListener() {
+        DbQuery.loadJournals(userInstitution, new MyCompleteListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSucces() {
@@ -581,7 +569,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 if (DbQuery.g_militaryJournalList != null && !DbQuery.g_militaryJournalList.isEmpty()) {
                     journalList.addAll(DbQuery.g_militaryJournalList);
 
-                    // Cache the data
                     cachedJournals = new ArrayList<>(DbQuery.g_militaryJournalList);
                     journalsLastLoad = System.currentTimeMillis();
 
@@ -636,7 +623,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     @Override
     public void onJournalClick(String journalLink) {
         if (!NetworkUtils.isNetworkAvailable(requireContext())) {
-            // You might want to show a toast here
             return;
         }
 
@@ -653,7 +639,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
     }
 
     private void loadCategories() {
-        DbQuery.loadMilitaryCategories(requireContext(), new MyCompleteListener() {
+        DbQuery.loadMilitaryCategories(requireContext(), userInstitution, new MyCompleteListener() {
             @Override
             public void onSucces() {
                 if (!isFragmentSafe()) return;
@@ -662,14 +648,9 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
                 if (loadedCategories != null && !loadedCategories.isEmpty()) {
                     categoryList.clear();
                     categoryList.addAll(loadedCategories);
-
-                    // Cache the data
                     cachedCategories = new ArrayList<>(loadedCategories);
                     categoriesLastLoad = System.currentTimeMillis();
-
                     setUpCategoryRecyclerView(categoryList);
-                } else {
-                    Log.e(TAG, "Military category list is empty");
                 }
                 categoriesLoaded = true;
                 checkAllDataLoaded();
@@ -678,7 +659,6 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
             @Override
             public void onFailure() {
                 if (isFragmentSafe()) {
-                    Log.e(TAG, "Failed to load military categories");
                     categoriesLoaded = true;
                     checkAllDataLoaded();
                 }
@@ -764,6 +744,7 @@ public class MilitaryFragment1 extends Fragment implements CategoryAdapter.OnQui
         if (getActivity() != null) {
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserData", MODE_PRIVATE);
             userEmail = sharedPreferences.getString("userEmail", "");
+            userInstitution = sharedPreferences.getString("userInstitution", "");
         }
     }
 }

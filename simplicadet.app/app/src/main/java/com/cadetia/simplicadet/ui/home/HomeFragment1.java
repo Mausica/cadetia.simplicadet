@@ -271,25 +271,16 @@ public class HomeFragment1 extends Fragment implements LearningPathAdapter.OnLea
         });
     }
 
-    private void setupJournalAdapter() {
-        if (isFragmentSafe() && journalRecyclerView != null) {
-            if (journalAdapter == null) {
-                journalAdapter = new JournalAdapter(journalList, this, memCache);
-                journalRecyclerView.setAdapter(journalAdapter);
-            }
-        }
-    }
-
     private void loadJournals() {
-        DbQuery.loadJournals(new MyCompleteListener() {
+        DbQuery.loadJournals("NEWS", new MyCompleteListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSucces() {
                 if (!isFragmentSafe()) return;
                 journalList.clear();
-                if (DbQuery.g_homeJournalList != null && !DbQuery.g_homeJournalList.isEmpty()) {
-                    journalList.addAll(DbQuery.g_homeJournalList);
-                    cachedJournals = new ArrayList<>(DbQuery.g_homeJournalList);
+                if (DbQuery.g_militaryJournalList != null && !DbQuery.g_militaryJournalList.isEmpty()) {
+                    journalList.addAll(DbQuery.g_militaryJournalList);
+                    cachedJournals = new ArrayList<>(DbQuery.g_militaryJournalList);
                     journalsLastLoad = System.currentTimeMillis();
                     preloadJournalImages();
                 }

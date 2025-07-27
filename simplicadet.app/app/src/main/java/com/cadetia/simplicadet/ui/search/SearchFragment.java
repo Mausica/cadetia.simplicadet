@@ -266,7 +266,11 @@ public class SearchFragment extends Fragment implements CategoryAdapter.OnQuizCl
 
         showLoading(true);
 
-        DbQuery.loadCategories(requireContext(), new MyCompleteListener() {
+        // Get the institution from SharedPreferences
+        SharedPreferences sp = requireActivity().getSharedPreferences("UserData", MODE_PRIVATE);
+        String institution = sp.getString("institution", ""); // Default to empty string if not found
+
+        DbQuery.loadCategories(requireContext(), institution, new MyCompleteListener() {
             @Override
             public void onSucces() {
                 if (!isAdded()) {
