@@ -47,6 +47,7 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
     private final Handler handler = new Handler(Looper.getMainLooper());
     private View loadingLayout;
     private View contentView;
+    private Note placeholderNote;
 
     private List<Note> cachedNotes;
     private long lastLoadTime = 0;
@@ -145,6 +146,7 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
 
     @Override
     public void onNoteClicked(Note note, int position) {
+        if (note == placeholderNote) return;
         noteClickedPosition = position;
         showCreateNote(note, false);
     }
@@ -174,7 +176,17 @@ public class HomeFragment2 extends Fragment implements NotesListener, CreateNote
                         case REQUEST_CODE_SHOW_NOTES:
                         case REQUEST_CODE_ADD_NOTE:
                             noteList.clear();
-                            noteList.addAll(notes);
+                            if (notes.isEmpty()) {
+                                placeholderNote = new Note();
+                                placeholderNote.setTitle("Tap ➕ to create your first note");
+                                placeholderNote.setSubtitle("Your notes will appear here");
+                                placeholderNote.setDateTime("28 Jul 2025");
+                                placeholderNote.setId(-1);
+                                noteList.add(placeholderNote);
+                            } else {
+                                placeholderNote = null;
+                                noteList.addAll(notes);
+                            }
                             notesAdapter.notifyDataSetChanged();
                             break;
                         case REQUEST_CODE_UPDATE_NOTE:
