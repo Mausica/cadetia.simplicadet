@@ -2,7 +2,7 @@
 <resources>
     <!-- Información de la aplicación -->
     <string name="app_name">Simplicadet</string>
-    <string name="version_info">Versión 1.3b</string>
+    <string name="version_info">Versión 1.4b</string>
     <string name="copyright_info">© 2025 Simplicadet</string>
     <string name="current_language_display">Español</string>
 
