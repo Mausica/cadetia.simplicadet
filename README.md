@@ -16,7 +16,7 @@
 - **Facilitarea comunicării** între instituții și studenți
 - **Îmbunătățirea disciplinei** prin sisteme automatizate de monitorizare
 
-## ✨ Funcționalități Principale
+### ✨ Funcționalități Principale
 
 ### 📝 Gestionare Elegantă a Sarcinilor
 - **Organizare Precisă:** Programarea temelor, exercițiilor militare și termenelor academice
