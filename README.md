@@ -1,10 +1,8 @@
 # Simplicadet `v1.4b` 🎖️📚
 
-<div align="center">
-  <img src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" alt="Simplicadet Preview" height="600"/>
-</div>
+<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
 
-## 📋 Despre Proiect
+### 📋 Despre Proiect
 
 **Simplicadet** este o aplicație mobilă Android de ultimă generație, dezvoltată cu precizie militară pentru cadeții din instituțiile de învățământ militar românești și nu numai. Aplicația oferă o soluție completă și adaptabilă pentru gestionarea sarcinilor, pregătirea pentru examene și menținerea disciplinei prin instrumente digitale moderne.
 
@@ -18,7 +16,7 @@
 - **Facilitarea comunicării** între instituții și studenți
 - **Îmbunătățirea disciplinei** prin sisteme automatizate de monitorizare
 
-## ✨ Funcționalități Principale
+### ✨ Funcționalități Principale
 
 ### 📝 Gestionare Elegantă a Sarcinilor
 - **Organizare Precisă:** Programarea temelor, exercițiilor militare și termenelor academice
