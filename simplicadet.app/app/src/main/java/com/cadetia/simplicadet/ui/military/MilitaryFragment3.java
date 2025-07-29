@@ -277,7 +277,7 @@ public class MilitaryFragment3 extends Fragment {
                                 Object rankObj = data.get("RANK");
                                 String rank = getRankString(rankObj);
 
-                                Object imageObj = data.get("IMAGE");
+                                Object imageObj = data.get("PHOTO");
                                 String imageUrl = imageObj != null ? imageObj.toString() : "";
 
                                 if (!name.isEmpty() && height > 0 && platoon > 0) {
@@ -424,6 +424,7 @@ public class MilitaryFragment3 extends Fragment {
         String companyText = companyName + " " + companyNumber;
         String platoonText = "Plutonul " + student.platoon;
         DialogStudentPreview.show(requireActivity(), rank, student.name, companyText, platoonText, student.imageUrl);
+        Log.d("IMAGE URL", student.imageUrl);
     }
 
     private String generateFormationFormula(int studentCount) {
