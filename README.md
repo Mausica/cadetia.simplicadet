@@ -1,8 +1,6 @@
 # Simplicadet `v1.4b` 🎖️📚
 
-<div align="center">
-  <img src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" alt="Simplicadet Preview" height="600"/>
-</div>
+<img align="right" height="700" src="https://github.com/Mausica/cadetia.simplicadet/blob/main/assets/phone.png" />
 
 ## 📋 Despre Proiect
 
